@@ -102,7 +102,7 @@ textarea { font: inherit; }
 .home { background: #fff; }
 .home-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; overscroll-behavior: contain; }
 .home-scroll::-webkit-scrollbar { display: none; }
-.fh { position: relative; width: 375px; height: 2720px; margin: calc(var(--sb) - 44px) auto 0; overflow: hidden; }
+.fh { position: relative; width: 375px; height: 2480px; margin: calc(var(--sb) - 44px) auto 0; overflow: hidden; }
 .home-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: var(--sb); background: #fff; }
 .fh p, .home-header p, .bottom-nav p, .fh ul, .fh ol { margin: 0; }
 .fh img, .home-header img, .bottom-nav img { max-width: none; }
