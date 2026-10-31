@@ -46,84 +46,131 @@
     <img class="sb-batt" src="assets/battery.svg" alt="" />
   </div>
 
-  <!-- ================= HOME ================= -->
+  <!-- ================= HOME (Figma "Manage Landing" 81538:20209) ================= -->
   <section class="screen home active" id="home">
     <header class="home-header">
-      <button class="icon-btn" aria-label="Menu" data-toast="Menu is not part of this prototype">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h11M4 17h16" stroke="#292C31" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
+      <button class="icon-btn" aria-label="Menu" data-toast="Menu is not part of this prototype"><img src="assets/home/imgVector.svg" alt="" /></button>
       <button class="ama-pill" id="amaPill" aria-label="Open Agentic">
         <span class="ama-shine"></span>
         <span class="ama-text" id="amaText"><span>What do you need today?</span></span>
-        <svg class="ama-star" width="22" height="22" viewBox="0 0 24 24"><path d="M12 1.5c.6 4.9 2.6 8.9 10.5 10.5-7.9 1.6-9.9 5.6-10.5 10.5C11.4 17.6 9.4 13.6 1.5 12 9.4 10.4 11.4 6.4 12 1.5Z" fill="#fff"/></svg>
+        <span class="ama-star" id="amaStar"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 0l.65 2.56a7.1 7.1 0 0 0 5.8 5.79L18 9l-2.55.65a7.1 7.1 0 0 0-5.8 5.8L9 18l-.65-2.55a7.1 7.1 0 0 0-5.8-5.8L0 9l2.55-.65a7.1 7.1 0 0 0 5.8-5.8Z" fill="#fff"/></svg></span>
       </button>
-      <button class="icon-btn round" aria-label="Scan" data-toast="Scan & pay is not part of this prototype">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#292C31" stroke-width="1.7" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="3" height="3" rx=".5"/><rect x="13" y="8" width="3" height="3" rx=".5"/><rect x="8" y="13" width="3" height="3" rx=".5"/><path d="M13 13h3v3"/></svg>
-      </button>
+      <button class="icon-btn append" aria-label="Scan" data-toast="Scan & pay is not part of this prototype"><img src="assets/home/imgAppendIconWithBase.svg" alt="" /><img class="append-ic" src="assets/home/imgLiveContainer.svg" alt="" /></button>
     </header>
 
     <div class="home-scroll" id="homeScroll">
       <nav class="cats" id="cats">
-        <button class="cat active"><span class="cat-ic"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1Z" fill="#292C31"/></svg></span>All</button>
-        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9.5 8h5M9.5 10.5h5M12.5 8c1.6 0 1.6 2.5 0 2.5H10l3.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Prepaid</button>
-        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6"><path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a3 3 0 0 1 3-3Z"/><rect x="8.5" y="10" width="7" height="7" rx="1"/></svg></span>Postpaid</button>
-        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><path d="M4 9.5a12 12 0 0 1 16 0M7 12.5a7.5 7.5 0 0 1 10 0M10 15.5a3 3 0 0 1 4 0"/><rect x="4" y="17" width="16" height="4" rx="1.2"/></svg></span>Wi-Fi</button>
-        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M9 2.5l3 3.5 3-3.5"/></svg></span>Digital TV</button>
-        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><path d="M5 5h14v10H5zM9 19h6M12 15v4"/></svg></span>DTH</button>
+        <button class="cat active"><span class="cat-ic"><img src="assets/home/imgVectorStroke.svg" alt="" /></span><span class="cat-l">All</span></button>
+        <button class="cat"><span class="cat-ic"><img src="assets/home/imgLiveContainer2.svg" alt="" /></span><span class="cat-l">Prepaid</span></button>
+        <button class="cat"><span class="cat-ic"><img src="assets/home/imgIcn.svg" alt="" /></span><span class="cat-l">Postpaid</span></button>
+        <button class="cat"><span class="cat-ic"><img src="assets/home/imgIcn1.svg" alt="" /></span><span class="cat-l">Wi-Fi</span></button>
+        <button class="cat"><span class="cat-ic"><img src="assets/home/imgIcn2.svg" alt="" /></span><span class="cat-l">Digital TV</span></button>
+        <span class="cat-bar" id="catBar"></span>
       </nav>
 
       <div class="home-band">
-        <div class="pack-card">
+        <div class="pack-card rv">
           <span class="pack-tag">Pack Status</span>
           <div class="pack-top">
-            <span class="pack-type"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="#E40000"/></svg>Prepaid</span>
+            <span class="pack-type"><img src="assets/home/imgLast.png" width="16" height="16" alt="" />Prepaid</span>
             <span class="pack-num">9876543210</span>
           </div>
           <p class="pack-title">Your ₹399 pack is expiring today</p>
           <p class="pack-sub">Recharge now to avoid service interruption and continue enjoying your benefits.</p>
         </div>
-        <div class="pack-actions">
+        <div class="pack-actions rv">
           <button class="btn btn-secondary" data-ask="Show me recharge plans">Explore Packs</button>
-          <button class="btn btn-primary" data-ask="Recharge my ₹399 pack">Recharge Now</button>
+          <button class="btn btn-black" data-ask="Recharge my ₹399 pack">Recharge Now</button>
         </div>
       </div>
 
-      <div class="home-sec">
+      <section class="home-sec rv">
         <div class="sec-title">My services</div>
         <button class="svc-card" data-ask="Show my active services">
-          <span class="svc-logo"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="#E40000"/></svg></span>
+          <img class="svc-logo" src="assets/home/imgLast.png" width="40" height="40" alt="" />
           <span class="svc-body"><b>3 active</b><small>no action due</small></span>
-          <img src="assets/chevron.svg" width="20" height="20" alt="" />
+          <img src="assets/home/imgLiveContainer3.svg" alt="" />
         </button>
-      </div>
+      </section>
 
-      <button class="agent-promo" data-open-agent>
-        <div class="promo-orb" data-orb="56"></div>
-        <div class="promo-body">
-          <span class="promo-kicker">New · Agentic</span>
-          <b>Ask anything about your plan, bill or network</b>
-          <span class="promo-cta">Try it now <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <section class="home-sec rv">
+        <div class="sec-row"><div class="sec-title">Buy airtel products</div><button class="link-blue" data-toast="All products would open here">View all</button></div>
+        <div class="ig-grid">
+          <button class="ig" data-toast="Insta EMI Card"><span class="ig-img"><img src="assets/home/imgImagePlaceholder.png" alt="" /></span><b>Insta EMI Card</b></button>
+          <button class="ig" data-toast="Gold Loan"><span class="ig-img"><img src="assets/home/imgImagePlaceholder1.png" alt="" /></span><b>Gold Loan</b></button>
+          <button class="ig" data-toast="Credit Card"><span class="ig-img"><img src="assets/home/imgImagePlaceholder2.png" alt="" /></span><b>Credit Card</b></button>
+          <button class="ig" data-toast="Fixed Deposit"><span class="ig-img"><img src="assets/home/imgImagePlaceholder3.png" alt="" /></span><b>Fixed Deposit</b></button>
+          <button class="ig" data-toast="Refer Wi-Fi and get ₹300 off"><span class="clip-tag"><img src="assets/home/imgLeftAnkle.svg" alt="" /><span>₹300 off</span><img src="assets/home/imgRightAnkle.svg" alt="" /></span><span class="ig-img"><img src="assets/home/imgImagePlaceholder4.png" alt="" /></span><b>Refer Wi-Fi</b></button>
+          <button class="ig" data-toast="Postpaid"><span class="ig-img"><img src="assets/home/imgImagePlaceholder5.png" alt="" /></span><b>Postpaid</b></button>
+          <button class="ig" data-toast="IPTV"><span class="ig-img"><img src="assets/home/imgImagePlaceholder6.png" alt="" /></span><b>IPTV</b></button>
+          <button class="ig" data-toast="Bundle your services"><span class="ig-img"><img src="assets/home/imgImagePlaceholder7.png" alt="" /></span><b>Bundle your services</b></button>
+          <button class="ig" data-toast="New Prepaid"><span class="ig-img"><img src="assets/home/imgImagePlaceholder8.png" alt="" /></span><b>New Prepaid</b></button>
         </div>
-      </button>
+      </section>
 
-      <div class="home-sec">
-        <div class="sec-row"><div class="sec-title">Buy Airtel products</div><button class="link" data-toast="All products — coming soon">View all</button></div>
-        <div class="prod-row">
-          <button class="prod" data-toast="Insta EMI Card — coming soon"><b>Insta EMI Card</b><span class="prod-art a1"></span></button>
-          <button class="prod" data-toast="Gold Loan — coming soon"><b>Gold Loan</b><span class="prod-art a2"></span></button>
-          <button class="prod" data-toast="Credit Card — coming soon"><b>Credit Card</b><span class="prod-art a3"></span></button>
+      <section class="home-sec rv">
+        <div class="sec-title">Manage services</div>
+        <div class="ia-grid">
+          <button class="ia" data-ask="Recharge my number"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn3.svg" alt="" /></span></span><span class="ia-l">Recharge</span></button>
+          <button class="ia" data-ask="Why is my bill high?"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn4.svg" alt="" /></span></span><span class="ia-l">Pay Bills</span></button>
+          <button class="ia" data-ask="Show my active services"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn5.svg" alt="" /></span></span><span class="ia-l">Claim OTTs &amp; More</span></button>
+          <button class="ia" data-ask="Going to Dubai next week"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgLiveContainer4.svg" alt="" /></span></span><span class="ia-l">International Roaming</span></button>
+          <button class="ia" data-ask="Is my Wi-Fi working?"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn6.svg" alt="" /></span></span><span class="ia-l">My Wi-Fi</span></button>
+          <button class="ia" data-toast="Upgrade to Postpaid"><span class="info-tag">Offer</span><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn7.svg" alt="" /></span></span><span class="ia-l">Upgrade to Postpaid</span></button>
+          <button class="ia" data-toast="Manage Family"><span class="ia-ring"><span class="ia-cell"><img src="assets/home/imgIcn8.svg" alt="" /></span></span><span class="ia-l">Manage Family</span></button>
+          <button class="ia" data-toast="More services"><span class="ia-ring"><span class="ia-cell"><span class="cat4"><i></i><i></i><i></i><i></i></span></span></span><span class="ia-l">More</span></button>
         </div>
-      </div>
-      <div style="height:140px"></div>
+      </section>
+
+      <section class="home-sec rv">
+        <div class="sec-title">Curated for you</div>
+        <div class="hrow snap" id="curated">
+          <img class="banner" src="assets/home/imgImagePlaceholder9.png" alt="Offer banner" />
+          <img class="banner" src="assets/home/imgImagePlaceholder10.png" alt="Offer banner" />
+        </div>
+        <div class="dots" id="curatedDots"><i class="on"></i><i></i></div>
+      </section>
+
+      <section class="home-sec rv">
+        <div class="sec-title">You might like</div>
+        <div class="hrow">
+          <button class="poster" data-toast="Now streaming on Xstream Play"><img src="assets/home/imgImage1.png" alt="" /></button>
+          <button class="poster" data-toast="Now streaming on Xstream Play"><img src="assets/home/imgImage2.png" alt="" /></button>
+          <button class="poster" data-toast="Now streaming on Xstream Play"><img src="assets/home/imgImage3.png" alt="" /></button>
+        </div>
+      </section>
+
+      <section class="home-sec rv">
+        <div class="sec-title">Featuring fresh</div>
+        <div class="hrow fresh">
+          <img src="assets/home/imgBase.png" style="width:264px;height:274px" alt="" />
+          <img src="assets/home/imgBase1.png" style="width:300px;height:306px" alt="" />
+          <img src="assets/home/imgBase2.png" style="width:264px;height:274px" alt="" />
+        </div>
+      </section>
+
+      <section class="showcase rv" id="showcase">
+        <img class="showcase-bg" src="assets/home/imgProductShowcase.png" alt="" />
+        <div class="showcase-head"><b>Claim</b><span>YOUR benefits</span></div>
+        <div class="showcase-cards">
+          <button class="ps-tile" data-toast="Adobe Express claimed"><span class="ps-logo"><img src="assets/home/imgJioHotstarLogo13.png" alt="" /></span><span class="ps-t"><b>Adobe Express</b><small>12 months for FREE worth ₹4000</small></span><span class="ps-cta">CLAIM NOW <img src="assets/home/imgLiveContainer1.svg" width="13" height="13" alt="" /></span></button>
+          <button class="ps-tile" data-toast="Netflix Basic"><span class="ps-logo"><img src="assets/home/imgJioHotstarLogo14.png" alt="" /></span><span class="ps-t"><b>Netflix Basic</b><small>Included with your ₹449 plan</small></span><span class="ps-cta">CLAIM NOW <img src="assets/home/imgLiveContainer1.svg" width="13" height="13" alt="" /></span></button>
+          <button class="ps-tile" data-toast="JioHotstar"><span class="ps-logo"><img src="assets/home/imgJioHotstarLogo12.png" alt="" /></span><span class="ps-t"><b>JioHotstar</b><small>3 months of Super on us</small></span><span class="ps-cta">CLAIM NOW <img src="assets/home/imgLiveContainer1.svg" width="13" height="13" alt="" /></span></button>
+        </div>
+      </section>
+      <div style="height:120px"></div>
     </div>
 
     <nav class="bottom-nav" id="bottomNav">
+      <span class="bn-pill" id="bnPill"></span>
       <button class="bn active"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="currentColor"/></svg>Manage</button>
       <button class="bn"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><path d="M9 8h6M9 10.5h6M12 8c2 0 2 3 0 3H9.5l4 4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Finance</button>
       <button class="bn"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 8h14l-1 12.5H6Z" fill="currentColor"/><path d="M9 10V7a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Shop</button>
       <button class="bn" data-open-agent><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3.5" y="13" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="16.5" y="13" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M18.5 19c0 1.5-2 2.5-5 2.5"/></svg>Ask Us</button>
     </nav>
   </section>
+
+  <div class="fly-orb" id="flyOrb" data-orb="120" aria-hidden="true"></div>
 
   <!-- ================= ONBOARDING ================= -->
   <section class="screen onboard" id="onboard">
@@ -165,13 +212,6 @@
       <div class="greet" id="greet">
         <h2>Hey <span class="uname">Yashish</span>,</h2>
         <p>What can I help you with today?</p>
-      </div>
-      <div class="starter-chips" id="starters">
-        <button class="chip" data-ask="How much data do I have left?">How much data do I have left?</button>
-        <button class="chip" data-ask="Recharge my number">Recharge my number</button>
-        <button class="chip" data-ask="Why is my bill high?">Why is my bill high?</button>
-        <button class="chip" data-ask="My internet is slow">My internet is slow</button>
-        <button class="chip" data-ask="Kitna data bacha hai?">Kitna data bacha hai?</button>
       </div>
       <div class="messages" id="messages"></div>
       <div class="scroll-pad"></div>

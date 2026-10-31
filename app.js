@@ -82,22 +82,70 @@
   let pi = 0;
   setInterval(() => {
     if (!home.classList.contains('active')) return;
-    const box = $('#amaText'), cur = box.querySelector('span:last-child');
+    const box = $('#amaText'), cur = box.querySelector('span:not(.out):last-child') || box.lastElementChild;
     pi = (pi + 1) % PHRASES.length;
     const nx = document.createElement('span');
     nx.className = 'in'; nx.textContent = PHRASES[pi];
+    box.querySelectorAll('span.out').forEach((x) => x.remove());
     box.appendChild(nx);
-    requestAnimationFrame(() => requestAnimationFrame(() => { cur.classList.add('out'); nx.classList.remove('in'); }));
+    void nx.offsetWidth;
+    cur.classList.add('out'); nx.classList.remove('in');
     setTimeout(() => cur.remove(), 500);
   }, 2800);
 
-  $('#homeScroll').addEventListener('scroll', (e) => home.classList.toggle('scrolled', e.target.scrollTop > 4));
-  $$('.cat').forEach((c) => c.addEventListener('click', () => { $$('.cat').forEach((x) => x.classList.remove('active')); c.classList.add('active'); }));
-  $$('.bn').forEach((b) => b.addEventListener('click', () => {
-    if (b.hasAttribute('data-open-agent')) return;
-    $$('.bn').forEach((x) => x.classList.remove('active')); b.classList.add('active');
-    if (b.textContent.trim() !== 'Manage') toast(`${b.textContent.trim()} is not part of this prototype`);
+  const homeScroll = $('#homeScroll');
+  let lastY = 0;
+  homeScroll.addEventListener('scroll', () => {
+    const y = homeScroll.scrollTop;
+    home.classList.toggle('scrolled', y > 4);
+    if (y > lastY + 6 && y > 240) home.classList.add('hide-nav');
+    else if (y < lastY - 6) home.classList.remove('hide-nav');
+    lastY = y;
+    parallax();
+  }, { passive: true });
+
+  // Category tabs with a sliding underline
+  const catBar = $('#catBar');
+  const moveBar = (c) => { catBar.style.transform = `translateX(${c.offsetLeft + 16}px)`; };
+  $$('.cat').forEach((c) => c.addEventListener('click', () => {
+    $$('.cat').forEach((x) => x.classList.remove('active')); c.classList.add('active'); moveBar(c);
+    c.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
   }));
+  requestAnimationFrame(() => moveBar($('.cat.active')));
+
+  // Bottom nav with a sliding pill
+  const bns = $$('.bn');
+  const movePill = (i) => { $('#bnPill').style.transform = `translateX(${i * 100}%)`; };
+  bns.forEach((b, i) => b.addEventListener('click', () => {
+    if (b.hasAttribute('data-open-agent')) return;
+    bns.forEach((x) => x.classList.remove('active')); b.classList.add('active'); movePill(i);
+    if (i !== 0) { toast(`${b.textContent.trim()} is not part of this prototype`); setTimeout(() => { bns.forEach((x) => x.classList.remove('active')); bns[0].classList.add('active'); movePill(0); }, 900); }
+  }));
+
+  // Sections rise in as they scroll into view
+  document.documentElement.classList.add('io');
+  const io = new IntersectionObserver((ents) => ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { root: homeScroll, threshold: 0.12 });
+  $$('.rv', home).forEach((el, i) => { el.style.transitionDelay = i < 3 ? `${i * 80}ms` : '0ms'; io.observe(el); });
+
+  // Curated banners: autoplay + dots
+  const cur = $('#curated'), dots = $$('#curatedDots i');
+  let curI = 0;
+  cur.addEventListener('scroll', () => {
+    const i = Math.round(cur.scrollLeft / 323);
+    if (i !== curI) { curI = i; dots.forEach((d, j) => d.classList.toggle('on', j === i)); }
+  }, { passive: true });
+  setInterval(() => {
+    if (!home.classList.contains('active') || agent.classList.contains('active')) return;
+    const n = (curI + 1) % dots.length;
+    cur.scrollTo({ left: n * 323, behavior: 'smooth' });
+  }, 3800);
+
+  // Parallax on the Claim showcase
+  const show = $('#showcase'), showBg = $('.showcase-bg');
+  function parallax() {
+    const r = show.offsetTop - homeScroll.scrollTop - homeScroll.clientHeight / 2;
+    showBg.style.transform = `translateY(${Math.max(-20, Math.min(20, r * -0.06))}px)`;
+  }
 
   function updateHomePack() {
     if (!S.recharged) return;
@@ -124,37 +172,84 @@
   }
   function setOrigin(el, o) { el.style.setProperty('--ox', o.x + 'px'); el.style.setProperty('--oy', o.y + 'px'); }
 
-  function openAgent(opts = {}) {
-    const o = originOf(opts.from);
-    pendingAsk = opts.ask || null;
-    if (!store.get(KEY)) {
-      setOrigin(onboard, o);
-      onboard.classList.add('active');
-      play(onboard, 'reveal-in');
-      return;
-    }
-    setOrigin(agent, o);
-    showAgent('reveal-in');
+  // Rects in the phone's own (unscaled) coordinates
+  function pRect(el) {
+    const p = phone.getBoundingClientRect(), r = el.getBoundingClientRect(), k = p.width / phone.offsetWidth || 1;
+    return { x: (r.left - p.left) / k, y: (r.top - p.top) / k, w: r.width / k, h: r.height / k };
   }
-  function showAgent(anim) {
-    agent.classList.add('active');
-    if (!msgs.children.length) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1300); }
-    play(agent, anim).then(() => {
-      if (pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
-    });
+  function centered(el, size) {
+    const r = pRect(el);
+    return { x: r.x + r.w / 2 - size / 2, y: r.y + r.h / 2 - size / 2, w: size };
+  }
+  // The AI blob itself carries the user between screens
+  const flyEl = $('#flyOrb');
+  function fly(from, to, ms = 760) {
+    flyEl.classList.add('on');
+    const k0 = from.w / 120, k1 = to.w / 120;
+    const mx = from.x + (to.x - from.x) * 0.55, my = Math.min(from.y, to.y) + (to.y - from.y) * 0.35 - 30;
+    const anim = flyEl.animate([
+      { transform: `translate(${from.x}px, ${from.y}px) scale(${k0})`, opacity: 0.4 },
+      { transform: `translate(${mx}px, ${my}px) scale(${(k0 + k1) / 2 * 1.15})`, opacity: 1, offset: 0.55 },
+      { transform: `translate(${to.x - to.w * 0.04}px, ${to.y - to.w * 0.04}px) scale(${k1 * 1.08})`, offset: 0.85 },
+      { transform: `translate(${to.x}px, ${to.y}px) scale(${k1})`, opacity: 1 },
+    ], { duration: ms, easing: 'cubic-bezier(.6,0,.25,1)', fill: 'forwards' });
+    return anim.finished.then(() => { flyEl.classList.remove('on'); anim.cancel(); });
+  }
+  const pill = $('#amaPill');
+  const starRect = () => centered($('#amaStar'), 18);
+  let moving = false;
+
+  async function openAgent(opts = {}) {
+    if (moving) return;
+    moving = true;
+    pendingAsk = opts.ask || null;
+    const fromEl = opts.from && opts.from !== pill ? opts.from : null;
+    const from = fromEl ? centered(fromEl, 24) : starRect();
+    pill.classList.add('launch');
+    const target = !store.get(KEY) ? onboard : agent;
+    setOrigin(target, { x: from.x + from.w / 2, y: from.y + from.w / 2 });
+    target.classList.add('active', 'orb-hidden');
+    if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1400); }
+    const to = target === agent ? pRect($('#agentOrb')) : pRect($('.topbar-orb', onboard));
+    play(target, 'reveal-in');
+    await fly(from, to, 780);
+    target.classList.remove('orb-hidden');
+    pill.classList.remove('launch');
+    moving = false;
+    if (target === agent && pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   }
   $('#agreeBtn').addEventListener('click', async () => {
+    if (moving) return;
+    moving = true;
     store.set(KEY, '1');
-    showAgent('fade-in');
-    await play(onboard, 'fade-out');
-    onboard.classList.remove('active');
+    const from = pRect($('.topbar-orb', onboard));
+    agent.classList.add('active', 'orb-hidden', 'intro');
+    setTimeout(() => agent.classList.remove('intro'), 1400);
+    onboard.classList.add('orb-hidden');
+    const to = pRect($('#agentOrb'));
+    play(agent, 'fade-in');
+    play(onboard, 'fade-out').then(() => onboard.classList.remove('active', 'orb-hidden'));
+    await fly(from, to, 820);
+    agent.classList.remove('orb-hidden');
+    moving = false;
+    if (pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   });
   async function closeOverlay(el) {
+    if (moving) return;
+    moving = true;
     stopSpeaking(); closeVoice(true); closeSheet();
-    setOrigin(el, originOf());
     input.blur();
-    await play(el, 'reveal-out');
-    el.classList.remove('active');
+    const from = el === agent ? pRect($('#agentOrb')) : pRect($('.topbar-orb', el));
+    const to = starRect();
+    setOrigin(el, { x: to.x + 9, y: to.y + 9 });
+    el.classList.add('orb-hidden');
+    pill.classList.add('launch');
+    play(el, 'reveal-out').then(() => el.classList.remove('active', 'orb-hidden'));
+    await fly(from, to, 620);
+    pill.classList.remove('launch');
+    pill.classList.add('landed');
+    setTimeout(() => pill.classList.remove('landed'), 600);
+    moving = false;
   }
   $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeOverlay(b.closest('.screen'))));
 
@@ -216,7 +311,7 @@
 
   /* ---------------- Messaging ---------------- */
   let busy = false, gen = null, lastUser = '';
-  function setBusy(b) { busy = b; composer.classList.toggle('busy', b); }
+  function setBusy(b) { busy = b; composer.classList.toggle('busy', b); agentOrb.classList.toggle('fast', b); }
   function stopGen() { if (gen) gen.stopped = true; }
 
   function addUser(text, opts = {}) {
@@ -237,6 +332,7 @@
     dock();
     lastUser = text;
     addUser(text);
+    agentOrb.classList.remove('gulp'); void agentOrb.offsetWidth; agentOrb.classList.add('gulp');
     await sleep(380);
     await runBot(route(text), { q: text });
   }
@@ -971,7 +1067,7 @@
       else openAgent({ ask: t.dataset.ask, from: t });
     }
   });
-  $('#amaPill').addEventListener('click', (e) => openAgent({ from: e.currentTarget }));
+  pill.addEventListener('click', () => openAgent({ from: pill }));
 
   /* ---------------- Side panel (desktop) ---------------- */
   $$('.side-tries li').forEach((li) => li.addEventListener('click', () => {
