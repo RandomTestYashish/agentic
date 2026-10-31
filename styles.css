@@ -592,3 +592,13 @@ textarea { font: inherit; }
 .agent.flown .greet h2 { animation: greetIn .7s .78s cubic-bezier(.16, 1, .3, 1) both; }
 .agent.flown .greet p { animation: greetIn .7s .9s cubic-bezier(.16, 1, .3, 1) both; }
 @keyframes greetIn { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* ===== Smoothness ===== */
+.screen.preparing { opacity: 0; }
+.onboard, .agent { will-change: opacity; }
+.ama-pill.expanding { will-change: clip-path; contain: paint; }
+.ama-pill::after { will-change: opacity; }
+/* the orb's inner layers pause while it travels, so only a cheap transform runs */
+.fly-orb { will-change: transform; }
+.fly-orb.still .of, .fly-orb.still .orb-star, .agent.orb-moving .agent-orb .of, .agent.orb-moving .agent-orb .orb { animation-play-state: paused !important; }
+@keyframes greetIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

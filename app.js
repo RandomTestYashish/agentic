@@ -129,7 +129,7 @@
   // The AI blob itself carries the user between screens
   const flyEl = $('#flyOrb');
   function fly(from, to, ms = 900) {
-    flyEl.classList.add('on');
+    flyEl.classList.add('on', 'still');
     const k0 = from.w / 120, k1 = to.w / 120;
     const mx = from.x + (to.x - from.x) * 0.35, my = from.y + (to.y - from.y) * 0.55;
     const anim = flyEl.animate([
@@ -137,7 +137,7 @@
       { transform: `translate(${mx}px, ${my}px) scale(${k0 + (k1 - k0) * 0.6})`, offset: 0.5, easing: 'cubic-bezier(.3,0,.2,1)' },
       { transform: `translate(${to.x}px, ${to.y}px) scale(${k1})` },
     ], { duration: ms, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'forwards' });
-    return anim.finished.then(() => { flyEl.classList.remove('on'); anim.cancel(); });
+    return anim.finished.then(() => { flyEl.classList.remove('on', 'still'); anim.cancel(); });
   }
   const pill = $('#amaPill');
   const starRect = () => centered($('#amaStar'), 18);
@@ -163,19 +163,23 @@
     pill.classList.remove('expanding', 'blushed');
     pill.getAnimations().forEach((a) => a.cancel());
   }
+  const nextFrame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const EASE_SMOOTH = 'cubic-bezier(.22, 1, .36, 1)';
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
     const target = !store.get(KEY) ? onboard : agent;
+    // lay out and paint the next screen first (invisible), so nothing heavy happens mid-animation
+    target.classList.add('active', 'preparing');
     const c = pillToFull();
-    const grow = pill.animate([{ clipPath: c.closed }, { clipPath: c.open }], { duration: 760, easing: EASE_INOUT, fill: 'forwards' });
-    setTimeout(() => pill.classList.add('blushed'), 260);
-    // the screen starts fading in before the pill finishes, so the two blend instead of stepping
-    await sleep(560);
-    target.classList.add('active');
+    await nextFrame();
+    const grow = pill.animate([{ clipPath: c.closed }, { clipPath: c.open }], { duration: 720, easing: EASE_SMOOTH, fill: 'forwards' });
+    setTimeout(() => pill.classList.add('blushed'), 180);
+    await sleep(430);
     if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1600); }
-    const fade = target.animate([{ opacity: 0, transform: 'scale(1.015)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: EASE_OUT });
+    target.classList.remove('preparing');
+    const fade = target.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 480, easing: 'cubic-bezier(.33, 0, .2, 1)' });
     await Promise.all([grow.finished, fade.finished]);
     pillReset();
     moving = false;
@@ -211,11 +215,13 @@
     pill.classList.add('instant', 'blushed');
     void pill.offsetWidth;
     pill.classList.remove('instant');
-    const fade = el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.985)' }], { duration: 340, easing: 'cubic-bezier(.4,0,1,1)', fill: 'both' });
+    await nextFrame();
+    const fade = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'cubic-bezier(.4, 0, .6, 1)', fill: 'both' });
+    const shrink = pill.animate([{ clipPath: c.open }, { clipPath: c.closed }], { duration: 680, delay: 180, easing: 'cubic-bezier(.65, 0, .35, 1)', fill: 'forwards' });
+    setTimeout(() => pill.classList.remove('blushed'), 360);
     await fade.finished;
     el.classList.remove('active'); fade.cancel();
-    setTimeout(() => pill.classList.remove('blushed'), 200);
-    await pill.animate([{ clipPath: c.open }, { clipPath: c.closed }], { duration: 640, easing: EASE_INOUT, fill: 'forwards' }).finished;
+    await shrink.finished;
     pillReset();
     pill.classList.add('landed');
     setTimeout(() => pill.classList.remove('landed'), 700);
@@ -241,8 +247,9 @@
   const greetParts = () => [...greet.children];
   const isDocked = () => agent.classList.contains('docked');
   const hasMsgs = () => msgs.children.length > 0;
-  function dock() { if (!isDocked()) flip(greetParts(), () => agent.classList.add('docked')); }
-  function undock() { if (isDocked() && !hasMsgs()) flip(greetParts(), () => agent.classList.remove('docked')); }
+  const settle = () => { agent.classList.add('orb-moving'); clearTimeout(settle.t); settle.t = setTimeout(() => agent.classList.remove('orb-moving'), 800); };
+  function dock() { if (!isDocked()) { settle(); flip(greetParts(), () => agent.classList.add('docked')); } }
+  function undock() { if (isDocked() && !hasMsgs()) { settle(); flip(greetParts(), () => agent.classList.remove('docked')); } }
 
   /* ---------------- Composer ---------------- */
   function autosize() {
