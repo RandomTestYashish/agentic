@@ -530,3 +530,41 @@ textarea { font: inherit; }
 .live-tx .interim { color: #A8AFBA; }
 .live-tx:empty::before { content: "Listening…"; color: #A8AFBA; font-weight: 400; font-size: 16px; }
 .agent.recording .live-tx { opacity: 1; transform: none; }
+
+/* ===== Home micro-interactions (CSS only, on the Figma-generated blocks) ===== */
+.fh [class*="w-[103px]"], .fh [class*="w-[74px]"], .fh [class*="rounded-[100px]"][class*="p-[16px]"],
+.fh [class*="w-[163.5px]"], .fh [class*="w-[303px]"], .fh [class*="w-[160px]"], .fh [class*="h-[274px]"], .fh [class*="h-[306px]"],
+.fh [class*="w-[158px]"], .fh [class*="w-[64px]"], .fh [class*="h-[20px]"][class*="overflow-clip"], .bn, .home-header button:not(.ama-pill) {
+  cursor: pointer; transition: transform .2s cubic-bezier(.22, .8, .24, 1), box-shadow .25s, filter .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+/* press: blocks sink a little */
+.fh [class*="w-[103px]"]:active, .fh [class*="w-[303px]"]:active, .fh [class*="w-[160px]"]:active,
+.fh [class*="h-[274px]"]:active, .fh [class*="h-[306px]"]:active, .fh [class*="w-[158px]"]:active { transform: scale(.95); }
+.fh [class*="rounded-[100px]"][class*="p-[16px]"]:active, .fh [class*="w-[163.5px]"]:active { transform: scale(.97); }
+.fh [class*="w-[74px]"]:active, .fh [class*="w-[64px]"]:active, .bn:active, .home-header button:not(.ama-pill):active { transform: scale(.9); }
+/* hover: lift and nudge the artwork */
+@media (hover: hover) {
+  .fh [class*="w-[103px]"]:hover { box-shadow: 0 8px 18px -10px rgba(41, 44, 49, .28); transform: translateY(-2px); }
+  .fh [class*="w-[103px]"] img { transition: transform .4s cubic-bezier(.22, .8, .24, 1); }
+  .fh [class*="w-[103px]"]:hover img { transform: translateY(-3px) scale(1.05); }
+  .fh [class*="w-[74px]"] img { transition: transform .35s cubic-bezier(.22, .8, .24, 1); }
+  .fh [class*="w-[74px]"]:hover img { transform: rotate(-10deg) scale(1.12); }
+  .fh [class*="rounded-[100px]"][class*="p-[16px]"]:hover { box-shadow: 0 8px 18px -10px rgba(41, 44, 49, .25); }
+  .fh [class*="w-[160px]"] img, .fh [class*="w-[303px]"] img { transition: transform .5s cubic-bezier(.22, .8, .24, 1); }
+  .fh [class*="w-[160px]"]:hover img, .fh [class*="w-[303px]"]:hover img { transform: scale(1.04); }
+  .fh [class*="h-[274px]"]:hover, .fh [class*="h-[306px]"]:hover { transform: translateY(-4px); }
+  .fh [class*="w-[158px]"]:hover { filter: brightness(1.08); }
+  .fh [class*="w-[64px]"]:hover img, .bn:hover img { transform: scale(1.08); }
+  .fh [class*="w-[163.5px]"]:hover { box-shadow: 0 6px 14px -8px rgba(0, 0, 0, .35); }
+}
+.fh [class*="w-[64px]"] img, .bn img { transition: transform .3s cubic-bezier(.22, .8, .24, 1); }
+/* Pack Status tag gives a small wiggle now and then */
+.pack-tag-body { animation: tagWiggle 4s 1.5s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes tagWiggle { 0%, 90%, 100% { transform: none; } 93% { transform: rotate(-4deg); } 96% { transform: rotate(3deg); } }
+/* Sections rise in as they scroll into view (CSS scroll-driven; static where unsupported) */
+@supports (animation-timeline: view()) {
+  .fh > .rv { animation: blockRise linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+  @keyframes blockRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) { .fh > .rv, .pack-tag-body { animation: none !important; } }
