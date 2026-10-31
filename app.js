@@ -128,15 +128,19 @@
   }
   // The AI blob itself carries the user between screens
   const flyEl = $('#flyOrb');
-  function fly(from, to, ms = 900) {
+  function fly(from, to, ms = 1100) {
     flyEl.classList.add('on', 'still');
-    const k0 = from.w / 120, k1 = to.w / 120;
-    const mx = from.x + (to.x - from.x) * 0.35, my = from.y + (to.y - from.y) * 0.55;
-    const anim = flyEl.animate([
-      { transform: `translate(${from.x}px, ${from.y}px) scale(${k0})` },
-      { transform: `translate(${mx}px, ${my}px) scale(${k0 + (k1 - k0) * 0.6})`, offset: 0.5, easing: 'cubic-bezier(.3,0,.2,1)' },
-      { transform: `translate(${to.x}px, ${to.y}px) scale(${k1})` },
-    ], { duration: ms, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'forwards' });
+    const k0 = from.w / 120, k1 = to.w / 120, N = 60, T = ms / 1000, frames = [];
+    const lift = Math.min(90, Math.hypot(to.x - from.x, to.y - from.y) * 0.35);
+    for (let i = 0; i <= N; i++) {
+      const t = (i / N) * T;
+      const p = spring(t, 110, 11);                      // underdamped: overshoots, then settles (bounce)
+      const q = Math.min(1, spring(t, 200, 26));          // path progress for the arc
+      const x = lerp(from.x, to.x, p), y = lerp(from.y, to.y, p) - lift * Math.sin(Math.PI * q);
+      const sc = lerp(k0, k1, Math.min(p, 1.12));
+      frames.push({ transform: `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${sc.toFixed(4)})` });
+    }
+    const anim = flyEl.animate(frames, { duration: ms, easing: 'linear', fill: 'forwards' });
     return anim.finished.then(() => { flyEl.classList.remove('on', 'still'); anim.cancel(); });
   }
   const pill = $('#amaPill');
@@ -164,22 +168,49 @@
     pill.getAnimations().forEach((a) => a.cancel());
   }
   const nextFrame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-  const EASE_SMOOTH = 'cubic-bezier(.22, 1, .36, 1)';
+  // Damped spring (seconds -> progress). One physical curve drives each motion, so speed never jumps.
+  function spring(t, k = 170, c = 20) {
+    const w0 = Math.sqrt(k), z = c / (2 * Math.sqrt(k));
+    if (z >= 1) return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+    const wd = w0 * Math.sqrt(1 - z * z);
+    return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t));
+  }
+  const easeInOut = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const lerp = (a, b, p) => a + (b - a) * p;
+  function rrPath(x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    const f = (n) => n.toFixed(2);
+    return `path('M${f(x + r)},${f(y)} H${f(x + w - r)} A${f(r)},${f(r)} 0 0 1 ${f(x + w)},${f(y + r)} V${f(y + h - r)} A${f(r)},${f(r)} 0 0 1 ${f(x + w - r)},${f(y + h)} H${f(x + r)} A${f(r)},${f(r)} 0 0 1 ${f(x)},${f(y + h - r)} V${f(y + r)} A${f(r)},${f(r)} 0 0 1 ${f(x + r)},${f(y)} Z')`;
+  }
+  // Keyframes for the pill growing into a soft blob that swallows the screen
+  function blobFrames(dir) {
+    const r = pRect(pill), W = phone.offsetWidth, H = phone.offsetHeight, m = 140;
+    const cover = { x: -m, y: -m, w: W + 2 * m, h: H + 2 * m };
+    const N = 60, T = 1.25, frames = [];
+    for (let i = 0; i <= N; i++) {
+      let p = dir === 'open' ? spring((i / N) * T, 42, 11.5) : 1 - easeInOut(i / N);
+      p = Math.max(0, p);
+      const x = lerp(r.x, cover.x, p), y = lerp(r.y, cover.y, p), w = lerp(r.w, cover.w, p), h = lerp(r.h, cover.h, p);
+      frames.push({ clipPath: rrPath(x, y, w, h, lerp(20, 180, Math.min(1, p * 1.6))) });
+    }
+    return frames;
+  }
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
     const target = !store.get(KEY) ? onboard : agent;
-    // lay out and paint the next screen first (invisible), so nothing heavy happens mid-animation
-    target.classList.add('active', 'preparing');
-    const c = pillToFull();
+    target.classList.add('active', 'preparing');           // pre-render, invisible
+    const openFrames = blobFrames('open');                  // measure the pill before it leaves the header layout
+    pillToFull();
+    pill.style.clipPath = openFrames[0].clipPath;
     await nextFrame();
-    const grow = pill.animate([{ clipPath: c.closed }, { clipPath: c.open }], { duration: 720, easing: EASE_SMOOTH, fill: 'forwards' });
-    setTimeout(() => pill.classList.add('blushed'), 180);
-    await sleep(430);
+    const grow = pill.animate(openFrames, { duration: 1150, easing: 'linear', fill: 'forwards' });
+    setTimeout(() => pill.classList.add('blushed'), 300);
+    await sleep(620);
     if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1600); }
     target.classList.remove('preparing');
-    const fade = target.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 480, easing: 'cubic-bezier(.33, 0, .2, 1)' });
+    const fade = target.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 460, easing: 'cubic-bezier(.33, 0, .2, 1)' });
     await Promise.all([grow.finished, fade.finished]);
     pillReset();
     moving = false;
@@ -199,8 +230,9 @@
     const fadeIn = agent.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 160, easing: EASE_OUT, fill: 'both' });
     // onboarding stays opaque underneath; the agent screen fades in over it
     fadeIn.finished.then(() => onboard.classList.remove('active', 'orb-hidden', 'leaving'));
-    await fly(from, to, 980);
+    await fly(from, to, 1100);
     agent.classList.remove('orb-hidden');
+    agent.classList.add('land-ping'); setTimeout(() => agent.classList.remove('land-ping'), 1200);
     await fadeIn.finished; fadeIn.cancel();
     moving = false;
     if (pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
@@ -210,14 +242,15 @@
     moving = true;
     stopSpeaking(); closeVoice(true); closeSheet(); cancelRec();
     input.blur();
-    const c = pillToFull();
-    pill.style.clipPath = c.open;
+    const closeFrames = blobFrames('close');
+    pillToFull();
+    pill.style.clipPath = 'none';
     pill.classList.add('instant', 'blushed');
     void pill.offsetWidth;
     pill.classList.remove('instant');
     await nextFrame();
     const fade = el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'cubic-bezier(.4, 0, .6, 1)', fill: 'both' });
-    const shrink = pill.animate([{ clipPath: c.open }, { clipPath: c.closed }], { duration: 680, delay: 180, easing: 'cubic-bezier(.65, 0, .35, 1)', fill: 'forwards' });
+    const shrink = pill.animate(closeFrames, { duration: 700, delay: 160, easing: 'linear', fill: 'forwards' });
     setTimeout(() => pill.classList.remove('blushed'), 360);
     await fade.finished;
     el.classList.remove('active'); fade.cancel();
