@@ -498,7 +498,7 @@ textarea { font: inherit; }
 .home.behind { transition: transform .56s cubic-bezier(.32, .72, 0, 1), filter .56s; transform: scale(.94); filter: brightness(.82); border-radius: 24px; }
 .home { transition: transform .42s cubic-bezier(.4, 0, .2, 1), filter .42s; }
 /* The landing orb grows in once the sheet has settled */
-.agent.intro .agent-orb { animation: orbIn .8s .3s cubic-bezier(.22, .8, .24, 1) both; }
+.agent.intro:not(.flown) .agent-orb { animation: orbIn .8s .3s cubic-bezier(.22, .8, .24, 1) both; }
 @keyframes orbIn { from { opacity: 0; transform: translate(36px, 36px) scale(.4); } to { opacity: 1; transform: none; } }
 
 /* ===== Inline voice input (Figma page 81544:4371): waveform in the composer, then "Transcribing..." ===== */
@@ -568,3 +568,19 @@ textarea { font: inherit; }
   @keyframes blockRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 }
 @media (prefers-reduced-motion: reduce) { .fh > .rv, .pack-tag-body { animation: none !important; } }
+
+/* ===== Pill burst: the Agentic pill expands to the full screen ===== */
+.burst { position: absolute; inset: 0; z-index: 80; pointer-events: none; visibility: hidden;
+  background: radial-gradient(120% 70% at 50% 8%, #FFE3DA 0%, #FFF3F0 40%, #fff 75%), #fff; }
+.burst::before { content: ""; position: absolute; inset: 0; background: var(--brand-grad); opacity: .9; animation: burstTint .6s ease-out forwards; }
+.burst.on { visibility: visible; }
+@keyframes burstTint { 0% { opacity: .95; } 100% { opacity: 0; } }
+.sparks { position: absolute; z-index: 81; width: 0; height: 0; pointer-events: none; }
+.sparks i { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: #EE6A43; box-shadow: 0 0 8px rgba(238,106,67,.8); animation: spark .7s cubic-bezier(.2,.8,.3,1) forwards; }
+.sparks i:nth-child(3n) { background: #FFB48F; width: 4px; height: 4px; }
+.sparks i:nth-child(4n) { background: #A8241A; }
+@keyframes spark { from { transform: translate(0, 0) scale(1); opacity: 1; } to { transform: translate(var(--x), var(--y)) scale(.2); opacity: 0; } }
+.screen.burst-in { animation: burstIn .38s ease-out both; z-index: 85; }
+.screen.burst-out { animation: burstOut .3s ease-in both; z-index: 85; }
+@keyframes burstIn { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+@keyframes burstOut { from { opacity: 1; } to { opacity: 0; transform: scale(1.02); } }

@@ -142,16 +142,42 @@
   const starRect = () => centered($('#amaStar'), 18);
   let moving = false;
 
-  // Agent screens slide up over the home screen; the orb only animates inside them
+  // The Agentic pill bursts open into the full screen, then the agent screen fades in on top of it
+  function burstLayer() {
+    let el = $('#burst');
+    if (!el) { el = document.createElement('div'); el.id = 'burst'; el.className = 'burst'; phone.appendChild(el); }
+    return el;
+  }
+  function sparks(r) {
+    const box = document.createElement('div'); box.className = 'sparks';
+    box.style.left = r.x + r.w / 2 + 'px'; box.style.top = r.y + r.h / 2 + 'px';
+    box.innerHTML = Array.from({ length: 14 }, (_, i) => { const a = (i / 14) * Math.PI * 2, d = 60 + Math.random() * 70; return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d}px;animation-delay:${Math.random() * 60}ms"></i>`; }).join('');
+    phone.appendChild(box);
+    setTimeout(() => box.remove(), 800);
+  }
+  function morph(el, from, to, ms, easing) {
+    const W = phone.offsetWidth, H = phone.offsetHeight;
+    const clip = (r, rad) => `inset(${r.y}px ${W - r.x - r.w}px ${H - r.y - r.h}px ${r.x}px round ${rad}px)`;
+    return el.animate([{ clipPath: clip(from, from.rad) }, { clipPath: clip(to, to.rad) }], { duration: ms, easing, fill: 'forwards' }).finished;
+  }
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
     const target = !store.get(KEY) ? onboard : agent;
+    const pr = { ...pRect(pill), rad: 20 };
+    const full = { x: 0, y: 0, w: phone.offsetWidth, h: phone.offsetHeight, rad: 0 };
+    const burst = burstLayer();
+    pill.classList.add('launch');
+    burst.classList.add('on');
+    sparks(pr);
+    home.classList.add('behind');
+    await morph(burst, pr, full, 560, 'cubic-bezier(.7,0,.2,1)');
     target.classList.add('active');
     if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1400); }
-    home.classList.add('behind');
-    await play(target, 'sheet-in');
+    await play(target, 'burst-in');
+    burst.classList.remove('on');
+    pill.classList.remove('launch');
     moving = false;
     if (target === agent && pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   }
@@ -160,8 +186,8 @@
     moving = true;
     store.set(KEY, '1');
     const from = pRect($('.topbar-orb', onboard));
-    agent.classList.add('active', 'orb-hidden', 'intro');
-    setTimeout(() => agent.classList.remove('intro'), 1400);
+    agent.classList.add('active', 'orb-hidden', 'intro', 'flown');
+    setTimeout(() => agent.classList.remove('intro', 'flown'), 1400);
     onboard.classList.add('orb-hidden');
     const to = pRect($('#agentOrb'));
     play(agent, 'fade-in');
@@ -176,9 +202,19 @@
     moving = true;
     stopSpeaking(); closeVoice(true); closeSheet(); cancelRec();
     input.blur();
-    home.classList.remove('behind');
-    await play(el, 'sheet-out');
+    const burst = burstLayer();
+    const full = { x: 0, y: 0, w: phone.offsetWidth, h: phone.offsetHeight, rad: 0 };
+    burst.getAnimations().forEach((a) => a.cancel());
+    burst.style.clipPath = 'none';
+    burst.classList.add('on');
+    await play(el, 'burst-out');
     el.classList.remove('active');
+    home.classList.remove('behind');
+    await morph(burst, full, { ...pRect(pill), rad: 20 }, 460, 'cubic-bezier(.6,0,.3,1)');
+    burst.classList.remove('on');
+    burst.getAnimations().forEach((a) => a.cancel());
+    pill.classList.add('landed');
+    setTimeout(() => pill.classList.remove('landed'), 600);
     moving = false;
   }
   $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeOverlay(b.closest('.screen'))));
@@ -213,8 +249,7 @@
     agent.classList.toggle('typing', has);
     composer.style.borderRadius = input.scrollHeight > 30 ? '24px' : '';
   }
-  input.addEventListener('input', autosize);
-  input.addEventListener('focus', dock);
+  input.addEventListener('input', () => { autosize(); if (input.value.trim()) dock(); });
   input.addEventListener('blur', () => setTimeout(() => { if (!input.value.trim() && document.activeElement !== input) undock(); }, 150));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); composer.requestSubmit(); }
