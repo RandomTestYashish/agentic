@@ -143,50 +143,41 @@
   const starRect = () => centered($('#amaStar'), 18);
   let moving = false;
 
-  // The Agentic pill bursts open: a blob grows from the pill (transform only, GPU-smooth) while the agent screen fades in over it
+  // The Agentic pill itself expands into the full screen (no extra element), then the agent screen fades in over it
   const EASE_INOUT = 'cubic-bezier(.65, 0, .35, 1)', EASE_OUT = 'cubic-bezier(.16, 1, .3, 1)';
-  function burstGeom() {
+  const header = $('.home-header');
+  function pillClip() {
     const r = pRect(pill), W = phone.offsetWidth, H = phone.offsetHeight;
-    const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-    const R = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) + 8;
-    return { r, cx, cy, R, s0: (r.h / 2) / R };
+    return { open: 'inset(0px 0px 0px 0px round 0px)', closed: `inset(${r.y}px ${W - r.x - r.w}px ${H - r.y - r.h}px ${r.x}px round 20px)` };
   }
-  function burstLayer() {
-    let el = $('#burst');
-    if (!el) { el = document.createElement('div'); el.id = 'burst'; el.className = 'burst'; el.innerHTML = '<i class="burst-tint"></i>'; phone.appendChild(el); }
-    const g = burstGeom();
-    Object.assign(el.style, { left: g.cx - g.R + 'px', top: g.cy - g.R + 'px', width: 2 * g.R + 'px', height: 2 * g.R + 'px' });
-    return { el, g };
+  function pillToFull() {
+    const c = pillClip();
+    Object.assign(pill.style, { position: 'absolute', left: `${-header.offsetLeft}px`, top: `${-header.offsetTop}px`, width: phone.offsetWidth + 'px', height: phone.offsetHeight + 'px', borderRadius: '0', clipPath: c.closed, zIndex: 1 });
+    header.style.zIndex = 90;
+    pill.classList.add('expanding');
+    return c;
   }
-  function sparks(g) {
-    const box = document.createElement('div'); box.className = 'sparks';
-    box.style.left = g.cx + 'px'; box.style.top = g.cy + 'px';
-    box.innerHTML = Array.from({ length: 16 }, (_, i) => { const a = (i / 16) * Math.PI * 2 + Math.random() * .3, d = 70 + Math.random() * 90; return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d * .8}px;animation-delay:${60 + Math.random() * 80}ms"></i>`; }).join('');
-    phone.appendChild(box);
-    setTimeout(() => box.remove(), 1100);
+  function pillReset() {
+    pill.removeAttribute('style');
+    header.style.zIndex = '';
+    pill.classList.remove('expanding', 'blushed');
+    pill.getAnimations().forEach((a) => a.cancel());
   }
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
     const target = !store.get(KEY) ? onboard : agent;
-    const { el, g } = burstLayer();
-    const tint = $('.burst-tint', el);
-    pill.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: .35 }, { transform: 'scale(1)' }], { duration: 520, easing: EASE_OUT });
-    pill.classList.add('launch');
-    el.classList.add('on');
-    sparks(g);
-    home.classList.add('behind');
-    const grow = el.animate([{ transform: `scale(${g.s0})` }, { transform: 'scale(1)' }], { duration: 760, delay: 60, easing: EASE_INOUT, fill: 'both' });
-    tint.animate([{ opacity: 1 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: 760, delay: 60, easing: 'ease-out', fill: 'both' });
-    // the screen starts fading in before the blob finishes, so the two blend instead of stepping
-    await sleep(520);
+    const c = pillToFull();
+    const grow = pill.animate([{ clipPath: c.closed }, { clipPath: c.open }], { duration: 760, easing: EASE_INOUT, fill: 'forwards' });
+    setTimeout(() => pill.classList.add('blushed'), 260);
+    // the screen starts fading in before the pill finishes, so the two blend instead of stepping
+    await sleep(560);
     target.classList.add('active');
     if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1600); }
     const fade = target.animate([{ opacity: 0, transform: 'scale(1.015)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: EASE_OUT });
     await Promise.all([grow.finished, fade.finished]);
-    el.classList.remove('on'); grow.cancel();
-    pill.classList.remove('launch');
+    pillReset();
     moving = false;
     if (target === agent && pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   }
@@ -215,18 +206,17 @@
     moving = true;
     stopSpeaking(); closeVoice(true); closeSheet(); cancelRec();
     input.blur();
-    const { el: bl, g } = burstLayer();
-    const tint = $('.burst-tint', bl);
-    bl.classList.add('on');
+    const c = pillToFull();
+    pill.style.clipPath = c.open;
+    pill.classList.add('instant', 'blushed');
+    void pill.offsetWidth;
+    pill.classList.remove('instant');
     const fade = el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.985)' }], { duration: 340, easing: 'cubic-bezier(.4,0,1,1)', fill: 'both' });
-    const shrink = bl.animate([{ transform: 'scale(1)' }, { transform: `scale(${g.s0})` }], { duration: 640, delay: 140, easing: EASE_INOUT, fill: 'both' });
-    tint.animate([{ opacity: 0 }, { opacity: 0, offset: .4 }, { opacity: 1 }], { duration: 640, delay: 140, easing: 'ease-in', fill: 'both' });
-    setTimeout(() => home.classList.remove('behind'), 180);
     await fade.finished;
     el.classList.remove('active'); fade.cancel();
-    await shrink.finished;
-    bl.classList.remove('on'); shrink.cancel();
-    pill.classList.remove('launch');
+    setTimeout(() => pill.classList.remove('blushed'), 200);
+    await pill.animate([{ clipPath: c.open }, { clipPath: c.closed }], { duration: 640, easing: EASE_INOUT, fill: 'forwards' }).finished;
+    pillReset();
     pill.classList.add('landed');
     setTimeout(() => pill.classList.remove('landed'), 700);
     moving = false;
