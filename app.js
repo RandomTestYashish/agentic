@@ -1012,16 +1012,4 @@
   });
   pill.addEventListener('click', () => openAgent({ from: pill }));
 
-  /* ---------------- Side panel (desktop) ---------------- */
-  $$('.side-tries li').forEach((li) => li.addEventListener('click', () => {
-    if (agent.classList.contains('active')) send(li.textContent);
-    else if (onboard.classList.contains('active')) toast('Tap “I Agree” first');
-    else openAgent({ ask: li.textContent });
-  }));
-  $('#resetOnboarding').addEventListener('click', async () => {
-    store.del(KEY);
-    for (const s of [agent, onboard]) if (s.classList.contains('active')) await closeOverlay(s);
-    toast('Onboarding reset — tap the header pill');
-  });
-  $('#resetAll').addEventListener('click', () => { store.del(KEY); location.href = location.pathname; });
 })();
