@@ -475,8 +475,7 @@ textarea { font: inherit; }
 }
 
 /* Orb moods */
-.agent:not(.docked) .agent-orb .orb { animation: orbFloat 4.5s ease-in-out infinite; }
-@keyframes orbFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
+/* The landing orb stays fixed in place; only its inner layers animate */
 .agent.typing .agent-orb .orb { animation: orbBeat 1.1s ease-in-out infinite; }
 @keyframes orbBeat { 0%, 100% { scale: 1; } 50% { scale: 1.07; } }
 .agent.typing .agent-orb .orb-glow { opacity: 1; }
