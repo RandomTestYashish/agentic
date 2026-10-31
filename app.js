@@ -67,6 +67,8 @@
     device.style.transform = k < 1 ? `scale(${k})` : '';
   }
   addEventListener('resize', fit); fit();
+  const setDock = () => phone.style.setProperty('--dock-x', `${16 - (phone.offsetWidth / 2 - 60)}px`);
+  addEventListener('resize', setDock); setDock();
 
   /* ---------------- Toast ---------------- */
   let toastT;
@@ -126,57 +128,64 @@
   }
   // The AI blob itself carries the user between screens
   const flyEl = $('#flyOrb');
-  function fly(from, to, ms = 760) {
+  function fly(from, to, ms = 900) {
     flyEl.classList.add('on');
     const k0 = from.w / 120, k1 = to.w / 120;
-    const mx = from.x + (to.x - from.x) * 0.55, my = Math.min(from.y, to.y) + (to.y - from.y) * 0.35 - 30;
+    const mx = from.x + (to.x - from.x) * 0.35, my = from.y + (to.y - from.y) * 0.55;
     const anim = flyEl.animate([
-      { transform: `translate(${from.x}px, ${from.y}px) scale(${k0})`, opacity: 0.4 },
-      { transform: `translate(${mx}px, ${my}px) scale(${(k0 + k1) / 2 * 1.15})`, opacity: 1, offset: 0.55 },
-      { transform: `translate(${to.x - to.w * 0.04}px, ${to.y - to.w * 0.04}px) scale(${k1 * 1.08})`, offset: 0.85 },
-      { transform: `translate(${to.x}px, ${to.y}px) scale(${k1})`, opacity: 1 },
-    ], { duration: ms, easing: 'cubic-bezier(.6,0,.25,1)', fill: 'forwards' });
+      { transform: `translate(${from.x}px, ${from.y}px) scale(${k0})` },
+      { transform: `translate(${mx}px, ${my}px) scale(${k0 + (k1 - k0) * 0.6})`, offset: 0.5, easing: 'cubic-bezier(.3,0,.2,1)' },
+      { transform: `translate(${to.x}px, ${to.y}px) scale(${k1})` },
+    ], { duration: ms, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'forwards' });
     return anim.finished.then(() => { flyEl.classList.remove('on'); anim.cancel(); });
   }
   const pill = $('#amaPill');
   const starRect = () => centered($('#amaStar'), 18);
   let moving = false;
 
-  // The Agentic pill bursts open into the full screen, then the agent screen fades in on top of it
+  // The Agentic pill bursts open: a blob grows from the pill (transform only, GPU-smooth) while the agent screen fades in over it
+  const EASE_INOUT = 'cubic-bezier(.65, 0, .35, 1)', EASE_OUT = 'cubic-bezier(.16, 1, .3, 1)';
+  function burstGeom() {
+    const r = pRect(pill), W = phone.offsetWidth, H = phone.offsetHeight;
+    const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    const R = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) + 8;
+    return { r, cx, cy, R, s0: (r.h / 2) / R };
+  }
   function burstLayer() {
     let el = $('#burst');
-    if (!el) { el = document.createElement('div'); el.id = 'burst'; el.className = 'burst'; phone.appendChild(el); }
-    return el;
+    if (!el) { el = document.createElement('div'); el.id = 'burst'; el.className = 'burst'; el.innerHTML = '<i class="burst-tint"></i>'; phone.appendChild(el); }
+    const g = burstGeom();
+    Object.assign(el.style, { left: g.cx - g.R + 'px', top: g.cy - g.R + 'px', width: 2 * g.R + 'px', height: 2 * g.R + 'px' });
+    return { el, g };
   }
-  function sparks(r) {
+  function sparks(g) {
     const box = document.createElement('div'); box.className = 'sparks';
-    box.style.left = r.x + r.w / 2 + 'px'; box.style.top = r.y + r.h / 2 + 'px';
-    box.innerHTML = Array.from({ length: 14 }, (_, i) => { const a = (i / 14) * Math.PI * 2, d = 60 + Math.random() * 70; return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d}px;animation-delay:${Math.random() * 60}ms"></i>`; }).join('');
+    box.style.left = g.cx + 'px'; box.style.top = g.cy + 'px';
+    box.innerHTML = Array.from({ length: 16 }, (_, i) => { const a = (i / 16) * Math.PI * 2 + Math.random() * .3, d = 70 + Math.random() * 90; return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d * .8}px;animation-delay:${60 + Math.random() * 80}ms"></i>`; }).join('');
     phone.appendChild(box);
-    setTimeout(() => box.remove(), 800);
-  }
-  function morph(el, from, to, ms, easing) {
-    const W = phone.offsetWidth, H = phone.offsetHeight;
-    const clip = (r, rad) => `inset(${r.y}px ${W - r.x - r.w}px ${H - r.y - r.h}px ${r.x}px round ${rad}px)`;
-    return el.animate([{ clipPath: clip(from, from.rad) }, { clipPath: clip(to, to.rad) }], { duration: ms, easing, fill: 'forwards' }).finished;
+    setTimeout(() => box.remove(), 1100);
   }
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
     const target = !store.get(KEY) ? onboard : agent;
-    const pr = { ...pRect(pill), rad: 20 };
-    const full = { x: 0, y: 0, w: phone.offsetWidth, h: phone.offsetHeight, rad: 0 };
-    const burst = burstLayer();
+    const { el, g } = burstLayer();
+    const tint = $('.burst-tint', el);
+    pill.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: .35 }, { transform: 'scale(1)' }], { duration: 520, easing: EASE_OUT });
     pill.classList.add('launch');
-    burst.classList.add('on');
-    sparks(pr);
+    el.classList.add('on');
+    sparks(g);
     home.classList.add('behind');
-    await morph(burst, pr, full, 560, 'cubic-bezier(.7,0,.2,1)');
+    const grow = el.animate([{ transform: `scale(${g.s0})` }, { transform: 'scale(1)' }], { duration: 760, delay: 60, easing: EASE_INOUT, fill: 'both' });
+    tint.animate([{ opacity: 1 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: 760, delay: 60, easing: 'ease-out', fill: 'both' });
+    // the screen starts fading in before the blob finishes, so the two blend instead of stepping
+    await sleep(520);
     target.classList.add('active');
-    if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1400); }
-    await play(target, 'burst-in');
-    burst.classList.remove('on');
+    if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1600); }
+    const fade = target.animate([{ opacity: 0, transform: 'scale(1.015)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: EASE_OUT });
+    await Promise.all([grow.finished, fade.finished]);
+    el.classList.remove('on'); grow.cancel();
     pill.classList.remove('launch');
     moving = false;
     if (target === agent && pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
@@ -186,14 +195,18 @@
     moving = true;
     store.set(KEY, '1');
     const from = pRect($('.topbar-orb', onboard));
+    $('#agreeBtn').animate([{ transform: 'scale(1)' }, { transform: 'scale(.96)', offset: .4 }, { transform: 'scale(1)' }], { duration: 300, easing: EASE_OUT });
+    onboard.classList.add('leaving');
     agent.classList.add('active', 'orb-hidden', 'intro', 'flown');
-    setTimeout(() => agent.classList.remove('intro', 'flown'), 1400);
+    setTimeout(() => agent.classList.remove('intro', 'flown'), 1700);
     onboard.classList.add('orb-hidden');
     const to = pRect($('#agentOrb'));
-    play(agent, 'fade-in');
-    play(onboard, 'fade-out').then(() => onboard.classList.remove('active', 'orb-hidden'));
-    await fly(from, to, 820);
+    const fadeIn = agent.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 160, easing: EASE_OUT, fill: 'both' });
+    // onboarding stays opaque underneath; the agent screen fades in over it
+    fadeIn.finished.then(() => onboard.classList.remove('active', 'orb-hidden', 'leaving'));
+    await fly(from, to, 980);
     agent.classList.remove('orb-hidden');
+    await fadeIn.finished; fadeIn.cancel();
     moving = false;
     if (pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   });
@@ -202,19 +215,20 @@
     moving = true;
     stopSpeaking(); closeVoice(true); closeSheet(); cancelRec();
     input.blur();
-    const burst = burstLayer();
-    const full = { x: 0, y: 0, w: phone.offsetWidth, h: phone.offsetHeight, rad: 0 };
-    burst.getAnimations().forEach((a) => a.cancel());
-    burst.style.clipPath = 'none';
-    burst.classList.add('on');
-    await play(el, 'burst-out');
-    el.classList.remove('active');
-    home.classList.remove('behind');
-    await morph(burst, full, { ...pRect(pill), rad: 20 }, 460, 'cubic-bezier(.6,0,.3,1)');
-    burst.classList.remove('on');
-    burst.getAnimations().forEach((a) => a.cancel());
+    const { el: bl, g } = burstLayer();
+    const tint = $('.burst-tint', bl);
+    bl.classList.add('on');
+    const fade = el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.985)' }], { duration: 340, easing: 'cubic-bezier(.4,0,1,1)', fill: 'both' });
+    const shrink = bl.animate([{ transform: 'scale(1)' }, { transform: `scale(${g.s0})` }], { duration: 640, delay: 140, easing: EASE_INOUT, fill: 'both' });
+    tint.animate([{ opacity: 0 }, { opacity: 0, offset: .4 }, { opacity: 1 }], { duration: 640, delay: 140, easing: 'ease-in', fill: 'both' });
+    setTimeout(() => home.classList.remove('behind'), 180);
+    await fade.finished;
+    el.classList.remove('active'); fade.cancel();
+    await shrink.finished;
+    bl.classList.remove('on'); shrink.cancel();
+    pill.classList.remove('launch');
     pill.classList.add('landed');
-    setTimeout(() => pill.classList.remove('landed'), 600);
+    setTimeout(() => pill.classList.remove('landed'), 700);
     moving = false;
   }
   $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeOverlay(b.closest('.screen'))));
@@ -230,7 +244,7 @@
       e.style.transition = 'none';
       e.style.transform = `translate(${dx}px, ${dy}px)`;
       e.getBoundingClientRect();
-      e.style.transition = 'transform .6s cubic-bezier(.22,.8,.24,1)';
+      e.style.transition = 'transform .75s cubic-bezier(.32,.72,0,1)';
       e.style.transform = '';
     });
   }
