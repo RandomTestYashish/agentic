@@ -379,10 +379,11 @@
     const w = document.createElement('div');
     w.className = 'msg-bot';
     w.dataset.q = opts.q || '';
-    const steps = resp.steps || ['🤔 Thinking…'];
+    // Figma thinking state: a ring loader, starting with "Thinking about it...", then the task-specific steps
+    const steps = instant ? (resp.steps || ['Thinking…']) : ['🤔 Thinking about it...', ...(resp.steps || [])];
     const split = (s) => { const m = s.match(/^(\S+)\s(.*)$/); return m ? [m[1], m[2]] : ['', s]; };
     const [e0, t0] = split(steps[0]);
-    w.innerHTML = `<div class="thinking"><span class="t-emoji">${e0}</span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
+    w.innerHTML = `<div class="thinking"><span class="t-loader" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
     if (opts.before) msgs.insertBefore(w, opts.before); else msgs.appendChild(w);
     toBottom();
     const th = $('.thinking', w);
@@ -393,13 +394,13 @@
         const tx = $('.t-txt', th);
         tx.classList.add('swap');
         await sleep(220);
-        $('.t-emoji', th).textContent = e; tx.textContent = t; tx.classList.remove('swap');
+        tx.textContent = t; tx.classList.remove('swap');
         await sleep(rand(850, 1150));
       }
       $('.skeleton', w)?.remove();
     } else {
       const [e, t] = split(steps[steps.length - 1]);
-      $('.t-emoji', th).textContent = e; $('.t-txt', th).textContent = t;
+      $('.t-txt', th).textContent = t;
     }
     $('.t-txt', th).classList.remove('shimmer-text'); th.classList.add('done');
 
