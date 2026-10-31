@@ -1170,4 +1170,15 @@
   });
   pill.addEventListener('click', () => openAgent({ from: pill }));
 
+  /* ---------------- Deep links (used by the case study): ?ask=..., ?chat, ?mic, ?voice ---------------- */
+  const deep = new URLSearchParams(location.search);
+  if (deep.has('ask') || deep.has('chat') || deep.has('mic') || deep.has('voice')) {
+    store.set(KEY, '1');
+    setTimeout(async () => {
+      await openAgent({ ask: deep.get('ask') || null });
+      if (deep.has('mic')) setTimeout(startRec, 400);
+      if (deep.has('voice')) setTimeout(openVoice, 400);
+    }, 350);
+  }
+
 })();
