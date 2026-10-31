@@ -93,7 +93,7 @@
     setTimeout(() => cur.remove(), 500);
   }, 2800);
 
-  const homeScroll = $('#homeScroll');
+  const homeScroll = $('#homeScroll'), fh = $('#figmaHome');
   let lastY = 0;
   homeScroll.addEventListener('scroll', () => {
     const y = homeScroll.scrollTop;
@@ -104,41 +104,78 @@
     parallax();
   }, { passive: true });
 
-  // Category tabs with a sliding underline
-  const catBar = $('#catBar');
-  const moveBar = (c) => { catBar.style.transform = `translateX(${c.offsetLeft + 16}px)`; };
-  $$('.cat').forEach((c) => c.addEventListener('click', () => {
-    $$('.cat').forEach((x) => x.classList.remove('active')); c.classList.add('active'); moveBar(c);
-    c.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
-  }));
-  requestAnimationFrame(() => moveBar($('.cat.active')));
+  // Wire the Figma-generated markup to actions by its visible labels
+  const ASK = {
+    'Recharge': 'Recharge my number', 'Pay Bills': 'Why is my bill high?', 'Claim OTTs & More': 'Show my active services',
+    'International Roaming': 'Going to Dubai next week', 'My Wi-Fi': 'Is my Wi-Fi working?', '3 active': 'Show my active services',
+  };
+  $$('p', fh).forEach((p) => {
+    const t = p.textContent.trim();
+    const ia = p.closest('[class*="w-[74px]"]');
+    const tile = p.closest('[class*="w-[103px]"]');
+    const svc = t === '3 active' && p.closest('[class*="rounded-[100px]"]');
+    const el = svc || ia || tile;
+    if (el && !el.dataset.wired) {
+      el.dataset.wired = '1';
+      if (ASK[t]) el.dataset.ask = ASK[t]; else el.dataset.toast = `${t} would open here`;
+      const img = $('img', el);
+      if (img && tile) img.parentElement.classList.add('tile-img');
+      if (img && ia) img.parentElement.parentElement.classList.add('ia-icon');
+    }
+    if (t === 'View all') p.closest('[class*="h-[20px]"]').dataset.toast = 'All Airtel products would open here';
+  });
+  $$('img[src*="imgImagePlaceholder9"], img[src*="imgImagePlaceholder10"], img[src*="imgImage1"], img[src*="imgImage2"], img[src*="imgImage3"], img[src*="imgBase"]', fh)
+    .forEach((img) => { const box = img.closest('[class*="rounded-[16px]"]') || img.parentElement; box.dataset.toast = 'Offer details would open here'; });
 
-  // Bottom nav with a sliding pill
-  const bns = $$('.bn');
-  const movePill = (i) => { $('#bnPill').style.transform = `translateX(${i * 100}%)`; };
+  // Growth rows: let people swipe them like the real app
+  const rowOf = (src) => $(`img[src*="${src}"]`, fh).closest('[class*="gap-[16px]"], [class*="gap-[20px]"]');
+  const curated = rowOf('imgImagePlaceholder9'), posters = rowOf('imgImage1'), fresh = rowOf('imgBase1');
+  [curated, posters, fresh].forEach((r) => { r.style.overflowX = 'auto'; r.style.scrollbarWidth = 'none'; r.style.scrollSnapType = 'x mandatory'; [...r.children].forEach((c) => (c.style.scrollSnapAlign = 'center')); });
+  fresh.style.justifyContent = 'flex-start'; fresh.style.padding = '0 16px';
+  requestAnimationFrame(() => { fresh.scrollLeft = (fresh.scrollWidth - fresh.clientWidth) / 2; });
+  let curI = 0;
+  setInterval(() => {
+    if (!home.classList.contains('active') || agent.classList.contains('active') || onboard.classList.contains('active')) return;
+    curI = (curI + 1) % curated.children.length;
+    curated.scrollTo({ left: curated.children[curI].offsetLeft - curated.children[0].offsetLeft, behavior: 'smooth' });
+  }, 3800);
+
+  // Category tabs: selection moves the red underline and the white tile
+  const master = fh.firstElementChild.firstElementChild;
+  const tabs = [...master.children];
+  const origLine = $('.rotate-180', tabs[0]).parentElement;
+  const lineTop = origLine.getBoundingClientRect().top - master.getBoundingClientRect().top;
+  origLine.remove();
+  master.style.position = 'relative';
+  const bar = document.createElement('span');
+  bar.className = 'tab-bar'; bar.style.top = lineTop + 'px'; bar.style.bottom = 'auto';
+  master.appendChild(bar);
+  const labelOf = (u) => $('p', u).parentElement;
+  const selectTab = (u) => {
+    tabs.forEach((x) => {
+      const on = x === u, ic = x.firstElementChild, lab = labelOf(x);
+      lab.classList.toggle('font-bold', on); lab.classList.toggle('font-normal', !on);
+      if (x === tabs[0]) { ic.style.filter = on ? '' : 'none'; [...ic.children].slice(0, -1).forEach((l, i) => { l.style.display = on ? '' : (i === 0 ? '' : 'none'); }); ic.firstElementChild.style.background = on ? '' : '#f0f4f9'; }
+      else ic.classList.toggle('sel-bg', on);
+    });
+    bar.style.transform = `translateX(${u.offsetLeft + u.offsetWidth / 2 - 16}px)`;
+  };
+  tabs.forEach((u) => { u.classList.add('tab'); u.firstElementChild.classList.add('tab-ic'); u.addEventListener('click', () => selectTab(u)); });
+  requestAnimationFrame(() => selectTab(tabs[0]));
+
+  // Bottom nav: the Figma selected-indicator slides between destinations
+  const bns = $$('.bn'), CENTERS = [54, 132, 210, 288];
+  const movePill = (i) => { $('#bnPill').style.transform = `translateX(${CENTERS[i] - 55}px)`; };
   bns.forEach((b, i) => b.addEventListener('click', () => {
-    if (b.hasAttribute('data-open-agent')) return;
     bns.forEach((x) => x.classList.remove('active')); b.classList.add('active'); movePill(i);
+    if (b.hasAttribute('data-open-agent')) { setTimeout(() => { bns.forEach((x) => x.classList.remove('active')); bns[0].classList.add('active'); movePill(0); }, 900); return; }
     if (i !== 0) { toast(`${b.textContent.trim()} is not part of this prototype`); setTimeout(() => { bns.forEach((x) => x.classList.remove('active')); bns[0].classList.add('active'); movePill(0); }, 900); }
   }));
 
   // Sections rise in as they scroll into view
   document.documentElement.classList.add('io');
-  const io = new IntersectionObserver((ents) => ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { root: homeScroll, threshold: 0.12 });
-  $$('.rv', home).forEach((el, i) => { el.style.transitionDelay = i < 3 ? `${i * 80}ms` : '0ms'; io.observe(el); });
-
-  // Curated banners: autoplay + dots
-  const cur = $('#curated'), dots = $$('#curatedDots i');
-  let curI = 0;
-  cur.addEventListener('scroll', () => {
-    const i = Math.round(cur.scrollLeft / 323);
-    if (i !== curI) { curI = i; dots.forEach((d, j) => d.classList.toggle('on', j === i)); }
-  }, { passive: true });
-  setInterval(() => {
-    if (!home.classList.contains('active') || agent.classList.contains('active')) return;
-    const n = (curI + 1) % dots.length;
-    cur.scrollTo({ left: n * 323, behavior: 'smooth' });
-  }, 3800);
+  const io = new IntersectionObserver((ents) => ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { root: homeScroll, threshold: 0.08 });
+  $$('.rv', home).forEach((el, i) => { el.style.transitionDelay = i < 4 ? `${i * 70}ms` : '0ms'; io.observe(el); });
 
   // Parallax on the Claim showcase
   const show = $('#showcase'), showBg = $('.showcase-bg');
@@ -150,6 +187,7 @@
   function updateHomePack() {
     if (!S.recharged) return;
     $('.pack-tag').textContent = 'Recharged';
+    $('.pack-tag-body').style.background = 'linear-gradient(#2FB36A, #1F8A4C)';
     $('.pack-title').textContent = 'Your ₹399 pack is active';
     $('.pack-sub').textContent = 'Valid till 28 Nov. Enjoy 2.5 GB/day and unlimited 5G.';
   }

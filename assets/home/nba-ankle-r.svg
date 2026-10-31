@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="13.0118" height="20" viewBox="0 0 13.0118 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Right Ankle">
+<path id="Lid" d="M11.2478 0L6.90001 6H13.0118L11.2478 0Z" fill="#FFD5D7"/>
+<path id="Rectangle 3" d="M4.07398e-05 0H11.25L4.33803 17.0761C3.62266 18.8434 1.90668 20 8.04435e-05 20L4.07398e-05 0Z" fill="url(#paint0_linear_0_241)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_241" x1="5.62504" y1="0" x2="5.62504" y2="20" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FC5252"/>
+<stop offset="1" stop-color="#E32121"/>
+</linearGradient>
+</defs>
+</svg>
