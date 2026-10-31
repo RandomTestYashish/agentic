@@ -383,7 +383,7 @@
     const steps = instant ? (resp.steps || ['Thinking…']) : ['🤔 Thinking about it...', ...(resp.steps || [])];
     const split = (s) => { const m = s.match(/^(\S+)\s(.*)$/); return m ? [m[1], m[2]] : ['', s]; };
     const [e0, t0] = split(steps[0]);
-    w.innerHTML = `<div class="thinking"><span class="t-loader" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
+    w.innerHTML = `<div class="thinking"><span class="t-orb" aria-hidden="true">${ORB.replace('class="orb"', 'class="orb fast"')}</span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
     if (opts.before) msgs.insertBefore(w, opts.before); else msgs.appendChild(w);
     toBottom();
     const th = $('.thinking', w);
@@ -402,7 +402,7 @@
       const [e, t] = split(steps[steps.length - 1]);
       $('.t-txt', th).textContent = t;
     }
-    $('.t-txt', th).classList.remove('shimmer-text'); th.classList.add('done');
+    $('.t-txt', th).classList.remove('shimmer-text'); th.classList.add('done'); $('.t-orb .orb', th)?.classList.remove('fast');
 
     const body = document.createElement('div');
     body.className = 'bot-body';
