@@ -658,3 +658,5 @@ textarea { font: inherit; }
 /* Composer send button follows the home page black CTA */
 .send-btn { background: linear-gradient(0deg, #000, #2D2B2B); }
 .composer.busy .send-btn { background: var(--line); }
+/* Pack Status tag stays still */
+.pack-tag-body { animation: none !important; }
