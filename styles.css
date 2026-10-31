@@ -655,3 +655,6 @@ textarea { font: inherit; }
 .thinking .t-txt.shimmer-text { background: linear-gradient(100deg, #8E95A0 0%, #8E95A0 35%, #E1E4E8 50%, #8E95A0 65%, #8E95A0 100%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
 .thinking .t-txt { transition: opacity .3s, transform .3s, filter .3s; }
 .thinking .t-txt.swap { opacity: 0; transform: translateY(-5px); filter: blur(2px); }
+/* Composer send button follows the home page black CTA */
+.send-btn { background: linear-gradient(0deg, #000, #2D2B2B); }
+.composer.busy .send-btn { background: var(--line); }
