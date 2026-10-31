@@ -112,70 +112,34 @@ textarea { font: inherit; }
 .chip:hover { border-color: #F3C3B6; }
 .chip:active { transform: scale(.96); background: var(--brand-tint); }
 
-/* ===== HOME: markup + Tailwind utilities are generated from Figma (figma/); rules here add behaviour only ===== */
+/* ===== HOME: markup + Tailwind utilities are generated from Figma (figma/). Static page; only the Agentic pill moves ===== */
 .home { background: #fff; }
 .home-scroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; overscroll-behavior: contain; }
 .home-scroll::-webkit-scrollbar { display: none; }
 .fh { position: relative; width: 375px; height: 2720px; margin: calc(var(--sb) - 44px) auto 0; overflow: hidden; }
-.home-header { transition: box-shadow .25s; }
 .home-header::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: var(--sb); background: #fff; }
-.home.scrolled .home-header { box-shadow: 0 1px 0 #E6E9EF, 0 6px 16px -10px rgba(41,44,49,.18); }
-
-/* Agentic pill: the one element in the new ember branding */
-.ama-pill { color: #fff; background: var(--brand-grad); background-size: 180% 100%; box-shadow: 0 6px 18px -6px rgba(180, 40, 25, .55); animation: pillBg 6s ease-in-out infinite alternate; transition: transform .2s var(--ease), box-shadow .2s; }
-.ama-pill:active { transform: scale(.96); box-shadow: 0 2px 8px -4px rgba(180,40,25,.6); }
-@keyframes pillBg { from { background-position: 0% 0; } to { background-position: 100% 0; } }
-.ama-shine { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.35) 48%, transparent 66%); transform: translateX(-120%); animation: shine 3.6s 1s ease-in-out infinite; }
-@keyframes shine { 0%, 55% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
-.ama-text { font-size: 14px; font-weight: 500; line-height: 17px; text-align: left; }
-.ama-text span { display: block; white-space: nowrap; transition: transform .45s var(--ease), opacity .45s; }
-.ama-text span.out { transform: translateY(-100%); opacity: 0; }
-.ama-text span.in { position: absolute; left: 0; top: 0; transform: translateY(100%); opacity: 0; }
-.ama-star { animation: twinkle 2.4s ease-in-out infinite; }
-.ama-star svg { display: block; }
-@keyframes twinkle { 0%, 100% { transform: rotate(0) scale(1); } 50% { transform: rotate(90deg) scale(.8); } }
-.ama-pill.launch { animation: none; background-position: 100% 0; }
-.ama-pill.launch .ama-star { opacity: 0; transform: scale(2.2); transition: opacity .2s, transform .3s var(--ease); }
-.ama-pill.landed .ama-star { animation: starLand .6s var(--ease); }
-@keyframes starLand { 0% { transform: scale(2); opacity: 0; } 60% { transform: scale(.8); opacity: 1; } 100% { transform: scale(1); } }
-
-/* Press feedback on everything tappable */
-.fh [data-ask], .fh [data-toast], .tap { cursor: pointer; transition: transform .18s var(--ease), filter .18s; }
-.fh [data-ask]:active, .fh [data-toast]:active, .tap:active { transform: scale(.95); }
-.fh .tile-img img { transition: transform .4s var(--ease); }
-.fh [data-toast]:hover .tile-img img, .fh [data-ask]:hover .tile-img img { transform: translateY(-3px) scale(1.04); }
-.fh .ia-icon img { transition: transform .35s var(--ease); }
-.fh [data-ask]:hover .ia-icon img, .fh [data-toast]:hover .ia-icon img { transform: rotate(-10deg) scale(1.12); }
-.tab { cursor: pointer; }
-.tab .tab-ic { transition: transform .2s var(--ease); }
-.tab:active .tab-ic { transform: scale(.92); }
-.tab-ic.sel-bg::after { content: ""; position: absolute; inset: 1px; border-radius: 16px; background: #fff; box-shadow: inset 0 0 0 1.5px #CDD3DD; z-index: 0; }
-.tab-ic.sel-bg > :last-child { z-index: 1; }
-.tab-bar { position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; border-radius: 100px; background: linear-gradient(#FC5252, #E32121); transition: transform .45s var(--ease); }
-.pack-tag-body { animation: tagWiggle 4s 1.5s ease-in-out infinite; transform-origin: 50% 0; }
-@keyframes tagWiggle { 0%, 90%, 100% { transform: none; } 93% { transform: rotate(-4deg); } 96% { transform: rotate(3deg); } }
-.poster-row { scroll-snap-type: x mandatory; }
-
-/* Scroll reveal: visible by default; animates in once JS marks the page ready */
-/* uses transform, since Tailwind v4 positions with the separate translate property */
-.io .rv { opacity: 0; transform: translateY(18px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
-.io .rv.in { opacity: 1; transform: none; }
-/* Minimal reset for the generated markup (Tailwind preflight is not loaded) */
 .fh p, .home-header p, .bottom-nav p, .fh ul, .fh ol { margin: 0; }
 .fh img, .home-header img, .bottom-nav img { max-width: none; }
-.showcase-bg { will-change: transform; inset: -20px 0 !important; height: calc(100% + 40px) !important; }
-.showcase-cards { scrollbar-width: none; }
-.showcase-cards::-webkit-scrollbar { display: none; }
-
-/* Bottom nav */
-.bottom-nav { transition: transform .35s var(--ease); padding-bottom: env(safe-area-inset-bottom); }
-.home.hide-nav .bottom-nav { transform: translateY(110px); }
-.bn-pill { transition: transform .45s var(--ease); }
-.bn { color: #292C31; }
-.bn .bn-l { font-weight: 400; color: #292C31; transition: color .25s; }
+.bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+.bn .bn-l { font-weight: 400; color: #292C31; }
 .bn.active .bn-l { font-weight: 700; color: #FD2F36; }
-.bn img { transition: transform .3s var(--ease); }
-.bn:active img { transform: scale(.85); }
+.bn { cursor: default; }
+
+/* Agentic pill (Figma "AMA Bar"): the gradient drifts, the star twinkles, the prompt rolls up */
+.ama-pill { cursor: pointer; transition: transform .25s var(--ease); }
+.ama-pill:active { transform: scale(.97); }
+.ama-art { animation: amaDrift 9s ease-in-out infinite alternate; }
+@keyframes amaDrift { from { rotate: -3deg; scale: 1.18; } to { rotate: 4deg; scale: 1.28; } }
+.ama-text { color: #fff; font-size: 14px; font-weight: 500; line-height: 17px; text-align: left; }
+.ama-text span { position: absolute; left: 0; top: 0; display: block; white-space: nowrap; will-change: transform, opacity;
+  transition: transform .8s cubic-bezier(.65, 0, .35, 1), opacity .8s cubic-bezier(.65, 0, .35, 1), filter .8s; }
+.ama-text span.in { transform: translateY(110%); opacity: 0; filter: blur(2px); }
+.ama-text span.out { transform: translateY(-110%); opacity: 0; filter: blur(2px); }
+.ama-star { animation: twinkle 2.4s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { transform: rotate(0) scale(1); } 50% { transform: rotate(90deg) scale(.8); } }
+.ama-pill.launch .ama-star { animation: none; opacity: 0; transform: scale(2.2); transition: opacity .2s, transform .3s var(--ease); }
+.ama-pill.landed .ama-star { animation: starLand .6s var(--ease); }
+@keyframes starLand { 0% { transform: scale(2); opacity: 0; } 60% { transform: scale(.8); opacity: 1; } 100% { transform: scale(1); } }
 
 /* Fly-in orb used for the pill -> agent transition */
 .fly-orb { position: absolute; left: 0; top: 0; width: 120px; height: 120px; z-index: 90; pointer-events: none; transform-origin: 0 0; visibility: hidden; }
