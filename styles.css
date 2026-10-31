@@ -619,3 +619,24 @@ textarea { font: inherit; }
 .onboard.active .reveal { animation: riseSpring .8s cubic-bezier(.22, 1.2, .36, 1) forwards; animation-delay: calc(var(--d) * 70ms + 380ms); }
 @keyframes riseSpring { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 #agreeBtn:active { transform: scale(.96); }
+
+/* ===== Chat widgets follow the home page theme (black CTAs, blue links). The user's own bubble keeps its colour. ===== */
+.btn-primary { background: linear-gradient(0deg, #000, #2D2B2B); color: #fff; box-shadow: none; }
+.btn-secondary { background: #fff; border: 1px solid #E6E9EF; color: #485B76; }
+.card .btn-secondary, .pack .btn-secondary, .plan .btn-secondary { border-color: #292C31; color: #292C31; background: linear-gradient(#fff, #F5F5F5); }
+.link, .tlink { color: #075EE8; }
+.tlink img { filter: invert(27%) sepia(96%) saturate(2400%) hue-rotate(211deg) brightness(92%); }
+.bar > i { background: linear-gradient(90deg, #397EED, #064BBA); }
+.pack-badge { background: linear-gradient(#FC5252, #E32121); }
+.pack.best, .plan.best { border-color: #E6E9EF; background: linear-gradient(#fff, #F7F9FC); }
+.r .flag { color: #E32121; background: #FFF0F0; }
+.toggle.on { background: #000; }
+.ticket { background: #F7F9FC; border-color: #CDD3DD; }
+.pay-sum { background: #F3F5F8; border-color: #E6E9EF; }
+.pay-m.sel { border-color: #000; background: #fff; }
+.pay-m.sel .radio { border-color: #000; }
+.pay-m.sel .radio::after { background: #000; }
+.chart .col i { background: linear-gradient(#397EED, #064BBA); }
+.chart .col.dim i { background: #D7E3F8; }
+.follow .chip, .msg-bot .chip { background: linear-gradient(181deg, #F0F4F9 6%, #fff 92%); border-color: #E6E9EF; box-shadow: 0 4px 8px rgba(143, 165, 227, .2); color: #292C31; }
+.follow .chip:active { background: #F0F4F9; }

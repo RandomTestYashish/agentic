@@ -455,7 +455,7 @@
       <div class="card-over">USAGE</div>
       <div><div class="kp-key">Daily Data</div><div class="kp-val">${S.dailyLeft} GB of ${S.dailyTotal} GB left</div><div class="bar"><i data-w="${100 - usedPct}"></i></div></div>
       ${S.extraGB ? `<div><div class="kp-key">Data top-up</div><div class="kp-val">${S.extraGB} GB left</div><div class="bar"><i data-w="100"></i></div></div>` : ''}
-      <div><div class="kp-key">5G Data</div><div class="kp-val">Unlimited</div><div class="bar"><i data-w="100" style="background:linear-gradient(90deg,#F0866B,#D42D1F);opacity:.35"></i></div></div>
+      <div><div class="kp-key">5G Data</div><div class="kp-val">Unlimited</div><div class="bar"><i data-w="100" style="opacity:.35"></i></div></div>
       <div><div class="kp-key">Daily SMS</div><div class="kp-val">100 of 100 left</div><div class="bar"><i data-w="100"></i></div><div class="hint">Auto-renews every day at midnight</div></div>
       <div class="card-actions"><button class="btn btn-secondary" data-act="track">Track Data Usage</button><button class="btn btn-primary" data-ask="Buy more data">Buy Data</button></div>
     </div>`;
@@ -773,7 +773,7 @@
     const meta = it.kind === 'plan' ? `${it.data} · ${it.validity}` : it.kind === 'bill' ? it.validity : `${it.gb} GB · ${it.validity}`;
     openSheet(`<h3>${label}</h3><p class="sub">${it.name} · ${meta} · 98765 43210</p>
       <div class="pay-sum"><span>Amount to pay</span><b>₹${it.price}</b></div>
-      <button class="pay-m sel" data-act="pm"><span class="pm-ic" style="color:#D42D1F">UPI</span><span class="pm-t">Airtel Payments Bank<small>yashish@airtel</small></span><span class="radio"></span></button>
+      <button class="pay-m sel" data-act="pm"><span class="pm-ic" style="color:#292C31">UPI</span><span class="pm-t">Airtel Payments Bank<small>yashish@airtel</small></span><span class="radio"></span></button>
       <button class="pay-m" data-act="pm"><span class="pm-ic">💳</span><span class="pm-t">HDFC Credit Card<small>•••• 4242</small></span><span class="radio"></span></button>
       <button class="pay-m" data-act="pm"><span class="pm-ic">👛</span><span class="pm-t">Airtel Wallet<small>Balance ₹1,240</small></span><span class="radio"></span></button>
       <button class="btn btn-primary btn-lg" data-act="pay">Pay ₹${it.price}</button>`);
