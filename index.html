@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#F3EDEA" />
+<title>Agentic</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2212%22 fill=%22%23D42D1F%22/%3E%3Cpath d=%22M12 4c.4 3.6 2 6.2 8 8-6 1.8-7.6 4.4-8 8-.4-3.6-2-6.2-8-8 6-1.8 7.6-4.4 8-8Z%22 fill=%22white%22/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<aside class="side">
+  <div class="side-brand"><span class="side-dot"></span>Agentic</div>
+  <h1>Your telco AI assistant, in the new ember branding.</h1>
+  <p class="side-sub">Tap the header pill on the home screen to start. First visit shows onboarding; after that you go straight to chat.</p>
+  <div class="side-label">Try asking</div>
+  <ul class="side-tries">
+    <li>How much data do I have left?</li>
+    <li>Kitna data bacha hai?</li>
+    <li>Recharge my number</li>
+    <li>Why is my bill high?</li>
+    <li>My internet is slow</li>
+    <li>Going to Dubai next week</li>
+  </ul>
+  <div class="side-label">Voice</div>
+  <p class="side-sub">Tap the mic in the composer. Speak in English or Hinglish; the transcript appears live and the reply is read aloud.</p>
+  <div class="side-actions">
+    <button class="side-btn" id="resetOnboarding">Replay onboarding</button>
+    <button class="side-btn ghost" id="resetAll">Restart prototype</button>
+  </div>
+</aside>
+
+<main class="stage">
+<div class="device" id="device">
+<div class="phone" id="phone">
+
+  <!-- Status bar (from Figma) -->
+  <div class="statusbar" aria-hidden="true">
+    <img class="sb-time" src="assets/time.svg" alt="" />
+    <img class="sb-cell" src="assets/cellular.svg" alt="" />
+    <img class="sb-wifi" src="assets/wifi.svg" alt="" />
+    <img class="sb-batt" src="assets/battery.svg" alt="" />
+  </div>
+
+  <!-- ================= HOME ================= -->
+  <section class="screen home active" id="home">
+    <header class="home-header">
+      <button class="icon-btn" aria-label="Menu" data-toast="Menu is not part of this prototype">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h11M4 17h16" stroke="#292C31" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <button class="ama-pill" id="amaPill" aria-label="Open Agentic">
+        <span class="ama-shine"></span>
+        <span class="ama-text" id="amaText"><span>What do you need today?</span></span>
+        <svg class="ama-star" width="22" height="22" viewBox="0 0 24 24"><path d="M12 1.5c.6 4.9 2.6 8.9 10.5 10.5-7.9 1.6-9.9 5.6-10.5 10.5C11.4 17.6 9.4 13.6 1.5 12 9.4 10.4 11.4 6.4 12 1.5Z" fill="#fff"/></svg>
+      </button>
+      <button class="icon-btn round" aria-label="Scan" data-toast="Scan & pay is not part of this prototype">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#292C31" stroke-width="1.7" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="3" height="3" rx=".5"/><rect x="13" y="8" width="3" height="3" rx=".5"/><rect x="8" y="13" width="3" height="3" rx=".5"/><path d="M13 13h3v3"/></svg>
+      </button>
+    </header>
+
+    <div class="home-scroll" id="homeScroll">
+      <nav class="cats" id="cats">
+        <button class="cat active"><span class="cat-ic"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M3.5 11 12 4l8.5 7v8.5a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1Z" fill="#292C31"/></svg></span>All</button>
+        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9.5 8h5M9.5 10.5h5M12.5 8c1.6 0 1.6 2.5 0 2.5H10l3.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Prepaid</button>
+        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6"><path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a3 3 0 0 1 3-3Z"/><rect x="8.5" y="10" width="7" height="7" rx="1"/></svg></span>Postpaid</button>
+        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><path d="M4 9.5a12 12 0 0 1 16 0M7 12.5a7.5 7.5 0 0 1 10 0M10 15.5a3 3 0 0 1 4 0"/><rect x="4" y="17" width="16" height="4" rx="1.2"/></svg></span>Wi-Fi</button>
+        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M9 2.5l3 3.5 3-3.5"/></svg></span>Digital TV</button>
+        <button class="cat"><span class="cat-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><path d="M5 5h14v10H5zM9 19h6M12 15v4"/></svg></span>DTH</button>
+      </nav>
+
+      <div class="home-band">
+        <div class="pack-card">
+          <span class="pack-tag">Pack Status</span>
+          <div class="pack-top">
+            <span class="pack-type"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="#E40000"/></svg>Prepaid</span>
+            <span class="pack-num">9876543210</span>
+          </div>
+          <p class="pack-title">Your ₹399 pack is expiring today</p>
+          <p class="pack-sub">Recharge now to avoid service interruption and continue enjoying your benefits.</p>
+        </div>
+        <div class="pack-actions">
+          <button class="btn btn-secondary" data-ask="Show me recharge plans">Explore Packs</button>
+          <button class="btn btn-primary" data-ask="Recharge my ₹399 pack">Recharge Now</button>
+        </div>
+      </div>
+
+      <div class="home-sec">
+        <div class="sec-title">My services</div>
+        <button class="svc-card" data-ask="Show my active services">
+          <span class="svc-logo"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="#E40000"/></svg></span>
+          <span class="svc-body"><b>3 active</b><small>no action due</small></span>
+          <img src="assets/chevron.svg" width="20" height="20" alt="" />
+        </button>
+      </div>
+
+      <button class="agent-promo" data-open-agent>
+        <div class="promo-orb" data-orb="56"></div>
+        <div class="promo-body">
+          <span class="promo-kicker">New · Agentic</span>
+          <b>Ask anything about your plan, bill or network</b>
+          <span class="promo-cta">Try it now <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </button>
+
+      <div class="home-sec">
+        <div class="sec-row"><div class="sec-title">Buy Airtel products</div><button class="link" data-toast="All products — coming soon">View all</button></div>
+        <div class="prod-row">
+          <button class="prod" data-toast="Insta EMI Card — coming soon"><b>Insta EMI Card</b><span class="prod-art a1"></span></button>
+          <button class="prod" data-toast="Gold Loan — coming soon"><b>Gold Loan</b><span class="prod-art a2"></span></button>
+          <button class="prod" data-toast="Credit Card — coming soon"><b>Credit Card</b><span class="prod-art a3"></span></button>
+        </div>
+      </div>
+      <div style="height:140px"></div>
+    </div>
+
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="bn active"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M15.6 3.2c3.4.6 5.6 3.4 4.4 7.3-1.2 3.6-5.2 7.6-9.6 9.6-2.4 1.1-4.6.9-5.4-.8-.7-1.6.4-3.6 2.6-4.6 1.4-.6 2.9-.6 3.9.1l-1.6 1.4c-.5-.3-1.2-.3-1.9 0-.9.4-1.4 1.2-1.1 1.8.3.6 1.4.6 2.5.1 3-1.4 6-4.8 6.7-7.4.6-2.2-.6-3.8-2.6-4.1-2.6-.4-6 1.2-8.2 3.6L4.2 8.6c2.9-3.4 7.6-5.9 11.4-5.4Z" fill="currentColor"/></svg>Manage</button>
+      <button class="bn"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><path d="M9 8h6M9 10.5h6M12 8c2 0 2 3 0 3H9.5l4 4.5" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Finance</button>
+      <button class="bn"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 8h14l-1 12.5H6Z" fill="currentColor"/><path d="M9 10V7a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Shop</button>
+      <button class="bn" data-open-agent><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3.5" y="13" width="4" height="6" rx="1.5" fill="currentColor"/><rect x="16.5" y="13" width="4" height="6" rx="1.5" fill="currentColor"/><path d="M18.5 19c0 1.5-2 2.5-5 2.5"/></svg>Ask Us</button>
+    </nav>
+  </section>
+
+  <!-- ================= ONBOARDING ================= -->
+  <section class="screen onboard" id="onboard">
+    <img class="blush" src="assets/blush-bg.png" alt="" />
+    <div class="topbar">
+      <div class="topbar-orb" data-orb="40"></div>
+      <button class="close-btn" data-close aria-label="Close"><img src="assets/cross.svg" width="40" height="40" alt="" /></button>
+    </div>
+    <div class="ob-body">
+      <h2 class="ob-title reveal" style="--d:0">Welcome, <span class="uname">Yashish</span>!</h2>
+      <p class="ob-intro reveal" style="--d:1">I’m your personal AI assistant, here to help you get things done, quickly and easily.<br><br>Before we get started, here are a few things to know about me:</p>
+      <div class="ob-item reveal" style="--d:2"><img src="assets/ob-grow.png" alt="" /><div><b>I’m growing &amp; improving</b><span>I’m learning every day, so I might miss a detail here and there, but I’m getting better with each chat.</span></div></div>
+      <div class="ob-item reveal" style="--d:3"><img src="assets/ob-bulb.png" alt="" /><div><b>Here to make things easier</b><span>Think of me as your go-to helper for quick answers and simple tasks.</span></div></div>
+      <div class="ob-item reveal" style="--d:4"><img src="assets/ob-shield.png" alt="" /><div><b>Your privacy comes first</b><span>To keep your data safe, avoid sharing sensitive details like passwords, card numbers, or personal IDs.</span></div></div>
+    </div>
+    <div class="ob-foot reveal" style="--d:5">
+      <p>By continuing, you confirm you have read &amp; agree to<br><button class="link" data-toast="Terms and conditions would open here">Terms and conditions</button></p>
+      <button class="btn btn-primary btn-lg" id="agreeBtn">I Agree</button>
+    </div>
+  </section>
+
+  <!-- ================= AGENT ================= -->
+  <section class="screen agent landing" id="agent">
+    <img class="blush" src="assets/blush-bg.png" alt="" />
+    <div class="topfade"></div>
+    <div class="topbar">
+      <div class="topbar-slot"></div>
+      <div class="topbar-right">
+        <button class="newchat-btn" id="newChat" aria-label="New chat" title="New chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#292C31" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+        <button class="close-btn" data-close aria-label="Close"><img src="assets/cross.svg" width="40" height="40" alt="" /></button>
+      </div>
+    </div>
+
+    <div class="agent-orb" id="agentOrb" data-orb="120"></div>
+
+    <div class="chat-scroll" id="chatScroll">
+      <div class="greet" id="greet">
+        <h2>Hey <span class="uname">Yashish</span>,</h2>
+        <p>What can I help you with today?</p>
+      </div>
+      <div class="starter-chips" id="starters">
+        <button class="chip" data-ask="How much data do I have left?">How much data do I have left?</button>
+        <button class="chip" data-ask="Recharge my number">Recharge my number</button>
+        <button class="chip" data-ask="Why is my bill high?">Why is my bill high?</button>
+        <button class="chip" data-ask="My internet is slow">My internet is slow</button>
+        <button class="chip" data-ask="Kitna data bacha hai?">Kitna data bacha hai?</button>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="scroll-pad"></div>
+    </div>
+
+    <button class="jump" id="jumpBtn" aria-label="Scroll to latest"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#292C31" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+
+    <div class="dock">
+      <div class="toast" id="toast"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <textarea id="input" rows="1" placeholder="Ask Anything..." aria-label="Message Agentic"></textarea>
+        <button type="button" class="mic-btn" id="micBtn" aria-label="Talk to Agentic"><img src="assets/mic.svg" width="20" height="20" alt="" /></button>
+        <button type="submit" class="send-btn" id="sendBtn" aria-label="Send">
+          <svg class="i-send" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>
+          <svg class="i-stop" width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#000"/></svg>
+        </button>
+      </form>
+      <p class="disclaimer">AI-generated responses are intended to assist you. Always verify important information before taking action</p>
+    </div>
+
+    <!-- Voice mode -->
+    <div class="voice" id="voice" aria-hidden="true">
+      <img class="blush" src="assets/blush-bg.png" alt="" />
+      <div class="voice-top">
+        <span class="voice-pill"><span class="rec-dot"></span><span id="voiceTimer">0:00</span></span>
+        <button class="close-btn" id="voiceClose" aria-label="Close voice"><img src="assets/cross.svg" width="40" height="40" alt="" /></button>
+      </div>
+      <div class="voice-status shimmer-text" id="voiceStatus">Listening…</div>
+      <div class="voice-orb-wrap" id="voiceOrbWrap">
+        <div class="voice-ring r1"></div><div class="voice-ring r2"></div>
+        <div class="voice-orb" id="voiceOrb" data-orb="200"></div>
+      </div>
+      <div class="voice-bars" id="voiceBars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="voice-transcript" id="voiceTranscript">
+        <div class="vt-you" id="vtYou"></div>
+        <div class="vt-ai" id="vtAi"></div>
+      </div>
+      <div class="voice-controls">
+        <button class="vc-side" id="voiceType" aria-label="Type instead"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#292C31" stroke-width="1.6" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M8 14h8"/></svg><span>Type</span></button>
+        <button class="vc-main" id="voiceMain" aria-label="Stop"><span class="vc-icon"></span></button>
+        <button class="vc-side" id="voiceEnd" aria-label="End voice"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B3261E" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span>End</span></button>
+      </div>
+    </div>
+
+    <!-- Bottom sheet -->
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="sheet" id="sheet"><div class="sheet-grip"></div><div class="sheet-body" id="sheetBody"></div></div>
+  </section>
+
+</div>
+</div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
