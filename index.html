@@ -778,6 +778,7 @@
     </div>
 
     <div class="agent-orb" id="agentOrb" data-orb="120"></div>
+    <div class="live-tx" id="liveTx" aria-live="polite"></div>
 
     <div class="chat-scroll" id="chatScroll">
       <div class="greet" id="greet">
@@ -799,6 +800,9 @@
           <svg class="i-send" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>
           <svg class="i-stop" width="14" height="14" viewBox="0 0 14 14"><rect width="14" height="14" rx="3" fill="#000"/></svg>
         </button>
+        <div class="rec" id="rec" aria-hidden="true"><canvas id="wave" width="560" height="72"></canvas></div>
+        <button type="button" class="rec-stop" id="recStop" aria-label="Stop recording"><span></span></button>
+        <div class="transcribe-row" id="transcribing" aria-live="polite"><span class="dots-loader"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span>Transcribing...</span></div>
       </form>
       <p class="disclaimer">AI-generated responses are intended to assist you. Always verify important information before taking action</p>
     </div>

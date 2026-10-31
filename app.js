@@ -142,22 +142,16 @@
   const starRect = () => centered($('#amaStar'), 18);
   let moving = false;
 
+  // Agent screens slide up over the home screen; the orb only animates inside them
   async function openAgent(opts = {}) {
     if (moving) return;
     moving = true;
     pendingAsk = opts.ask || null;
-    const fromEl = opts.from && opts.from !== pill ? opts.from : null;
-    const from = fromEl ? centered(fromEl, 24) : starRect();
-    pill.classList.add('launch');
     const target = !store.get(KEY) ? onboard : agent;
-    setOrigin(target, { x: from.x + from.w / 2, y: from.y + from.w / 2 });
-    target.classList.add('active', 'orb-hidden');
+    target.classList.add('active');
     if (target === agent && !hasMsgs()) { agent.classList.add('intro'); setTimeout(() => agent.classList.remove('intro'), 1400); }
-    const to = target === agent ? pRect($('#agentOrb')) : pRect($('.topbar-orb', onboard));
-    play(target, 'reveal-in');
-    await fly(from, to, 780);
-    target.classList.remove('orb-hidden');
-    pill.classList.remove('launch');
+    home.classList.add('behind');
+    await play(target, 'sheet-in');
     moving = false;
     if (target === agent && pendingAsk) { const a = pendingAsk; pendingAsk = null; send(a); }
   }
@@ -180,18 +174,11 @@
   async function closeOverlay(el) {
     if (moving) return;
     moving = true;
-    stopSpeaking(); closeVoice(true); closeSheet();
+    stopSpeaking(); closeVoice(true); closeSheet(); cancelRec();
     input.blur();
-    const from = el === agent ? pRect($('#agentOrb')) : pRect($('.topbar-orb', el));
-    const to = starRect();
-    setOrigin(el, { x: to.x + 9, y: to.y + 9 });
-    el.classList.add('orb-hidden');
-    pill.classList.add('launch');
-    play(el, 'reveal-out').then(() => el.classList.remove('active', 'orb-hidden'));
-    await fly(from, to, 620);
-    pill.classList.remove('launch');
-    pill.classList.add('landed');
-    setTimeout(() => pill.classList.remove('landed'), 600);
+    home.classList.remove('behind');
+    await play(el, 'sheet-out');
+    el.classList.remove('active');
     moving = false;
   }
   $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeOverlay(b.closest('.screen'))));
@@ -929,7 +916,98 @@
     voice.classList.remove('open'); voice.setAttribute('aria-hidden', 'true');
     if (!silent) setTimeout(() => toBottom(true), 100);
   }
-  $('#micBtn').addEventListener('click', openVoice);
+  /* ---------------- Inline voice input (mic in the composer) ---------------- */
+  const wave = $('#wave'), wctx = wave.getContext('2d'), liveTx = $('#liveTx');
+  let recState = 'off', recRec = null, recFinal = '', recRaf = 0, recRun = 0, recSim = 0, recHist = [], recTick = 0;
+  function drawWave(t) {
+    // level from the mic, or a speech-like pattern when the mic is unavailable
+    let lv = 0;
+    if (analyser) {
+      analyser.getByteTimeDomainData(abuf);
+      let sum = 0; for (let i = 0; i < abuf.length; i++) { const d = (abuf[i] - 128) / 128; sum += d * d; }
+      lv = Math.min(1, Math.sqrt(sum / abuf.length) * 6);
+    } else lv = recSim ? 0.25 + 0.75 * Math.abs(Math.sin(t / 140)) * Math.random() : 0.08 + 0.06 * Math.random();
+    if (t - recTick > 55) { recTick = t; recHist.push(lv); if (recHist.length > 46) recHist.shift(); }
+    const W = wave.width, H = wave.height, n = 46, gap = W / n, bw = gap * 0.42;
+    wctx.clearRect(0, 0, W, H);
+    const g = wctx.createLinearGradient(0, 0, W, 0);
+    g.addColorStop(0, '#F59A6E'); g.addColorStop(0.45, '#D42D1F'); g.addColorStop(1, '#8A2A19');
+    wctx.fillStyle = g;
+    for (let i = 0; i < n; i++) {
+      const v = recHist[recHist.length - n + i] ?? 0.04;
+      const x = i * gap + (gap - bw) / 2, edge = Math.min(1, Math.min(i, n - 1 - i) / 8);
+      const h = Math.max(bw, (0.08 + v * 0.92) * H * (0.35 + 0.65 * Math.abs(Math.sin(i * 1.7 + t / 900))) * edge + bw * (1 - edge));
+      wctx.globalAlpha = 0.2 + 0.8 * edge;
+      wctx.beginPath(); wctx.roundRect(x, (H - h) / 2, bw, h, bw / 2); wctx.fill();
+    }
+    wctx.globalAlpha = 1;
+    recRaf = requestAnimationFrame(drawWave);
+  }
+  async function startRec() {
+    if (busy) { toast('Wait for the reply, or tap stop'); return; }
+    stopSpeaking(); input.blur();
+    const run = ++recRun;
+    recState = 'recording'; recFinal = ''; recHist = []; liveTx.innerHTML = '';
+    agent.classList.add('recording');
+    cancelAnimationFrame(recRaf); recRaf = requestAnimationFrame(drawWave);
+    await startMic();
+    if (run !== recRun) return;
+    const simulate = () => {
+      const phrase = DEMOS[Math.floor(Math.random() * DEMOS.length)];
+      let i = 0;
+      setTimeout(() => {
+        if (run !== recRun || recState !== 'recording') return;
+        recSim = setInterval(() => {
+          i += 1;
+          liveTx.innerHTML = esc(phrase.slice(0, i)) + `<span class="interim">${esc(phrase.slice(i, i + 4))}</span>`;
+          if (i >= phrase.length) { clearInterval(recSim); recSim = 0; recFinal = phrase; setTimeout(() => run === recRun && recState === 'recording' && finishRec(), 700); }
+        }, 60);
+      }, 600);
+    };
+    if (SR) {
+      try {
+        recRec = new SR();
+        recRec.lang = 'en-IN'; recRec.interimResults = true; recRec.continuous = false;
+        recRec.onresult = (e) => {
+          let fin = '', int = '';
+          for (let i = 0; i < e.results.length; i++) { const r = e.results[i]; r.isFinal ? (fin += r[0].transcript) : (int += r[0].transcript); }
+          recFinal = fin;
+          liveTx.innerHTML = esc(fin) + `<span class="interim">${esc(int)}</span>`;
+        };
+        recRec.onerror = (e) => { if (/not-allowed|service-not-allowed|network/.test(e.error)) { recRec = null; simulate(); } };
+        recRec.onend = () => { if (run === recRun && recState === 'recording' && recRec) finishRec(); };
+        recRec.start();
+        setTimeout(() => { if (run === recRun && recState === 'recording' && recRec && !liveTx.textContent.trim()) { try { recRec.abort(); } catch {} recRec = null; simulate(); } }, 6000);
+        return;
+      } catch { recRec = null; }
+    }
+    simulate();
+  }
+  function stopRecAudio() {
+    try { recRec?.abort(); } catch {}
+    recRec = null; clearInterval(recSim); recSim = 0;
+    cancelAnimationFrame(recRaf); stopMic();
+  }
+  async function finishRec() {
+    if (recState !== 'recording') return;
+    const run = recRun;
+    const text = (recFinal || liveTx.textContent).trim();
+    stopRecAudio();
+    recState = 'transcribing';
+    agent.classList.remove('recording'); agent.classList.add('transcribing');
+    await sleep(1200);
+    if (run !== recRun) return;
+    agent.classList.remove('transcribing'); recState = 'off';
+    if (text) send(text); else toast('I didn’t catch that. Tap the mic and try again.');
+  }
+  function cancelRec() {
+    recRun++; stopRecAudio(); recState = 'off';
+    agent.classList.remove('recording', 'transcribing');
+  }
+  $('#micBtn').addEventListener('click', startRec);
+  $('#recStop').addEventListener('click', () => {
+    if (recRec) { try { recRec.stop(); } catch {} setTimeout(finishRec, 250); } else finishRec();
+  });
   $('#agentOrb').addEventListener('click', openVoice);
   $('#voiceClose').addEventListener('click', () => closeVoice());
   $('#voiceEnd').addEventListener('click', () => closeVoice());
