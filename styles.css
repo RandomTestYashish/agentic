@@ -682,5 +682,6 @@ textarea { font: inherit; }
 .orb-glow { z-index: 0; transform: translateZ(0); }
 .orb-clip { z-index: 1; }
 .orb-star { z-index: 2; transform: translateZ(0); will-change: transform; }
-.agent.land-ping .agent-orb .orb-star { animation: starTurn .8s cubic-bezier(.34, 1.56, .64, 1) both; }
-@keyframes starTurn { 0% { transform: translateZ(0) rotate(-90deg) scale(.7); } 60% { transform: translateZ(0) rotate(15deg) scale(1.1); } 100% { transform: translateZ(0) rotate(0) scale(1); } }
+/* landing: only the rings ripple out; the star stays steady (no snap) */
+.agent.land-ping .agent-orb .orb-star { animation: none; }
+.agent .agent-orb.snap { transition: none !important; opacity: 1 !important; }

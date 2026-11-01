@@ -133,7 +133,7 @@
   // The AI blob itself carries the user between screens
   const flyEl = $('#flyOrb');
   function fly(from, to, ms = 1100) {
-    flyEl.classList.add('on', 'still');
+    flyEl.classList.add('on');
     const k0 = from.w / 120, k1 = to.w / 120, N = 60, T = ms / 1000, frames = [];
     const lift = Math.min(90, Math.hypot(to.x - from.x, to.y - from.y) * 0.35);
     for (let i = 0; i <= N; i++) {
@@ -145,7 +145,18 @@
       frames.push({ transform: `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${sc.toFixed(4)})` });
     }
     const anim = flyEl.animate(frames, { duration: ms, easing: 'linear', fill: 'forwards' });
-    return anim.finished.then(() => { flyEl.classList.remove('on', 'still'); anim.cancel(); });
+    return anim.finished.then(() => anim);
+  }
+  // Swap the flying orb for the real one in the same frame, with the inner colours in the same phase
+  function handoff(anim, targetOrb) {
+    const src = $$('.of, .orb-star', flyEl), dst = $$('.of, .orb-star', targetOrb);
+    src.forEach((el, i) => { const a = el.getAnimations()[0], b = dst[i] && dst[i].getAnimations()[0]; if (a && b) b.currentTime = a.currentTime; });
+    targetOrb.classList.add('snap');
+    void targetOrb.offsetWidth;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      flyEl.classList.remove('on'); anim.cancel();
+      setTimeout(() => targetOrb.classList.remove('snap'), 50);
+    }));
   }
   const pill = $('#amaPill');
   const starRect = () => centered($('#amaStar'), 18);
@@ -236,7 +247,9 @@
     const fadeIn = agent.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 160, easing: EASE_OUT, fill: 'both' });
     // onboarding stays opaque underneath; the agent screen fades in over it
     fadeIn.finished.then(() => onboard.classList.remove('active', 'orb-hidden', 'leaving'));
-    await fly(from, to, 1100);
+    const flight = await fly(from, to, 1100);
+    const agentOrbEl = $('#agentOrb');
+    handoff(flight, agentOrbEl);
     agent.classList.remove('orb-hidden');
     agent.classList.add('land-ping'); setTimeout(() => agent.classList.remove('land-ping'), 1200);
     await fadeIn.finished; fadeIn.cancel();
