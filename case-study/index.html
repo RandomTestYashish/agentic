@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<script>document.documentElement.classList.add('js')</script>
 <style>
 /* Layout: quiet editorial read — one centred column, pale hero panel, static screens; the live prototype sits in one section */
 :root {
@@ -112,57 +113,113 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .btn:hover { opacity: .85; }
 
-/* ===== Landing (inspired by the reference video): fan of phones → pinned phone with side panels ===== */
-.pillnav { position: fixed; z-index: 40; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 5px 5px 5px 16px; border-radius: 12px; background: rgba(160, 160, 166, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: #fff; font-size: 14px; }
+/* ===== Landing (after the reference video): hero fan → pinned phone, panels rise, copy scrolls, screens stack ===== */
+.pillnav { position: fixed; z-index: 40; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 5px 5px 5px 16px; border-radius: 12px; background: rgba(150, 150, 156, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: #fff; font-size: 14px; white-space: nowrap; }
 .pillnav a { text-decoration: none; color: #fff; }
 .pn-brand { font-weight: 600; margin-right: 18px; }
 .pn-brand sup { font-size: 9px; }
 .pn-link { padding: 0 10px; min-height: 32px; display: inline-flex; align-items: center; border-radius: 8px; transition: background-color .2s; }
 .pn-link:hover { background: rgba(255,255,255,.18); }
-.pn-cta { min-height: 32px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 8px; background: rgba(255,255,255,.22); }
+.pn-cta { min-height: 32px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 8px; background: rgba(255,255,255,.22); transition: background-color .2s; }
+.pn-cta:hover { background: rgba(255,255,255,.32); }
 @media (max-width: 520px) { .pn-link { display: none; } }
 
-.show { position: relative; height: 480vh; }
+.show { position: relative; padding: 0; height: 560vh;
+  --w: min(24vw, calc((100vh - 120px) * .4618), 360px);   /* pinned phone width */
+  --h: calc(var(--w) * 2.1653);                             /* pinned phone height */
+  --pw: min(440px, calc((100vw - var(--w) - 112px) / 2)); } /* side panel width */
 .show-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
-.show-hero { position: absolute; left: 0; right: 0; top: 11vh; text-align: center; padding: 0 24px; will-change: transform, opacity; }
-.show-hero h1 { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.04; letter-spacing: -.035em; max-width: 16ch; margin: 0 auto 18px; }
-.show-hero p { max-width: 40ch; margin: 0 auto; font-size: 16px; line-height: 1.55; color: var(--muted); }
-.fan { position: absolute; left: 50%; top: 0; width: 0; height: 100%; }
-.ph { position: absolute; left: 0; top: 0; width: var(--w); aspect-ratio: 375 / 812; border-radius: calc(var(--w) * .14); border: calc(var(--w) * .028) solid #111; background: #fff; box-shadow: 0 30px 60px -30px rgba(0,0,0,.35); overflow: hidden; will-change: transform, opacity; transform-origin: 50% 0; }
-.ph-c { --w: min(300px, 25vw); z-index: 3; }
-.ph-l1, .ph-r1 { --w: min(220px, 18vw); z-index: 2; }
-.ph-l2, .ph-r2 { --w: min(180px, 15vw); z-index: 1; }
-img.ph { object-fit: cover; object-position: top; max-width: none; height: auto; }
-.ph-c { max-width: none; }
-.ph-c .scr { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; will-change: transform; }
-.panel { position: absolute; top: 9vh; bottom: 9vh; width: var(--pw); background: #F2F2F4; border-radius: 28px; opacity: 0; will-change: transform, opacity; }
-.panel-l { right: calc(50% + min(150px, 12.5vw) + 24px); }
-.panel-r { left: calc(50% + min(150px, 12.5vw) + 24px); }
-.show { --pw: min(420px, calc((100vw - min(300px, 25vw) - 96px) / 2)); }
-.chap { position: absolute; inset: 0; padding: 0 clamp(24px, 3vw, 40px); display: flex; flex-direction: column; justify-content: center; opacity: 0; transition: opacity .45s ease, transform .45s ease; transform: translateY(12px); pointer-events: none; }
-.chap.on { opacity: 1; transform: none; pointer-events: auto; }
-.panel-l .chap { justify-content: flex-end; padding-bottom: clamp(32px, 6vh, 64px); }
-.panel-l h2 { font-size: clamp(26px, 2.6vw, 36px); line-height: 1.08; letter-spacing: -.03em; margin-bottom: 14px; max-width: 12ch; }
-.panel-l p, .panel-r p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-bottom: 0; }
-.panel-r h3 { font-size: 17px; margin: 22px 0 6px; }
-.panel-r h3:first-child { margin-top: 0; }
+.show-hero { position: absolute; z-index: 0; left: 0; right: 0; top: 0; padding: 12vh 24px 0; text-align: center; will-change: transform; }
+.show-hero h1 { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.04; letter-spacing: -.035em; max-width: 19ch; margin: 0 auto 18px; }
+.show-hero p { max-width: 42ch; margin: 0 auto; font-size: 16px; line-height: 1.55; color: var(--muted); }
+.hero-cta { display: flex; gap: 10px; justify-content: center; margin-top: 24px; }
+.hero-cta .btn { white-space: nowrap; }
+@media (max-width: 420px) { .hero-cta .btn { padding: 0 16px; font-size: 14px; } }
+.btn-soft { background: #F2F2F4; color: var(--ink); }
 
-/* Phones and small screens: no pinning, a simple stack */
+/* Phones: dark body, silver rim, dynamic island, status bar on every screen */
+.fan { position: absolute; z-index: 2; left: 50%; top: 0; width: 0; height: 0; }
+.ph { position: absolute; left: 0; top: 0; width: var(--s); aspect-ratio: 375 / 812; padding: calc(var(--s) * .03); border-radius: calc(var(--s) * .15); background: #0E0E10;
+  box-shadow: 0 0 0 1.5px #C7C7CC, 0 0 0 3px #ECECEF, 0 44px 80px -40px rgba(0,0,0,.45); will-change: transform; }
+.ph::after { content: ""; position: absolute; z-index: 5; top: calc(var(--s) * .05); left: 50%; width: calc(var(--s) * .28); height: calc(var(--s) * .075); transform: translateX(-50%); border-radius: 99px; background: #0E0E10; }
+.ph-c { --s: var(--w); z-index: 3; }
+.ph-l1, .ph-r1 { --s: calc(var(--w) * .74); z-index: 2; }
+.ph-l2, .ph-r2 { --s: calc(var(--w) * .62); z-index: 1; }
+.scrn { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: calc(var(--s) * .12); background: #fff; isolation: isolate; }
+.card { position: absolute; inset: 0; overflow: hidden; background: #fff; will-change: transform; }
+.card img { width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: top; }
+.card + .card { border-radius: calc(var(--s) * .09) calc(var(--s) * .09) 0 0; box-shadow: 0 -14px 34px -12px rgba(0,0,0,.28); transform: translateY(calc(100% + 60px)); }
+.card::before { content: "9:41"; position: absolute; z-index: 2; top: 0; left: 0; right: 0; height: calc(var(--s) * .14); padding-left: calc(var(--s) * .1); display: flex; align-items: center; font: 600 calc(var(--s) * .042)/1 var(--font); color: #111;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 12' fill='%23111'%3E%3Crect y='8' width='3' height='4' rx='1'/%3E%3Crect x='4.5' y='6' width='3' height='6' rx='1'/%3E%3Crect x='9' y='3.5' width='3' height='8.5' rx='1'/%3E%3Crect x='13.5' y='1' width='3' height='11' rx='1'/%3E%3Cpath d='M29.5 3.6a10.5 10.5 0 0 1 14 0l-1.5 1.6a8.3 8.3 0 0 0-11 0zM32.4 6.6a6.3 6.3 0 0 1 8.2 0l-1.5 1.6a4.1 4.1 0 0 0-5.2 0zM36.5 11.6l-2.1-2.2a3 3 0 0 1 4.2 0z'/%3E%3Crect x='47' y='1' width='18.5' height='10' rx='3' fill='none' stroke='%23111' stroke-opacity='.4'/%3E%3Crect x='49' y='3' width='14.5' height='6' rx='1.6'/%3E%3Crect x='66.4' y='4.3' width='1.6' height='3.4' rx='.8' fill-opacity='.45'/%3E%3C/svg%3E") no-repeat right calc(var(--s) * .08) center / calc(var(--s) * .19) auto; }
+.fan .ph[data-go] { cursor: pointer; transition: translate .4s cubic-bezier(.2,.8,.2,1); }
+.fan .ph[data-go]:hover { translate: 0 -10px; }
+@keyframes rise { from { translate: 0 90px; opacity: 0; } }
+@keyframes fadeUp { from { transform: translateY(16px); opacity: 0; } }
+.fan .ph { animation: rise 1s cubic-bezier(.2,.8,.2,1) backwards; }
+.ph-c { animation-delay: .05s !important; } .ph-l1, .ph-r1 { animation-delay: .16s !important; } .ph-l2, .ph-r2 { animation-delay: .26s !important; }
+.show-hero > * { animation: fadeUp .8s cubic-bezier(.2,.8,.2,1) backwards; }
+.show-hero p { animation-delay: .08s; } .hero-cta { animation-delay: .14s; }
+
+/* Side panels: rise from below, then the copy scrolls through them chapter by chapter */
+.panel { position: absolute; z-index: 1; top: 0; height: var(--h); width: var(--pw); overflow: hidden; border-radius: 28px; background: #F2F2F4; transform: translateY(110vh); will-change: transform; }
+.panel-l { right: calc(50% + var(--w) / 2 + 24px); }
+.panel-r { left: calc(50% + var(--w) / 2 + 24px); }
+.track { position: absolute; left: 0; right: 0; top: 0; bottom: 0; will-change: transform; }
+.clip { position: absolute; inset: 0; overflow: hidden; }
+.panel-l .clip { top: 76px; }
+.panel-l::before { content: ""; position: absolute; z-index: 2; top: 76px; left: 0; right: 0; height: 28px; background: linear-gradient(#F2F2F4, rgba(242,242,244,0)); pointer-events: none; }
+.panel-r::before, .panel-r::after { content: ""; position: absolute; z-index: 2; left: 0; right: 0; height: 40px; pointer-events: none; }
+.panel-r::before { top: 0; background: linear-gradient(#F2F2F4, rgba(242,242,244,0)); }
+.panel-r::after { bottom: 0; background: linear-gradient(rgba(242,242,244,0), #F2F2F4); }
+.chap { position: absolute; left: 0; right: 0; top: calc(var(--i) * 100%); height: 100%; padding: 0 clamp(24px, 2.6vw, 40px) clamp(28px, 4vh, 44px); display: flex; flex-direction: column; justify-content: flex-end; }
+.panel-r .chap { justify-content: center; padding-top: clamp(28px, 4vh, 44px); }
+.chap h2 { font-size: clamp(26px, 2.5vw, 36px); line-height: 1.06; letter-spacing: -.03em; margin-bottom: 14px; max-width: 12ch; }
+.chap p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-bottom: 0; }
+.chap h3 { font-size: 17px; margin: 24px 0 6px; }
+.chap h3:first-child { margin-top: 0; }
+.try-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin-top: 26px; padding: 0 16px; border-radius: 99px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; text-decoration: none; transition: opacity .2s; }
+.try-link:hover { opacity: .85; }
+.try-link svg { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.try-link:hover svg { transform: translateX(3px); }
+
+/* Chapter rail: where you are, and a shortcut to any chapter */
+.rail { position: absolute; z-index: 3; top: 24px; left: clamp(24px, 2.6vw, 40px); right: clamp(24px, 2.6vw, 40px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.rail button { position: relative; min-height: 44px; padding: 12px 0 0; border: 0; background: none; text-align: left; font-size: 13px; color: #9A9AA0; transition: color .25s; }
+.rail button::before, .rail i { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px; border-radius: 2px; background: #DCDCE0; }
+.rail i { background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--f, 0)); }
+.rail b { font-weight: 500; color: inherit; font-variant-numeric: tabular-nums; opacity: .55; margin-right: 3px; }
+.rail button:hover, .rail button.on { color: var(--ink); }
+.rail button.on { font-weight: 500; }
+
+/* Phone-width chapters (built from the panels by the script) */
+.mchaps { display: none; }
+.js .rv { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+.js .rv.in { opacity: 1; transform: none; }
+
 @media (max-width: 899px), (prefers-reduced-motion: reduce) {
-  .show { height: auto; }
-  .show-stage { position: static; height: auto; overflow: visible; padding: 96px 0 24px; display: flex; flex-direction: column; }
-  .show-hero { order: 1; } .fan { order: 2; } .panel-l { order: 3; } .panel-r { order: 4; }
-  .show-hero { position: static; margin-bottom: 36px; }
-  .fan { position: static; width: auto; height: auto; display: flex; justify-content: center; }
-  .ph { position: static; }
-  .ph-l1, .ph-l2, .ph-r1, .ph-r2 { display: none; }
-  .ph-c { --w: min(280px, 72vw); }
-  .ph-c .scr + .scr { display: none; }
-  .panel { position: static; width: auto; opacity: 1; margin: 24px; background: #F2F2F4; padding: 28px 0; }
-  .chap { position: static; opacity: 1; transform: none; display: none; }
+  .show { height: auto !important; --w: min(230px, 58vw); }
+  .show-stage { position: static; height: auto; overflow: visible; padding: 92px 0 8px; }
+  .show-hero { position: static; transform: none !important; padding: 0 24px; }
+  .fan { position: relative; left: auto; width: auto; height: auto; display: flex; justify-content: center; align-items: flex-start; margin-top: 40px; padding: 4px 0 40px; overflow: hidden; }
+  .fan .ph { position: relative; flex: none; transform: none !important; }
+  .ph-l2, .ph-r2 { display: none; }
+  .ph-l1 { margin: 30px 16px 0 0; } .ph-r1 { margin: 30px 0 0 16px; }
+  .ph-c .card + .card { display: none; }
+  .panel { position: static; width: auto; height: auto; transform: none !important; margin: 0 16px 16px; padding: 24px 0; }
+  .clip, .track { position: static; transform: none !important; }
+  .chap { position: static; display: none; padding: 0 24px; }
   .chap[data-i="0"] { display: flex; }
-  .panel-l .chap { padding-bottom: 0; }
+  .rail { display: none; }
+  .js .panel { display: none; }
+  .js .mchaps { display: grid; gap: 16px; padding: 0 16px 24px; }
+  .mch { display: flex; flex-direction: column; padding: 28px 24px; border-radius: 24px; background: #F2F2F4; }
+  .mch-k { font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 10px; }
+  .mch h2 { font-size: 28px; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 12px; }
+  .mch p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-bottom: 0; }
+  .mch h3 { font-size: 17px; margin: 20px 0 4px; }
+  .mch .ph { --s: min(220px, 58vw); position: relative; margin: 28px auto 8px; }
 }
+@media (prefers-reduced-motion: reduce) { .fan .ph, .show-hero > * { animation: none; } .js .rv { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
@@ -174,41 +231,56 @@ img.ph { object-fit: cover; object-position: top; max-width: none; height: auto;
   <a class="pn-brand" href="#top">Agentic<sup>®</sup></a>
   <a class="pn-link" href="#problem">Problem</a>
   <a class="pn-link" href="#decisions">Decisions</a>
-  <a class="pn-cta" href="#try" aria-label="Try the prototype">Try it</a>
+  <a class="pn-cta" href="#try">Try it</a>
 </nav>
 
-<!-- Landing: hero fan of phones that resolves into a pinned phone with side panels (scroll-driven) -->
+<!-- Landing: hero fan → pinned phone. Panels rise, copy scrolls through them, each screen slides up as a stacked card -->
 <section class="show" id="top" aria-label="Agentic overview">
   <div class="show-stage" id="stage">
     <header class="show-hero" id="showHero">
       <h1>One calm assistant for every Airtel task</h1>
       <p>Agentic checks your data, recharges your number, explains your bill and fixes your network, inside one conversation.</p>
+      <div class="hero-cta"><a class="btn" href="#try">Try the prototype</a><a class="btn btn-soft" href="#main">Read the case study</a></div>
     </header>
 
-    <div class="panel panel-l" id="panelL" aria-live="polite">
-      <div class="chap" data-i="0"><h2>Say it the way you’d say it.</h2><p>“Kitna data bacha hai?” is enough. People type or speak in English or Hinglish, and the assistant works out the task.</p></div>
-      <div class="chap" data-i="1"><h2>Answers you can act on.</h2><p>Numbers come back as cards from the app’s own design system, with the next action inside the answer.</p></div>
-      <div class="chap" data-i="2"><h2>Nothing moves without you.</h2><p>Every payment opens a confirm sheet in the chat. The agent suggests; the person decides.</p></div>
+    <div class="panel panel-l" id="panelL">
+      <div class="rail" id="rail" role="group" aria-label="Chapters">
+        <button type="button" data-label="Ask"><i></i><b>01</b> Ask</button>
+        <button type="button" data-label="Answer"><i></i><b>02</b> Answer</button>
+        <button type="button" data-label="Confirm"><i></i><b>03</b> Confirm</button>
+        <button type="button" data-label="Fix"><i></i><b>04</b> Fix</button>
+      </div>
+      <div class="clip"><div class="track">
+        <div class="chap" data-i="0" style="--i:0"><h2>Say it the way you’d say it.</h2><p>“Kitna data bacha hai?” is enough. People type or speak in English or Hinglish, and the assistant works out the task.</p></div>
+        <div class="chap" data-i="1" style="--i:1"><h2>Answers you can act on.</h2><p>Numbers come back as cards from the app’s own design system, with the next action inside the answer.</p></div>
+        <div class="chap" data-i="2" style="--i:2"><h2>Nothing moves without you.</h2><p>Every payment opens a confirm sheet in the chat. The agent suggests; the person decides.</p></div>
+        <div class="chap" data-i="3" style="--i:3"><h2>Diagnose first, then escalate.</h2><p>“My internet is slow” runs a visible check, names the cause and lists fixes. If that fails, the complaint arrives pre-filled.</p></div>
+      </div></div>
     </div>
 
     <div class="fan" aria-hidden="true">
-      <img class="ph ph-l2" src="img/onboarding.jpg" alt="" width="750" height="1624" />
-      <img class="ph ph-l1" src="img/home.jpg" alt="" width="750" height="1624" />
-      <div class="ph ph-c" id="phC">
-        <img class="scr" src="img/landing.jpg" alt="Agentic greeting screen" width="750" height="1624" />
-        <img class="scr" src="img/usage.jpg" alt="Agentic usage card with actions" width="750" height="1624" />
-        <img class="scr" src="img/payment.jpg" alt="Payment confirmation sheet" width="750" height="1624" />
-      </div>
-      <img class="ph ph-r1" src="img/packs.jpg" alt="" width="750" height="1624" />
-      <img class="ph ph-r2" src="img/network.jpg" alt="" width="750" height="1624" />
+      <div class="ph ph-l2" data-go="0"><div class="scrn"><div class="card"><img src="img/onboarding.jpg" alt="" width="750" height="1624" /></div></div></div>
+      <div class="ph ph-l1" data-go="0"><div class="scrn"><div class="card"><img src="img/home.jpg" alt="" width="750" height="1624" /></div></div></div>
+      <div class="ph ph-c" id="phC"><div class="scrn">
+        <div class="card"><img src="img/landing.jpg" alt="" width="750" height="1624" /></div>
+        <div class="card"><img src="img/usage.jpg" alt="" width="750" height="1624" /></div>
+        <div class="card"><img src="img/payment.jpg" alt="" width="750" height="1624" /></div>
+        <div class="card"><img src="img/network.jpg" alt="" width="750" height="1624" /></div>
+      </div></div>
+      <div class="ph ph-r1" data-go="1"><div class="scrn"><div class="card"><img src="img/packs.jpg" alt="" width="750" height="1624" /></div></div></div>
+      <div class="ph ph-r2" data-go="3"><div class="scrn"><div class="card"><img src="img/ticket.jpg" alt="" width="750" height="1624" /></div></div></div>
     </div>
 
     <div class="panel panel-r" id="panelR">
-      <div class="chap" data-i="0"><h3>Starts from the home screen</h3><p>A pill in the header cycles real asks, so people learn what it can do before they tap.</p><h3>One-time ground rules</h3><p>A short first run sets expectations and covers consent.</p><h3>Hinglish and voice</h3><p>Type or talk; a live transcript catches mis-hears.</p></div>
-      <div class="chap" data-i="1"><h3>Usage, packs, plans, bills</h3><p>Each answer renders as a card with its button inside.</p><h3>One pick, explained</h3><p>A best-match pack with the reason, alternatives below.</p><h3>Shows its work</h3><p>The thinking state names real steps while it fetches.</p></div>
-      <div class="chap" data-i="2"><h3>Confirm in the chat</h3><p>Amount, item, number and method, then a separate Pay tap.</p><h3>App-grade actions</h3><p>Black CTAs and familiar cards make paying feel as safe as before.</p><h3>Escalates with context</h3><p>When it can’t fix something, the ticket arrives pre-filled.</p></div>
+      <div class="clip"><div class="track">
+        <div class="chap" data-i="0" style="--i:0"><h3>Starts from the home screen</h3><p>A pill in the header cycles real asks, so people learn what it can do before they tap.</p><h3>Hinglish and voice</h3><p>Type or talk; a live transcript catches mis-hears.</p><h3>One-time ground rules</h3><p>A short first run sets expectations and covers consent.</p><a class="try-link" href="#try" data-start>Try it from home <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m-3-3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="chap" data-i="1" style="--i:1"><h3>Usage, packs, plans, bills</h3><p>Each answer renders as a card with its button inside.</p><h3>One pick, explained</h3><p>A best-match pack with the reason, alternatives below.</p><h3>Shows its work</h3><p>The thinking state names real steps while it fetches.</p><a class="try-link" href="#try" data-q="Kitna data bacha hai?">Ask “Kitna data bacha hai?” <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m-3-3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="chap" data-i="2" style="--i:2"><h3>Confirm in the chat</h3><p>Amount, item, number and method, then a separate Pay tap.</p><h3>App-grade actions</h3><p>Black CTAs and familiar cards make paying feel as safe as before.</p><h3>Never leaves the chat</h3><p>The sheet opens over the conversation and closes back into it.</p><a class="try-link" href="#try" data-q="Recharge my number">Try a recharge <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m-3-3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="chap" data-i="3" style="--i:3"><h3>A check you can watch</h3><p>Speed, signal and outages, measured in about three seconds.</p><h3>Fixes in order</h3><p>The quickest thing to try comes first.</p><h3>Escalates with context</h3><p>When it can’t fix something, the ticket arrives pre-filled.</p><a class="try-link" href="#try" data-q="My internet is slow">Try “My internet is slow” <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8m-3-3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </div></div>
     </div>
   </div>
+  <div class="mchaps" id="mchaps"></div>
 </section>
 
 <main class="col" id="main">
@@ -433,45 +505,113 @@ document.querySelectorAll('#scen button').forEach((b) => b.addEventListener('cli
 <script>
 (() => {
   const big = matchMedia('(min-width: 900px)'), calm = matchMedia('(prefers-reduced-motion: reduce)');
-  const show = document.querySelector('.show'), hero = document.getElementById('showHero');
+  const show = document.getElementById('top'), hero = document.getElementById('showHero');
   const pL = document.getElementById('panelL'), pR = document.getElementById('panelR');
-  const phones = { l2: document.querySelector('.ph-l2'), l1: document.querySelector('.ph-l1'), c: document.getElementById('phC'), r1: document.querySelector('.ph-r1'), r2: document.querySelector('.ph-r2') };
-  const scr = [...document.querySelectorAll('#phC .scr')];
-  const chapsL = [...pL.querySelectorAll('.chap')], chapsR = [...pR.querySelectorAll('.chap')];
+  const tL = pL.querySelector('.track'), tR = pR.querySelector('.track');
+  const phC = document.getElementById('phC'), cards = [...phC.querySelectorAll('.card')];
+  const chL = [...tL.children], chR = [...tR.children], rail = [...document.querySelectorAll('#rail button')];
+  const sides = [['.ph-l1', -1, 1], ['.ph-r1', 1, 1], ['.ph-l2', -1, 2], ['.ph-r2', 1, 2]].map(([q, d, slot]) => ({ el: document.querySelector(q), d, slot }));
+  const N = cards.length, GAP = 28;
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
   const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const lerp = (a, b, t) => a + (b - a) * t;
-  let chap = -1, ticking = false;
+  const live = () => big.matches && !calm.matches;
+  let m = null, active = -1, ticking = false;
+
+  // Scroll script, in px of scroll inside the section:
+  // 0 → pinAt: hero, fan and centre phone scroll up together; the centre phone then pins
+  // → arrive: the two panels rise from below and stop level with the phone
+  // c0 + i·len: chapter i holds, then copy scrolls up and the next screen slides over the last
+  function measure() {
+    if (!live()) { m = null; show.style.height = ''; return; }
+    const vh = innerHeight, wC = phC.offsetWidth, hC = phC.offsetHeight;
+    const pinTop = Math.round((vh - hC) / 2);
+    const fanTop = Math.round(Math.min(hero.offsetHeight + 44, vh * .58));
+    const pinAt = Math.max(0, fanTop - pinTop);
+    const arrive = pinAt + vh * .75, c0 = arrive + vh * .25, len = vh * .95;
+    const end = c0 + (N - 1) * len + vh * .6;
+    show.style.height = Math.round(end + vh) + 'px';
+    m = { hS: phC.firstElementChild.offsetHeight + 60, vh, wC, hC, pinTop, fanTop, pinAt, arrive, c0, len, end, w1: sides[0].el.offsetWidth, w2: sides[2].el.offsetWidth };
+  }
+
+  function setActive(k) {
+    if (k === active) return;
+    active = k;
+    rail.forEach((b, i) => { b.classList.toggle('on', i === k); b.toggleAttribute('aria-current', i === k); });
+    [...chL, ...chR].forEach((c) => { c.inert = +c.dataset.i !== k; });
+  }
+
   function frame() {
     ticking = false;
-    if (!big.matches || calm.matches) { [hero, pL, pR, ...Object.values(phones), ...scr].forEach((e) => { e.style.transform = ''; e.style.opacity = ''; }); return; }
-    const vh = innerHeight, rect = show.getBoundingClientRect();
-    const p = clamp(-rect.top / (show.offsetHeight - vh));            // 0..1 through the section
-    const intro = ease(clamp(p / .2));                                 // fan → pinned
-    const wC = phones.c.offsetWidth, hC = wC * 812 / 375, w1 = phones.l1.offsetWidth, w2 = phones.l2.offsetWidth;
-    const fanTop = hero.offsetTop + hero.offsetHeight + 48, pinTop = (vh - hC) / 2, gap = 24;
-    const y = lerp(fanTop, pinTop, intro);
-    phones.c.style.transform = `translate(${-wC / 2}px, ${y}px)`;
-    const side = (el, w, dir, slot) => {
-      const x0 = dir * (wC / 2 + gap + (slot === 1 ? 0 : w1 + gap)) - (dir < 0 ? w : 0);
-      const x = x0 + dir * intro * vh * .9, top = fanTop + (hC - w * 812 / 375) * .35;
-      el.style.transform = `translate(${x}px, ${top + intro * 40}px)`; el.style.opacity = 1 - intro;
-    };
-    side(phones.l1, w1, -1, 1); side(phones.r1, w1, 1, 1); side(phones.l2, w2, -1, 2); side(phones.r2, w2, 1, 2);
-    hero.style.transform = `translateY(${-intro * vh * .25}px)`; hero.style.opacity = 1 - clamp(intro * 1.6);
-    const pin = ease(clamp((p - .12) / .12));
-    pL.style.opacity = pR.style.opacity = pin;
-    pL.style.transform = `translateX(${(1 - pin) * -40}px)`; pR.style.transform = `translateX(${(1 - pin) * 40}px)`;
-    // chapters: screens slide up inside the phone, panel copy swaps
-    const c = clamp((p - .24) / .76) * 3;                              // 0..3
-    scr.forEach((el, i) => { const t = ease(clamp(c - i - .55, 0, 1)); el.style.transform = i === 0 ? '' : `translateY(${(1 - ease(clamp(c - i + .45, 0, 1))) * 100}%)`; el.style.zIndex = i; });
-    const k = Math.min(2, Math.floor(c + .5 > 3 ? 2 : Math.max(0, c - .05)));
-    if (k !== chap) { chap = k; chapsL.forEach((e, i) => e.classList.toggle('on', i === k)); chapsR.forEach((e, i) => e.classList.toggle('on', i === k)); }
+    if (!m) {
+      [hero, pL, pR, tL, tR, phC, ...cards, ...sides.map((s) => s.el)].forEach((e) => { e.style.transform = ''; });
+      [...chL, ...chR].forEach((c) => { c.inert = false; });
+      active = -1; return;
+    }
+    const { hS, vh, wC, hC, pinTop, fanTop, pinAt, arrive, c0, len, end, w1, w2 } = m;
+    const s = clamp(-show.getBoundingClientRect().top, 0, end);
+
+    hero.style.transform = `translate3d(0, ${-s}px, 0)`;
+    phC.style.transform = `translate3d(${-wC / 2}px, ${Math.max(pinTop, fanTop - s)}px, 0)`;
+    sides.forEach(({ el, d, slot }) => {
+      const w = slot === 1 ? w1 : w2;
+      const x = d > 0 ? wC / 2 + GAP + (slot === 2 ? w1 + GAP : 0) : -(wC / 2 + GAP + w + (slot === 2 ? w1 + GAP : 0));
+      el.style.transform = `translate3d(${x}px, ${fanTop + hC * (slot === 1 ? .08 : .16) - s}px, 0)`;
+    });
+
+    const py = pinTop + Math.max(0, arrive - s);
+    pL.style.transform = pR.style.transform = `translate3d(0, ${py}px, 0)`;
+
+    const raw = (s - c0) / len, c = clamp(raw, 0, N - 1);
+    const i = Math.min(N - 2, Math.floor(c)), f = c - i;
+    const pos = i + ease(clamp((f - .4) / .6)), posR = i + ease(clamp((f - .32) / .6));
+    tL.style.transform = `translate3d(0, ${-pos * 100}%, 0)`;
+    tR.style.transform = `translate3d(0, ${-posR * 100}%, 0)`;
+    cards.forEach((el, j) => {
+      const inn = j === 0 ? 1 : clamp(pos - j + 1), out = clamp(pos - j);
+      el.style.transform = `translate3d(0, ${(1 - inn) * hS - out * hS * .07}px, 0)`;
+    });
+    rail.forEach((b, j) => b.style.setProperty('--f', (j === 0 ? clamp((s - arrive + vh * .3) / (vh * .3)) : clamp(pos - j + 1)).toFixed(3)));
+    setActive(Math.round(pos));
   }
+
   const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
-  addEventListener('scroll', req, { passive: true }); addEventListener('resize', req);
-  big.addEventListener('change', req); calm.addEventListener('change', req);
-  frame();
+  const refit = () => { measure(); frame(); };
+  function goTo(k) {
+    if (!m) return;
+    const s = k === 0 ? m.c0 : m.c0 + (k + .05) * m.len;
+    scrollTo({ top: show.getBoundingClientRect().top + scrollY + s, behavior: 'smooth' });
+  }
+  rail.forEach((b, k) => b.addEventListener('click', () => goTo(k)));
+  sides.forEach(({ el }) => el.addEventListener('click', () => goTo(+el.dataset.go)));
+  addEventListener('scroll', req, { passive: true });
+  addEventListener('resize', refit);
+  big.addEventListener('change', refit); calm.addEventListener('change', refit);
+  document.fonts && document.fonts.ready.then(refit);
+  refit();
+
+  // Phone width: the same chapters as a simple list of cards
+  const list = document.getElementById('mchaps');
+  cards.forEach((card, k) => {
+    const a = document.createElement('article');
+    a.className = 'mch rv';
+    a.innerHTML = `<div class="mch-k">${String(k + 1).padStart(2, '0')} · ${rail[k].dataset.label}</div>`;
+    a.append(...[...chL[k].cloneNode(true).childNodes]);
+    const ph = document.createElement('div');
+    ph.className = 'ph';
+    ph.innerHTML = `<div class="scrn"><div class="card">${card.innerHTML}</div></div>`;
+    a.append(ph, ...[...chR[k].cloneNode(true).childNodes]);
+    list.append(a);
+  });
+  const io = 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.rv').forEach((el) => (io ? io.observe(el) : el.classList.add('in')));
+
+  // "Try this live" links load that scenario into the prototype below
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('.try-link');
+    if (!a) return;
+    document.getElementById('tryFrame').src = a.dataset.q ? '../?ask=' + encodeURIComponent(a.dataset.q) : '../';
+    document.querySelectorAll('#scen button').forEach((x) => x.classList.toggle('on', a.dataset.q ? x.dataset.q === a.dataset.q : x.hasAttribute('data-start')));
+  });
 })();
 </script>
 </body>
