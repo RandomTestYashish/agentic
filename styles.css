@@ -660,3 +660,6 @@ textarea { font: inherit; }
 .composer.busy .send-btn { background: var(--line); }
 /* Pack Status tag stays still */
 .pack-tag-body { animation: none !important; }
+
+/* Phones wider than 375: the Figma home scales to the full width (no left/right gap) */
+.fh, .home-header, .bottom-nav { zoom: var(--home-zoom, 1); }

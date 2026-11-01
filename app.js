@@ -67,6 +67,10 @@
     device.style.transform = k < 1 ? `scale(${k})` : '';
   }
   addEventListener('resize', fit); fit();
+  // On real phones the Figma home (375 wide) zooms to the screen width, so there is no side gap
+  const homeZoom = () => (innerWidth <= 500 ? phone.offsetWidth / 375 : 1);
+  const fitHome = () => phone.style.setProperty('--home-zoom', homeZoom());
+  addEventListener('resize', fitHome); fitHome();
   const setDock = () => phone.style.setProperty('--dock-x', `${16 - (phone.offsetWidth / 2 - 60)}px`);
   addEventListener('resize', setDock); setDock();
 
@@ -156,7 +160,8 @@
   }
   function pillToFull() {
     const c = pillClip();
-    Object.assign(pill.style, { position: 'absolute', left: `${-header.offsetLeft}px`, top: `${-header.offsetTop}px`, width: phone.offsetWidth + 'px', height: phone.offsetHeight + 'px', borderRadius: '0', clipPath: c.closed, zIndex: 1 });
+    const z = homeZoom(), h = pRect(header);   // the header is zoomed, so convert phone px into its units
+    Object.assign(pill.style, { position: 'absolute', left: `${-h.x / z}px`, top: `${-h.y / z}px`, width: phone.offsetWidth / z + 'px', height: phone.offsetHeight / z + 'px', borderRadius: '0', clipPath: c.closed, zIndex: 1 });
     header.style.zIndex = 90;
     pill.classList.add('expanding');
     return c;
@@ -184,7 +189,8 @@
   }
   // Keyframes for the pill growing into a soft blob that swallows the screen
   function blobFrames(dir) {
-    const r = pRect(pill), W = phone.offsetWidth, H = phone.offsetHeight, m = 140;
+    const z = homeZoom(), r0 = pRect(pill);
+    const r = { x: r0.x / z, y: r0.y / z, w: r0.w / z, h: r0.h / z }, W = phone.offsetWidth / z, H = phone.offsetHeight / z, m = 140;
     const cover = { x: -m, y: -m, w: W + 2 * m, h: H + 2 * m };
     const N = 60, T = 1.25, frames = [];
     for (let i = 0; i <= N; i++) {
