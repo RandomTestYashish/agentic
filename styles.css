@@ -685,3 +685,23 @@ textarea { font: inherit; }
 /* landing: only the rings ripple out; the star stays steady (no snap) */
 .agent.land-ping .agent-orb .orb-star { animation: none; }
 .agent .agent-orb.snap { transition: none !important; opacity: 1 !important; }
+
+/* Agentic symbol: the star turns into the Airtel logo and back (one 6s loop, in step with the prompt roll) */
+.ama-star { animation: none !important; }
+.ama-star .sym { will-change: transform, opacity; }
+.ama-star .sym-star { animation: symStar 6s cubic-bezier(.65, 0, .35, 1) infinite; }
+.ama-star .sym-airtel { inset: 1px; width: 16px; height: 16px; opacity: 0; animation: symAirtel 6s cubic-bezier(.65, 0, .35, 1) infinite; }
+@keyframes symStar {
+  0%, 38% { transform: rotate(0) scale(1); opacity: 1; }
+  46% { transform: rotate(90deg) scale(.4); opacity: 0; }
+  50%, 88% { transform: rotate(90deg) scale(.4); opacity: 0; }
+  96%, 100% { transform: rotate(180deg) scale(1); opacity: 1; }
+}
+@keyframes symAirtel {
+  0%, 42% { transform: rotate(-60deg) scale(.4); opacity: 0; }
+  52% { transform: rotate(8deg) scale(1.12); opacity: 1; }
+  56%, 84% { transform: rotate(0) scale(1); opacity: 1; }
+  92%, 100% { transform: rotate(60deg) scale(.4); opacity: 0; }
+}
+.ama-pill.launch .ama-star .sym { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .ama-star .sym-airtel { display: none; } .ama-star .sym-star { animation: none; } }
