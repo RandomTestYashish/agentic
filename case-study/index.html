@@ -4,962 +4,355 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Agentic — Case Study</title>
-<meta name="description" content="How I designed Agentic, an AI layer for 300 Mn Airtel users that completes tasks instead of answering questions. Lead Product Designer case study with a live prototype." />
+<meta name="description" content="How I designed Agentic, an AI layer for 300 Mn Airtel users that completes tasks instead of answering questions." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
-/* Layout: editorial long-read; the live prototype is the hero, decisions are scroll-told beside a sticky phone */
+/* Layout: quiet editorial read — one centred column, pale hero panel, static screens; the live prototype sits in one section */
 :root {
-  --paper: #FBFAF9;
-  --paper-2: #F4F0EE;
-  --ink: #16110F;
-  --ink-2: #4A403C;
-  --muted: #8A7F7A;
-  --line: #E9E2DE;
-  --ember: #D42D1F;
-  --ember-2: #EE6A43;
-  --brown: #6E2416;
-  --night: #120D0B;
-  --night-2: #1E1714;
-  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
-  --body: "Geist", "Inter", system-ui, -apple-system, sans-serif;
-  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --grad: linear-gradient(135deg, #EE6A43 0%, #D42D1F 50%, #8A2A19 100%);
-  --ease: cubic-bezier(.22, 1, .36, 1);
+  --bg: #FFFFFF;
+  --ink: #1D1D1F;
+  --ink-2: #424245;
+  --muted: #86868B;
+  --line: #E8E8ED;
+  --panel: #FDF2EE;
+  --accent: #C4321F;
+  --font: Inter, -apple-system, "SF Pro Text", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 18px/1.75 var(--font); -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
 button { font: inherit; color: inherit; cursor: pointer; }
-::selection { background: #F6C9BC; }
-.wrap { width: min(1200px, 100%); margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left)) max(20px, env(safe-area-inset-right)); }
-.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ember); }
-h1, h2, h3 { font-family: var(--display); letter-spacing: -.025em; line-height: 1.02; margin: 0; text-wrap: balance; }
-h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 800; }
-h3 { font-size: clamp(22px, 2.2vw, 28px); font-weight: 700; letter-spacing: -.015em; line-height: 1.15; }
-p { margin: 0; }
-.lede { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.55; color: var(--ink-2); max-width: 62ch; }
-section { padding-block: clamp(80px, 11vw, 150px); }
-.sec-head { display: grid; gap: 18px; margin-bottom: clamp(36px, 5vw, 64px); max-width: 860px; }
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
-.reveal.in { opacity: 1; transform: none; }
-.no-js .reveal { opacity: 1; transform: none; }
+h1, h2, h3 { font-weight: 600; letter-spacing: -.025em; margin: 0; text-wrap: balance; color: var(--ink); }
+h1 { font-size: clamp(34px, 4.6vw, 52px); line-height: 1.12; }
+h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; margin-bottom: 28px; }
+h3 { font-size: 21px; line-height: 1.3; letter-spacing: -.015em; margin-bottom: 8px; }
+p { margin: 0 0 18px; color: var(--ink-2); }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0 0 18px; padding-left: 22px; color: var(--ink-2); }
+li { margin-bottom: 6px; }
+b, strong { color: var(--ink); font-weight: 600; }
 
-/* Nav */
-.nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--paper) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid transparent; transition: border-color .3s; }
-.nav.scrolled { border-color: var(--line); }
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 10px; font: 700 18px/1 var(--display); text-decoration: none; }
-.brand i { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F8A27F, #D42D1F 55%, #8A2A19); box-shadow: 0 0 0 4px rgba(212,45,31,.1); }
-.nav-links { display: flex; gap: 4px; }
-.nav-links a { text-decoration: none; font-size: 14px; color: var(--ink-2); padding: 8px 12px; border-radius: 99px; transition: background .2s, color .2s; }
-.nav-links a:hover, .nav-links a.on { background: var(--paper-2); color: var(--ink); }
-.btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 99px; border: 0; font-weight: 600; font-size: 15px; text-decoration: none; transition: transform .25s var(--ease), box-shadow .25s; white-space: nowrap; }
-.btn:active { transform: scale(.96); }
-.btn-dark { background: var(--ink); color: #fff; }
-.btn-dark:hover { box-shadow: 0 10px 24px -10px rgba(22,17,15,.5); transform: translateY(-1px); }
-.btn-line { background: transparent; border: 1px solid var(--line); color: var(--ink); }
-.btn-line:hover { border-color: var(--ink); }
-@media (max-width: 900px) { .nav-links { display: none; } }
+.nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav-in { max-width: 1300px; margin: 0 auto; height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 max(24px, env(safe-area-inset-left)); }
+.brand { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500; text-decoration: none; }
+.brand i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.nav-links { display: flex; gap: 32px; font-size: 15px; }
+.nav-links a { text-decoration: none; color: var(--ink); }
+.nav-links a:hover { color: var(--muted); }
+@media (max-width: 720px) { .nav-links a:not(:last-child) { display: none; } }
 
-/* Hero */
-.hero { padding-top: clamp(40px, 6vw, 72px); padding-bottom: 72px; position: relative; overflow: clip; }
-.hero::before { content: ""; position: absolute; width: 900px; height: 900px; right: -260px; top: -320px; background: radial-gradient(closest-side, rgba(238,106,67,.22), rgba(212,45,31,.08) 55%, transparent); pointer-events: none; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(32px, 5vw, 72px); align-items: center; position: relative; }
-.hero h1 { font-size: clamp(54px, 8.4vw, 118px); font-weight: 800; letter-spacing: -.045em; line-height: .92; margin: 22px 0 26px; }
-.hero h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hero .lede { margin-bottom: 32px; }
-.meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; padding-top: 28px; border-top: 1px solid var(--line); margin-top: 40px; }
-.meta dt { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-.meta dd { margin: 0; font-size: 15px; font-weight: 500; }
-.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
-@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.frame { max-width: 1300px; margin: 0 auto; padding: 0 max(24px, env(safe-area-inset-left)); }
+.hero-panel { background: var(--panel); display: flex; justify-content: center; align-items: center; gap: clamp(16px, 5vw, 72px); padding: clamp(40px, 6vw, 72px) 24px; overflow: hidden; }
+.hero-panel img { width: clamp(150px, 19vw, 260px); border-radius: clamp(22px, 2.6vw, 36px); border: 6px solid #111; box-shadow: 0 30px 60px -30px rgba(80, 30, 20, .35); }
+.hero-panel img:nth-child(2) { margin-top: clamp(30px, 4vw, 60px); }
+@media (max-width: 640px) { .hero-panel img:nth-child(3) { display: none; } }
 
-/* Phone */
-.phone-stage { display: grid; justify-items: center; gap: 18px; }
-.phone { position: relative; width: 340px; height: 736px; border-radius: 52px; padding: 11px; background: linear-gradient(150deg, #2E2522, #0D0908); box-shadow: inset 0 0 0 1.5px #4A3C37, 0 50px 90px -30px rgba(70, 25, 15, .45), 0 18px 40px -20px rgba(0,0,0,.4); flex: none; }
-.phone .screen { width: 100%; height: 100%; border-radius: 42px; overflow: hidden; background: #fff; position: relative; }
-.phone iframe { border: 0; width: 375px; height: 812px; transform: scale(calc(318 / 375)); transform-origin: 0 0; display: block; }
-.phone .shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: opacity .5s var(--ease), transform .7s var(--ease); }
-.phone .shot.out { opacity: 0; transform: scale(1.02); }
-.phone-caption { font: 400 13px/1.4 var(--mono); color: var(--muted); text-align: center; display: flex; align-items: center; gap: 8px; }
-.live-dot { width: 8px; height: 8px; border-radius: 50%; background: #1FA45A; box-shadow: 0 0 0 0 rgba(31,164,90,.5); animation: live 2s infinite; }
-@keyframes live { 70% { box-shadow: 0 0 0 8px rgba(31,164,90,0); } 100% { box-shadow: 0 0 0 0 rgba(31,164,90,0); } }
-.moments { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 380px; }
-.chip { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 8px 14px; font-size: 13px; font-weight: 500; transition: border-color .2s, background .2s, transform .2s var(--ease); }
-.chip:hover { border-color: var(--ink); }
-.chip:active { transform: scale(.95); }
-.chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
-@media (max-width: 420px) { .phone { transform: scale(.9); margin: -36px 0; } }
+.col { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+.intro { padding: 72px 0 24px; }
+.intro h1 { margin-bottom: 28px; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding: 32px 0; margin: 40px 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.facts dt { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.facts dd { margin: 0; font-size: 16px; line-height: 1.5; }
+@media (max-width: 720px) { .facts { grid-template-columns: 1fr 1fr; } }
 
-/* TL;DR */
-.tldr { background: var(--night); color: #F4EDEA; padding-block: 0; }
-.tldr .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.tldr article { padding: 44px 32px 48px 0; border-right: 1px solid #2E2522; }
-.tldr article + article { padding-left: 32px; }
-.tldr article:last-child { border-right: 0; }
-.tldr .eyebrow { color: #F28A66; margin-bottom: 16px; display: block; }
-.tldr p { color: #CDBFB9; font-size: 16px; }
-.tldr p b { color: #fff; font-weight: 600; }
-@media (max-width: 860px) { .tldr .wrap { grid-template-columns: 1fr; } .tldr article, .tldr article + article { padding: 32px 0; border-right: 0; border-bottom: 1px solid #2E2522; } }
+section { padding: 64px 0; }
+.numbered { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 56px; margin-top: 8px; }
+.numbered .n { font-size: 22px; color: var(--muted); margin-bottom: 4px; }
+.numbered p { color: var(--ink); }
+@media (max-width: 640px) { .numbered { grid-template-columns: 1fr; } }
 
-/* Role */
-.role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
-.role-grid article { background: var(--paper); padding: 28px 24px 32px; display: grid; gap: 10px; align-content: start; transition: background .3s; }
-.role-grid article:hover { background: #fff; }
-.role-grid .n { font: 500 12px/1 var(--mono); color: var(--muted); }
-.role-grid h4 { margin: 0; font: 700 19px/1.2 var(--display); letter-spacing: -.01em; }
-.role-grid p { font-size: 15px; color: var(--ink-2); }
+.quote { border-left: 2px solid var(--ink); padding: 4px 0 4px 24px; font-size: 24px; line-height: 1.45; letter-spacing: -.01em; color: var(--ink); margin: 8px 0 0; }
 
-/* Problem: path comparison */
-.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; margin-top: 8px; }
-.path { border: 1px solid var(--line); border-radius: 24px; padding: 28px; background: #fff; display: grid; gap: 18px; align-content: start; }
-.path header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.path .count { font: 800 64px/1 var(--display); letter-spacing: -.04em; }
-.path.today .count { color: var(--ink); }
-.path.agentic { background: linear-gradient(160deg, #FFF3EF, #fff 60%); border-color: #F5D3C8; }
-.path.agentic .count { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.steps li { display: flex; gap: 12px; align-items: center; font-size: 15px; padding: 10px 14px; border-radius: 12px; background: var(--paper); opacity: .25; transform: translateX(-6px); transition: opacity .4s var(--ease), transform .4s var(--ease); }
-.steps li.lit { opacity: 1; transform: none; }
-.steps li span { font: 500 12px/1 var(--mono); color: var(--muted); width: 20px; }
-.path.agentic .steps li { background: #fff; border: 1px solid #F5D3C8; }
-.compare-ctl { display: flex; gap: 12px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
-.note { font: 400 13px/1.5 var(--mono); color: var(--muted); }
-.pains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-bottom: 48px; }
-.pains div { border-top: 2px solid var(--ink); padding-top: 16px; display: grid; gap: 6px; }
-.pains b { font: 700 18px/1.3 var(--display); }
-.pains span { font-size: 15px; color: var(--ink-2); }
-.callout { margin-top: 40px; padding: 22px 26px; border-radius: 16px; background: var(--paper-2); font-size: 18px; display: flex; gap: 14px; align-items: flex-start; }
-.callout i { flex: none; width: 10px; height: 10px; margin-top: 10px; border-radius: 50%; background: var(--ember); }
-@media (max-width: 860px) { .compare, .pains { grid-template-columns: 1fr; } }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+.compare > div { border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; }
+.compare h3 { display: flex; justify-content: space-between; align-items: baseline; }
+.compare h3 span { font-size: 30px; font-weight: 600; }
+.compare ol { margin: 10px 0 0; font-size: 16px; }
+@media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+.small { font-size: 14px; color: var(--muted); margin-top: 12px; }
 
-/* Benchmark patterns */
-.patterns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.pattern { perspective: 1200px; height: 240px; border: 0; padding: 0; background: none; text-align: left; }
-.pattern .face { position: absolute; inset: 0; border-radius: 20px; padding: 24px; display: grid; align-content: space-between; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .7s var(--ease); }
-.pattern .inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .7s var(--ease); }
-.pattern .front { background: #fff; border: 1px solid var(--line); }
-.pattern .back { background: var(--night); color: #F4EDEA; transform: rotateY(180deg); }
-.pattern:hover .inner, .pattern.flipped .inner { transform: rotateY(180deg); }
-.pattern .src { font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.pattern h4 { margin: 0 0 8px; font: 700 21px/1.15 var(--display); letter-spacing: -.01em; }
-.pattern p { font-size: 15px; color: var(--ink-2); }
-.pattern .back p { color: #D9CCC6; }
-.pattern .back .src { color: #F28A66; }
-.pattern .hint { font: 500 12px/1 var(--mono); color: var(--ember); }
-@media (max-width: 960px) { .patterns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) { .patterns { grid-template-columns: 1fr; } }
+.table { width: 100%; border-collapse: collapse; font-size: 16px; margin-top: 8px; }
+.table th, .table td { text-align: left; padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table th { font-weight: 500; color: var(--muted); font-size: 14px; }
+.table td:first-child { font-weight: 600; color: var(--ink); width: 34%; }
+.table td { color: var(--ink-2); }
+.table-wrap { overflow-x: auto; }
 
-/* HMW */
-.hmw { background: var(--night); color: #fff; text-align: center; position: relative; overflow: clip; }
-.hmw::before { content: ""; position: absolute; left: 50%; top: 100%; width: 1200px; height: 800px; transform: translate(-50%, -45%); background: radial-gradient(closest-side, rgba(212,45,31,.45), rgba(110,36,22,.2) 50%, transparent); }
-.hmw .eyebrow { color: #F28A66; }
-.hmw blockquote { position: relative; margin: 24px auto 0; max-width: 980px; font: 700 clamp(30px, 4.4vw, 56px)/1.12 var(--display); letter-spacing: -.03em; text-wrap: balance; }
-.hmw blockquote span { color: #F7A484; }
+.decision { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 40px; padding: 36px 0; border-top: 1px solid var(--line); align-items: start; }
+.decision:first-of-type { border-top: 0; padding-top: 8px; }
+.decision .n { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+.decision dl { margin: 14px 0 0; display: grid; gap: 12px; }
+.decision dt { font-size: 14px; color: var(--muted); }
+.decision dd { margin: 2px 0 0; font-size: 17px; line-height: 1.65; color: var(--ink-2); }
+.decision img { border-radius: 26px; border: 5px solid #111; }
+@media (max-width: 720px) { .decision { grid-template-columns: 1fr; } .decision img { width: 220px; } }
 
-/* Principles */
-.principles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.principle { border-radius: 22px; padding: 28px 24px; background: #fff; border: 1px solid var(--line); display: grid; gap: 14px; align-content: start; transition: transform .35s var(--ease), box-shadow .35s; }
-.principle:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -24px rgba(70,25,15,.35); }
-.principle .glyph { width: 44px; height: 44px; border-radius: 14px; background: var(--paper-2); display: grid; place-items: center; }
-.principle h4 { margin: 0; font: 700 20px/1.2 var(--display); }
-.principle p { font-size: 15px; color: var(--ink-2); }
-.principle a { font: 500 12px/1.4 var(--mono); color: var(--ember); text-decoration: none; }
-@media (max-width: 960px) { .principles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .principles { grid-template-columns: 1fr; } }
+.flow { display: grid; gap: 10px; margin-top: 8px; }
+.flow-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 15px; }
+.flow-row .lbl { width: 92px; flex: none; font-size: 14px; color: var(--muted); }
+.flow-row .node { border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; background: #FAFAFC; }
+.flow-row .arr { color: var(--muted); }
 
-/* Decisions: scrollytelling */
-.decisions-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: clamp(32px, 6vw, 96px); align-items: start; }
-.sticky-phone { position: sticky; top: 96px; display: grid; justify-items: center; gap: 16px; }
-.dec-list { display: grid; gap: 0; }
-.dec { padding: 48px 0; border-top: 1px solid var(--line); display: grid; gap: 18px; scroll-margin-top: 90px; transition: opacity .5s var(--ease); }
-.dec:first-child { border-top: 0; padding-top: 0; }
-.dec-list.focus-mode .dec:not(.active) { opacity: .38; }
-.dec .num { display: flex; gap: 12px; align-items: center; font: 500 12px/1 var(--mono); color: var(--muted); letter-spacing: .08em; }
-.dec .num b { color: var(--ember); font-weight: 500; }
-.dec .tag { padding: 4px 10px; border-radius: 99px; background: var(--paper-2); color: var(--ink-2); letter-spacing: .02em; }
-.dec h3 { font-size: clamp(26px, 2.8vw, 36px); }
-.dec dl { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px 20px; margin: 0; }
-.dec dt { font: 500 12px/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.dec dd { margin: 0; font-size: 16px; color: var(--ink-2); }
-.dec dd b { color: var(--ink); font-weight: 600; }
-.dec .inline-shot { display: none; }
-@media (max-width: 960px) {
-  .decisions-wrap { grid-template-columns: 1fr; }
-  .sticky-phone { display: none; }
-  .dec .inline-shot { display: block; width: min(300px, 100%); border-radius: 28px; border: 1px solid var(--line); box-shadow: 0 20px 40px -24px rgba(70,25,15,.35); }
-  .dec dl { grid-template-columns: 1fr; gap: 4px; }
-  .dec dd { margin-bottom: 10px; }
-}
+.screens { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 12px; }
+.screens figure { margin: 0; }
+.screens img { border-radius: 20px; border: 4px solid #111; width: 100%; }
+.screens figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+@media (max-width: 720px) { .screens { grid-template-columns: 1fr 1fr; } }
 
-/* Conversation model */
-.model { background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: clamp(20px, 3vw, 40px); }
-.model-ctl { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
-.lane { display: grid; gap: 10px; align-content: start; }
-.lane > .lbl { font: 500 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); min-height: 30px; }
-.node { position: relative; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: var(--paper); font-size: 14px; font-weight: 500; text-align: left; transition: background .35s, color .35s, border-color .35s, transform .35s var(--ease), box-shadow .35s; }
-.node small { display: block; font: 400 12px/1.4 var(--body); color: var(--muted); margin-top: 2px; }
-.node.hot { background: var(--ink); color: #fff; border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 12px 24px -14px rgba(22,17,15,.6); }
-.node.hot small { color: #CDBFB9; }
-.node.done { border-color: #F2B8A6; background: #FFF3EF; }
-.node.sel { outline: 2px solid var(--ember); outline-offset: 2px; }
-.model-detail { margin-top: 24px; padding: 20px 22px; border-radius: 16px; background: var(--paper-2); min-height: 96px; display: grid; gap: 6px; }
-.model-detail b { font: 700 18px/1.2 var(--display); }
-.model-detail p { font-size: 15px; color: var(--ink-2); }
-@media (max-width: 900px) { .flow { grid-template-columns: 1fr 1fr; } }
+.try { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: start; }
+.phone { width: 300px; height: 650px; border-radius: 44px; padding: 9px; background: #111; flex: none; }
+.phone .screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; background: #fff; }
+.phone iframe { border: 0; width: 375px; height: 812px; transform: scale(calc(282 / 375)); transform-origin: 0 0; display: block; }
+.scen { display: grid; gap: 8px; margin-top: 18px; }
+.scen button { text-align: left; background: none; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; font-size: 16px; }
+.scen button:hover { border-color: var(--ink); }
+.scen button.on { border-color: var(--ink); background: #FAFAFC; }
+.scen button small { display: block; font-size: 14px; color: var(--muted); }
+@media (max-width: 760px) { .try { grid-template-columns: 1fr; } .phone { margin: 0 auto; } }
 
-/* Capabilities tabs */
-.caps { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(28px, 5vw, 72px); align-items: center; }
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
-.tab { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 10px 16px; font-size: 14px; font-weight: 500; transition: all .25s var(--ease); }
-.tab.on { background: var(--ink); color: #fff; border-color: var(--ink); }
-.tab-panel { display: grid; gap: 18px; min-height: 260px; }
-.tab-panel ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
-.tab-panel li { display: flex; gap: 12px; align-items: baseline; font-size: 17px; }
-.tab-panel li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ember); transform: translateY(-2px); }
-.tab-panel .why { font-size: 15px; color: var(--ink-2); border-left: 2px solid var(--ember); padding-left: 16px; }
-.caps .phone { width: 300px; height: 650px; border-radius: 46px; padding: 10px; }
-.caps .phone .screen { border-radius: 37px; }
-.support { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 56px; }
-.support div { border: 1px solid var(--line); border-radius: 18px; padding: 22px; background: #fff; display: grid; gap: 8px; }
-.support b { font: 700 17px/1.2 var(--display); }
-.support span { font-size: 14px; color: var(--ink-2); }
-@media (max-width: 900px) { .caps { grid-template-columns: 1fr; } .caps .phone { margin: 0 auto; } .support { grid-template-columns: 1fr; } }
-
-/* Motion lab */
-.motion { background: var(--night); color: #F4EDEA; }
-.motion .eyebrow { color: #F28A66; }
-.motion h2 { color: #fff; }
-.motion .lede { color: #CDBFB9; }
-.lab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
-.lab-card { background: var(--night-2); border: 1px solid #2E2522; border-radius: 24px; padding: 28px; display: grid; gap: 18px; }
-.lab-card h4 { margin: 0; font: 700 20px/1.2 var(--display); color: #fff; }
-.lab-card p { font-size: 15px; color: #BBAAA3; }
-.track { position: relative; height: 120px; border-radius: 16px; background: #0B0807; overflow: hidden; }
-.track .ball { position: absolute; top: 34px; left: 20px; width: 52px; height: 52px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFB896, #E2412A 55%, #7E2416); box-shadow: 0 0 30px rgba(238,106,67,.45); }
-.track .ghost { position: absolute; top: 34px; left: 20px; width: 52px; height: 52px; border-radius: 50%; border: 1.5px dashed #5A4A44; }
-.track .lane-lbl { position: absolute; left: 12px; top: 8px; font: 500 11px/1 var(--mono); color: #7A6A64; letter-spacing: .08em; text-transform: uppercase; }
-.sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.sliders label { display: grid; gap: 8px; font: 500 12px/1 var(--mono); color: #A8968F; letter-spacing: .06em; text-transform: uppercase; }
-.sliders output { color: #fff; }
-input[type=range] { width: 100%; accent-color: #EE6A43; }
-.morph-stage { position: relative; height: 260px; border-radius: 16px; background: #0B0807; overflow: hidden; }
-.morph { position: absolute; inset: 0; background: linear-gradient(135deg, #F59A6E, #D42D1F 55%, #6E2416); }
-.morph-pill { position: absolute; left: 50%; top: 40px; transform: translateX(-50%); width: 180px; height: 34px; border-radius: 99px; display: grid; place-items: center; font: 500 12px/1 var(--body); color: #fff; background: var(--grad); }
-.lab-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-ember { background: var(--grad); color: #fff; }
-.btn-ghost-d { background: transparent; color: #F4EDEA; border: 1px solid #3A2E2A; }
-.craft { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
-.craft div { border: 1px solid #2E2522; border-radius: 18px; padding: 20px; display: grid; gap: 6px; }
-.craft b { font: 800 30px/1 var(--display); color: #fff; letter-spacing: -.02em; }
-.craft span { font-size: 14px; color: #BBAAA3; }
-@media (max-width: 900px) { .lab, .craft { grid-template-columns: 1fr; } }
-
-/* Gallery */
-.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
-.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-.gal { border: 0; padding: 0; background: none; text-align: left; display: grid; gap: 10px; transition: opacity .35s, transform .35s var(--ease); }
-.gal img { border-radius: 22px; border: 1px solid var(--line); aspect-ratio: 375 / 812; object-fit: cover; object-position: top; width: 100%; transition: transform .45s var(--ease), box-shadow .45s; }
-.gal:hover img { transform: translateY(-6px); box-shadow: 0 24px 40px -24px rgba(70,25,15,.45); }
-.gal span { font-size: 13px; font-weight: 500; color: var(--ink-2); }
-.gal.hide { display: none; }
-.lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(18,13,11,.86); backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .3s; padding: 24px; }
-.lightbox.open { opacity: 1; pointer-events: auto; }
-.lightbox figure { margin: 0; display: grid; gap: 14px; justify-items: center; transform: scale(.96); transition: transform .4s var(--ease); }
-.lightbox.open figure { transform: none; }
-.lightbox img { max-height: 82vh; width: auto; border-radius: 28px; }
-.lightbox figcaption { color: #E6DAD5; font-size: 15px; max-width: 46ch; text-align: center; }
-.lb-close { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #4A3C37; background: transparent; color: #fff; font-size: 20px; }
-
-/* Try it */
-.try { text-align: center; background: radial-gradient(70% 60% at 50% 30%, #FFE9E1, var(--paper) 70%); }
-.try .sec-head { margin-inline: auto; justify-items: center; }
-.try-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 40px; align-items: center; }
-.scen { display: grid; gap: 10px; }
-.scen button { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 16px; padding: 16px 18px; display: grid; gap: 4px; transition: border-color .25s, transform .25s var(--ease), box-shadow .25s; }
-.scen button:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 12px 24px -18px rgba(22,17,15,.4); }
-.scen button.on { border-color: var(--ember); box-shadow: 0 0 0 3px rgba(212,45,31,.12); }
-.scen b { font: 700 16px/1.2 var(--display); }
-.scen span { font-size: 13px; color: var(--muted); }
-@media (max-width: 960px) { .try-grid { grid-template-columns: 1fr; } }
-
-/* Learnings */
-.learn { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.learn article { display: grid; gap: 10px; align-content: start; padding-top: 18px; border-top: 2px solid var(--ink); }
-.learn b { font: 700 20px/1.2 var(--display); }
-.learn p { font-size: 15px; color: var(--ink-2); }
-.next { margin-top: 64px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
-.next > div { border-radius: 22px; padding: 28px; background: #fff; border: 1px solid var(--line); display: grid; gap: 14px; align-content: start; }
-.next h4 { margin: 0; font: 700 20px/1.2 var(--display); }
-.next ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 15px; color: var(--ink-2); }
-@media (max-width: 860px) { .learn, .next { grid-template-columns: 1fr; } }
-
-.outro { background: var(--night); color: #fff; text-align: center; padding-block: 120px; position: relative; overflow: clip; }
-.outro::before { content: ""; position: absolute; left: 50%; top: 50%; width: 700px; height: 700px; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(212,45,31,.35), transparent); }
-.outro > * { position: relative; }
-.outro h2 { font-size: clamp(40px, 6vw, 80px); margin: 18px 0 20px; }
-.outro p { color: #CDBFB9; max-width: 56ch; margin: 0 auto 32px; }
-.outro .btn-line { color: #fff; border-color: #4A3C37; }
-footer { padding: 28px 0; font: 400 13px/1.4 var(--mono); color: var(--muted); background: var(--night); border-top: 1px solid #2E2522; }
-footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } html { scroll-behavior: auto; } }
-:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-radius: 8px; }
+.btn { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 99px; background: var(--ink); color: #fff; text-decoration: none; font-size: 15px; font-weight: 500; }
+.outro { text-align: center; padding: 88px 24px 96px; border-top: 1px solid var(--line); margin-top: 32px; }
+.outro p { max-width: 52ch; margin: 0 auto 28px; }
+footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; color: var(--muted); text-align: center; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 </style>
 </head>
-<body class="no-js">
+<body>
 
-<nav class="nav" id="nav">
-  <div class="wrap">
-    <a class="brand" href="#top"><i></i>Agentic</a>
-    <div class="nav-links">
-      <a href="#problem">Problem</a>
-      <a href="#research">Research</a>
-      <a href="#principles">Principles</a>
-      <a href="#decisions">Decisions</a>
-      <a href="#system">System</a>
-      <a href="#craft">Craft</a>
-    </div>
-    <a class="btn btn-dark" href="#try">Try the prototype</a>
+<nav class="nav"><div class="nav-in">
+  <a class="brand" href="#top"><i></i>Yashish</a>
+  <div class="nav-links"><a href="#problem">Problem</a><a href="#decisions">Decisions</a><a href="#system">System</a><a href="#try">Try it</a></div>
+</div></nav>
+
+<div class="frame" id="top">
+  <div class="hero-panel">
+    <img src="img/home.jpg" alt="Airtel home with the Agentic pill" />
+    <img src="img/landing.jpg" alt="Agentic greeting screen" />
+    <img src="img/usage.jpg" alt="Agentic answer with a usage card" />
   </div>
-</nav>
+</div>
 
-<header class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">Case study · Airtel · Agentic AI</span>
-      <h1>Ask once.<br><em>It’s done.</em></h1>
-      <p class="lede">Agentic is the AI layer I designed for the Airtel app, used by 300 Mn people. It doesn’t just answer questions. It checks your data, recharges your number, explains your bill and fixes your network, inside one conversation.</p>
-      <div class="hero-ctas">
-        <a class="btn btn-dark" href="#decisions">Read the decisions</a>
-        <a class="btn btn-line" href="../" target="_blank" rel="noopener">Open full prototype ↗</a>
-      </div>
-      <dl class="meta">
-        <div><dt>Role</dt><dd>Lead Product Designer</dd></div>
-        <div><dt>Team</dt><dd>Product, Engineering, Data</dd></div>
-        <div><dt>Scope</dt><dd>0→1 conversational layer</dd></div>
-        <div><dt>Platform</dt><dd>Airtel app · Android &amp; iOS</dd></div>
-      </dl>
-    </div>
-    <div class="phone-stage">
-      <div class="phone"><div class="screen"><iframe id="heroFrame" src="../" title="Agentic live prototype" loading="eager"></iframe></div></div>
-      <p class="phone-caption"><span class="live-dot"></span>Live prototype. Tap the red pill, or jump to a moment.</p>
-      <div class="moments" id="moments">
-        <button class="chip" data-q="Kitna data bacha hai?">Check data</button>
-        <button class="chip" data-q="Recharge my number">Recharge</button>
-        <button class="chip" data-q="Why is my bill high?">Bill shock</button>
-        <button class="chip" data-q="My internet is slow">Slow internet</button>
-        <button class="chip" data-deep="mic">Voice</button>
-        <button class="chip" data-reset>Start over</button>
-      </div>
-    </div>
+<main class="col">
+  <div class="intro">
+    <h1>Designing an AI layer that finishes tasks for 300 Mn Airtel users.</h1>
+    <p>People open the Airtel app to do one thing: check data, recharge, pay a bill, fix the internet. The app made them search menus to do it, and many gave up and called customer care.</p>
+    <p>Instead of improving the menus, I proposed <b>Agentic</b>: a conversation that understands what people want and does it, inside the chat.</p>
+    <dl class="facts">
+      <div><dt>My role</dt><dd>Lead Product Designer. Led design end to end.</dd></div>
+      <div><dt>Team</dt><dd>Product, Engineering, Data</dd></div>
+      <div><dt>Scope</dt><dd>0→1 conversational layer</dd></div>
+      <div><dt>Goal</dt><dd>Fewer digital-to-assisted hand-offs</dd></div>
+    </dl>
   </div>
-</header>
 
-<section class="tldr" aria-label="Summary">
-  <div class="wrap">
-    <article><span class="eyebrow">The problem</span><p>People open a telco app with one job in mind. The app makes them <b>hunt through menus</b> to do it, so many give up and <b>call the care centre</b>. Every one of those calls costs money and goodwill.</p></article>
-    <article><span class="eyebrow">What I did</span><p>Led design end to end: reframed navigation as <b>intent</b>, set principles for an agent people can trust, designed the <b>conversation model</b>, widgets, voice and motion, and built this working prototype.</p></article>
-    <article><span class="eyebrow">What it changes</span><p>A task like a data top-up goes from <b>seven taps across four screens</b> to <b>one sentence and a confirm</b>. The north star we set: tasks completed inside the chat, fewer digital-to-assisted hand-offs.</p></article>
-  </div>
-</section>
+  <section id="problem">
+    <h2>The current navigation falls short</h2>
+    <p>Traditional navigation assumes people explore. In a telco app they don’t browse, they act. Yet a person with a clear goal still has to:</p>
+    <div class="numbered">
+      <div><div class="n">01</div><p>Search through menus to find the right entry point</p></div>
+      <div><div class="n">02</div><p>Complete several steps for a simple task</p></div>
+      <div><div class="n">03</div><p>Move to a call centre or store when the path isn’t clear</p></div>
+      <div><div class="n">04</div><p>Each hand-off to a human raises operating costs</p></div>
+    </div>
+    <div class="compare">
+      <div><h3>Today <span>7</span></h3><ol><li>Open the app</li><li>Find “Prepaid”</li><li>Look for usage</li><li>Go back, open “Packs”</li><li>Compare data packs</li><li>Open details</li><li>Pay</li></ol></div>
+      <div><h3>With Agentic <span>3</span></h3><ol><li>“Kitna data bacha hai?”</li><li>See usage and one best-match pack</li><li>Confirm and pay in the chat</li></ol></div>
+    </div>
+    <p class="small">Steps to add a data top-up, walked through in the current app and in the prototype.</p>
+  </section>
 
-<section id="role">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">My role</span>
-      <h2>Hands on the pixels, and in every room.</h2>
-      <p class="lede">I owned the experience from the first framing doc to the motion spec, and kept product, engineering and data pointed at the same picture.</p>
-    </div>
-    <div class="role-grid reveal">
-      <article><span class="n">01</span><h4>Problem framing</h4><p>Moved the brief from “improve navigation” to “let people finish tasks by saying what they want”, with the PM.</p></article>
-      <article><span class="n">02</span><h4>Research &amp; patterns</h4><p>Audited six AI assistants and turned recurring patterns into rules we could design and test against.</p></article>
-      <article><span class="n">03</span><h4>Conversation framework</h4><p>Defined how a conversation starts, builds trust, takes action and closes, across buy and serve journeys.</p></article>
-      <article><span class="n">04</span><h4>Design execution</h4><p>Interaction and UI for chat, response widgets, action layer, voice and onboarding. Built the prototype myself.</p></article>
-      <article><span class="n">05</span><h4>Alignment &amp; systems</h4><p>Worked with engineering and data on agent hand-offs and guardrails, so the UI could promise only what the system can do.</p></article>
-    </div>
-  </div>
-</section>
+  <section>
+    <h2>The opportunity</h2>
+    <p>Let intent drive the experience. Instead of making people navigate, let them say what they want, and let the system do it.</p>
+    <p class="quote">How might we design a trustworthy conversation that helps Airtel users finish tasks instantly by saying what they want, instead of navigating flows?</p>
+  </section>
 
-<section id="problem" style="background:#fff">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">The problem</span>
-      <h2>Navigation assumes people explore. They arrive with intent.</h2>
-      <p class="lede">Telco app sessions are short and transactional. Nobody browses their prepaid plan. Yet a person with a clear goal still has to:</p>
-    </div>
-    <div class="pains reveal">
-      <div><b>Search through menus</b><span>Entry points live three levels deep, under labels that match the org chart, not the question.</span></div>
-      <div><b>Complete many steps</b><span>Simple jobs like a top-up or a bill query stretch across several screens.</span></div>
-      <div><b>Fall back to a human</b><span>When the path isn’t obvious, people call or visit a store. That is the digital-to-assisted (D2A) leak.</span></div>
-    </div>
-    <div class="compare reveal" id="compare">
-      <div class="path today">
-        <header><span class="eyebrow" style="color:var(--muted)">Today · add a data top-up</span><span class="count" data-to="7">0</span></header>
-        <ol class="steps">
-          <li><span>01</span>Open the app, land on Home</li>
-          <li><span>02</span>Find “Prepaid” in the category tabs</li>
-          <li><span>03</span>Open the account, look for usage</li>
-          <li><span>04</span>Go back, open “Packs”</li>
-          <li><span>05</span>Switch to “Data packs”, compare four options</li>
-          <li><span>06</span>Pick one, open details</li>
-          <li><span>07</span>Pay</li>
-        </ol>
-      </div>
-      <div class="path agentic">
-        <header><span class="eyebrow">With Agentic</span><span class="count" data-to="3">0</span></header>
-        <ol class="steps">
-          <li><span>01</span>“Kitna data bacha hai?”</li>
-          <li><span>02</span>See usage and one best-match pack, with the reason</li>
-          <li><span>03</span>Confirm and pay in a sheet, without leaving the chat</li>
-        </ol>
-      </div>
-    </div>
-    <div class="compare-ctl">
-      <button class="btn btn-dark" id="playCompare">▶ Play both journeys</button>
-      <span class="note">Step counts are from walking through the current app and the prototype.</span>
-    </div>
-    <p class="callout reveal"><i></i>The opportunity: let the person say what they want, and let the system do it. “Upgrade my plan” should show plans, not a help article.</p>
-  </div>
-</section>
+  <section id="research">
+    <h2>Learning from conversational AI</h2>
+    <p>I studied ChatGPT, Gemini, Copilot, Perplexity, Arc and Grok on the same tasks. Six patterns kept repeating, and each one shaped a part of Agentic.</p>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Pattern</th><th>How it shows up in Agentic</th></tr></thead>
+      <tbody>
+        <tr><td>Guided starters</td><td>The home pill rotates real asks, so people learn what it can do before they tap.</td></tr>
+        <tr><td>Keep the conversation going</td><td>Every answer ends with one to three follow-ups tied to the task.</td></tr>
+        <tr><td>Quiet UI, one accent</td><td>The red-brown accent is used only for the AI: the pill, the orb, the voice.</td></tr>
+        <tr><td>Inline action controls</td><td>Thumbs, copy, read-aloud and regenerate sit under every answer.</td></tr>
+        <tr><td>Structured widgets</td><td>Usage, packs, plans, bills and network checks render as cards with actions.</td></tr>
+        <tr><td>Trust signals</td><td>The thinking state names real steps, and anything that costs money asks first.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
 
-<section id="research">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Benchmarking</span>
-      <h2>Six assistants, six patterns worth stealing.</h2>
-      <p class="lede">I studied ChatGPT, Gemini, Copilot, Perplexity, Arc and Grok on the same tasks. The patterns repeated. Hover or tap a card to see how each one shows up in Agentic.</p>
+  <section id="principles">
+    <h2>From patterns to principles</h2>
+    <div class="numbered">
+      <div><div class="n">01</div><h3>You stay in control</h3><p>The agent assists, but never takes an irreversible step without consent.</p></div>
+      <div><div class="n">02</div><h3>Assist when it matters</h3><p>It stays out of the way until it can genuinely help.</p></div>
+      <div><div class="n">03</div><h3>Transparent and trustworthy</h3><p>Recommendations are explainable and the work is visible.</p></div>
+      <div><div class="n">04</div><h3>Fail gracefully</h3><p>When unsure, it asks, suggests or escalates. It never bluffs.</p></div>
     </div>
-    <div class="patterns reveal">
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in ChatGPT, Gemini</span><div><h4>Guided starters</h4><p>Prompts and nudges so a blank box isn’t the first thing you see.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>The home pill rotates real asks (“Check my data balance”, “Fix my slow internet”), so people learn what it can do before they tap.</p></div>
-      </div></button>
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in Perplexity, Copilot</span><div><h4>Keep it going</h4><p>Answers end with the likely next step, not a full stop.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>Every answer ends with one to three follow-ups tied to the task: “Yes, add a top-up”, “Raise a complaint”, “Pay bill ₹749”.</p></div>
-      </div></button>
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in Gemini, Arc</span><div><h4>Quiet UI, one vivid accent</h4><p>The conversation is the interface. Colour marks the AI, not the chrome.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>Ember is reserved for the AI itself: the pill, the orb, the voice. Everything else stays calm and familiar.</p></div>
-      </div></button>
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in ChatGPT, Copilot</span><div><h4>Inline action controls</h4><p>Copy, feedback, retry and read-aloud live on the answer.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>Thumbs, copy, Listen (with line-by-line highlight) and regenerate sit under every answer. Feedback is one tap.</p></div>
-      </div></button>
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in Perplexity, Gemini</span><div><h4>Structured widgets</h4><p>Cards and tables beat paragraphs for anything with numbers.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>Usage meters, pack cards, plan carousels, bill breakdowns and a live network check, each with its action button inside.</p></div>
-      </div></button>
-      <button class="pattern"><div class="inner">
-        <div class="face front"><span class="src">Seen in Perplexity, ChatGPT</span><div><h4>Trust signals</h4><p>Thinking states, sources and steps show the work.</p></div><span class="hint">How I used it →</span></div>
-        <div class="face back"><span class="src">In Agentic</span><p>The orb narrates what it is doing (“Checking current usage…”), and every action that costs money asks first.</p></div>
-      </div></button>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="hmw">
-  <div class="wrap">
-    <span class="eyebrow">The design challenge</span>
-    <blockquote>How might we design a <span>trustworthy</span> conversation that lets Airtel users <span>finish tasks instantly</span> by saying what they want, instead of navigating flows?</blockquote>
-  </div>
-</section>
+  <section id="decisions">
+    <h2>Key design decisions</h2>
+    <p>What I chose, why, and the trade-off I accepted.</p>
 
-<section id="principles">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Principles</span>
-      <h2>From patterns to principles.</h2>
-      <p class="lede">Four rules settled most arguments before they started. Each one maps to decisions further down.</p>
-    </div>
-    <div class="principles reveal">
-      <article class="principle"><span class="glyph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D42D1F" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><h4>You stay in control</h4><p>The agent assists, but never takes an irreversible step without consent.</p><a href="#d07">See decision 07 →</a></article>
-      <article class="principle"><span class="glyph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D42D1F" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/></svg></span><h4>Assist when it matters</h4><p>Stay out of the way until it can genuinely help, then help fully.</p><a href="#d01">See decision 01 →</a></article>
-      <article class="principle"><span class="glyph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D42D1F" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 5 6v6c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><h4>Transparent, so trustworthy</h4><p>Recommendations are explainable, and the work is visible.</p><a href="#d04">See decision 04 →</a></article>
-      <article class="principle"><span class="glyph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D42D1F" stroke-width="1.8" stroke-linecap="round"><path d="M4 12h4l2-5 4 10 2-5h4"/></svg></span><h4>Fail gracefully</h4><p>When unsure, it asks, suggests or escalates. It never bluffs.</p><a href="#d11">See decision 11 →</a></article>
-    </div>
-  </div>
-</section>
+    <article class="decision"><div>
+      <div class="n">01</div><h3>The entry sits where intent forms: the header</h3>
+      <dl><dt>Decision</dt><dd>A pill in the top bar that cycles real requests, instead of a floating button or a new tab.</dd>
+      <dt>Why</dt><dd>People decide what they came for at the top of the screen. A rotating prompt teaches what the assistant can do without a tutorial.</dd>
+      <dt>Trade-off</dt><dd>It takes the search slot. Search stays reachable inside the conversation.</dd></dl>
+    </div><img src="img/home.jpg" alt="Home with the Agentic pill" loading="lazy" /></article>
 
-<section id="decisions" style="background:#fff">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Design decisions</span>
-      <h2>Twelve calls, and why I made them.</h2>
-      <p class="lede">The phone follows along as you read. Each decision lists what I chose, the reasoning behind it, and the trade-off I accepted.</p>
-    </div>
-    <div class="decisions-wrap">
-      <div class="dec-list" id="decList">
-        <article class="dec" id="d01" data-shot="home" data-cap="Home, with the Agentic pill in the header">
-          <div class="num"><b>01</b><span class="tag">Assist when it matters</span></div>
-          <h3>Put the entry where intent forms: the header.</h3>
-          <dl><dt>Decision</dt><dd>The entry point is a pill in the top bar that cycles real requests, not a floating button or a new tab.</dd>
-          <dt>Why</dt><dd>People decide what they came to do in the first second, at the top of the screen. A <b>rotating prompt teaches capability</b> without a tutorial. A FAB competes with bottom nav and gets read as chat support.</dd>
-          <dt>Trade-off</dt><dd>It takes space from the search slot. We kept search reachable inside the conversation, so nothing was lost.</dd></dl>
-          <img class="inline-shot" src="img/home.jpg" alt="Airtel home with the Agentic pill" loading="lazy" />
-        </article>
-        <article class="dec" id="d02" data-shot="onboarding" data-cap="First-run contract">
-          <div class="num"><b>02</b><span class="tag">Transparent</span></div>
-          <h3>Agree on the rules before the first answer.</h3>
-          <dl><dt>Decision</dt><dd>A one-screen first run: what the assistant is good at, that it is still learning, and what never to share. One “I Agree”.</dd>
-          <dt>Why</dt><dd>Setting expectations early <b>lowers the cost of a wrong answer later</b>. It also covers consent for account access, which legal needed anyway.</dd>
-          <dt>Trade-off</dt><dd>One extra tap on first use. It only shows once, and the pill opens straight into it so it reads as part of the moment, not a gate.</dd></dl>
-          <img class="inline-shot" src="img/onboarding.jpg" alt="Onboarding screen" loading="lazy" />
-        </article>
-        <article class="dec" id="d03" data-shot="landing" data-cap="Greeting, before typing">
-          <div class="num"><b>03</b><span class="tag">Assist when it matters</span></div>
-          <h3>A warm greeting that steps aside as soon as you type.</h3>
-          <dl><dt>Decision</dt><dd>The orb and “Hey Yashish” sit centred on arrival, then glide to the top the moment the first character is typed.</dd>
-          <dt>Why</dt><dd>The centre says “I’m listening”. Once someone starts typing, <b>the keyboard and their words need the room</b>. Docking on keystroke, not on focus, avoids a jump when people just tap around.</dd>
-          <dt>Trade-off</dt><dd>No starter chips on landing. The pill already showed examples, and chips here pulled attention from typing.</dd></dl>
-          <img class="inline-shot" src="img/landing.jpg" alt="Greeting screen" loading="lazy" />
-        </article>
-        <article class="dec" id="d04" data-shot="thinking" data-cap="Narrated thinking state">
-          <div class="num"><b>04</b><span class="tag">Transparent</span></div>
-          <h3>Show the work while it thinks.</h3>
-          <dl><dt>Decision</dt><dd>A mini orb spins while the status line narrates real steps: “Thinking about it…”, then “Checking current usage…”, then “Reading today’s data meter…”.</dd>
-          <dt>Why</dt><dd>A spinner says “wait”. A narrated step says <b>“I’m doing the thing you asked”</b>, which makes the same wait feel shorter and makes the answer feel earned.</dd>
-          <dt>Trade-off</dt><dd>Steps must reflect what the backend actually does. We agreed with engineering to emit real stage events, never decorative ones.</dd></dl>
-          <img class="inline-shot" src="img/thinking.jpg" alt="Thinking state" loading="lazy" />
-        </article>
-        <article class="dec" id="d05" data-shot="usage" data-cap="Usage card with actions">
-          <div class="num"><b>05</b><span class="tag">Assist when it matters</span></div>
-          <h3>Answers are widgets, not paragraphs.</h3>
-          <dl><dt>Decision</dt><dd>Anything with numbers renders as a card from the app’s own design system: usage meters, packs, plans, bills, each with its action inside.</dd>
-          <dt>Why</dt><dd>“1.1 GB of 2 GB left” is faster to read as a bar than as a sentence, and a <b>button inside the answer turns reading into doing</b>. Reusing system cards meant engineering could ship them as-is.</dd>
-          <dt>Trade-off</dt><dd>Less freedom than free text. We kept a short sentence above every card, so the answer still reads well aloud.</dd></dl>
-          <img class="inline-shot" src="img/usage.jpg" alt="Usage card" loading="lazy" />
-        </article>
-        <article class="dec" id="d06" data-shot="packs" data-cap="One best match, with alternatives">
-          <div class="num"><b>06</b><span class="tag">Transparent</span></div>
-          <h3>Recommend one, and say why.</h3>
-          <dl><dt>Decision</dt><dd>One “Best match” pack is shown first with a reason (“you use about 1.9 GB a day”), and two alternatives sit below it.</dd>
-          <dt>Why</dt><dd>A wall of twelve packs is the old app again. One explained pick <b>reads as advice, not a sales pitch</b>, and keeps choice for anyone who disagrees.</dd>
-          <dt>Trade-off</dt><dd>Business wanted the premium pack first. We agreed the pick follows usage, with premium shown as an alternative.</dd></dl>
-          <img class="inline-shot" src="img/packs.jpg" alt="Data packs" loading="lazy" />
-        </article>
-        <article class="dec" id="d07" data-shot="payment" data-cap="Payment confirmation sheet">
-          <div class="num"><b>07</b><span class="tag">You stay in control</span></div>
-          <h3>Money never moves without a confirm.</h3>
-          <dl><dt>Decision</dt><dd>Every purchase opens a sheet with the amount, the item, the number and the payment method. Pay is a separate, deliberate tap.</dd>
-          <dt>Why</dt><dd>An agent that can spend is only trusted if it <b>always asks</b>. The sheet keeps people in the chat, so the flow doesn’t break into a checkout.</dd>
-          <dt>Trade-off</dt><dd>One more tap than a one-click buy. Worth it: an accidental charge would cost far more trust than the tap saves.</dd></dl>
-          <img class="inline-shot" src="img/payment.jpg" alt="Payment sheet" loading="lazy" />
-        </article>
-        <article class="dec" id="d08" data-shot="network" data-cap="Live network diagnosis">
-          <div class="num"><b>08</b><span class="tag">Fail gracefully</span></div>
-          <h3>Diagnose first. Escalate with context.</h3>
-          <dl><dt>Decision</dt><dd>“My internet is slow” runs a visible check (outage, SIM, signal, speed), explains the cause, gives fixes in order, then offers a complaint with location already attached.</dd>
-          <dt>Why</dt><dd>Most slow-net complaints have a cause the person can fix in a minute. Showing the check <b>builds belief in the fix</b>, and when it can’t help, the ticket arrives pre-filled, so nobody repeats themselves.</dd>
-          <dt>Trade-off</dt><dd>The check takes about three seconds. We made each row resolve one by one so the wait has rhythm.</dd></dl>
-          <img class="inline-shot" src="img/network.jpg" alt="Network diagnosis" loading="lazy" />
-        </article>
-        <article class="dec" id="d09" data-shot="mic" data-cap="Voice inside the composer">
-          <div class="num"><b>09</b><span class="tag">Assist when it matters</span></div>
-          <h3>Voice lives in the composer, not a separate mode.</h3>
-          <dl><dt>Decision</dt><dd>Tapping the mic turns the composer into a live waveform with a transcript above it. Stop, see “Transcribing…”, and it sends.</dd>
-          <dt>Why</dt><dd>A full-screen voice mode is a context switch. Keeping it in place <b>keeps the conversation the hero</b>, and the live transcript lets people catch a mis-hear before it sends. Hinglish works too.</dd>
-          <dt>Trade-off</dt><dd>Less room for a big visualiser. A full voice mode still exists, one tap away on the orb, for hands-free use.</dd></dl>
-          <img class="inline-shot" src="img/mic.jpg" alt="Inline voice" loading="lazy" />
-        </article>
-        <article class="dec" id="d10" data-shot="bill" data-cap="Bill breakdown with black CTA">
-          <div class="num"><b>10</b><span class="tag">Transparent</span></div>
-          <h3>Two tones: the AI is ember, actions are the app.</h3>
-          <dl><dt>Decision</dt><dd>Ember marks the AI (pill, orb, voice). Cards and buttons inside answers keep the app’s own language: black CTAs, blue links.</dd>
-          <dt>Why</dt><dd>The AI should feel new. Paying a bill should feel <b>exactly as safe as it always did</b>. Splitting the palette tells people which parts are suggestion and which are the bank-grade action.</dd>
-          <dt>Trade-off</dt><dd>Two palettes need discipline. I documented where ember is allowed, so the split survives handover.</dd></dl>
-          <img class="inline-shot" src="img/bill.jpg" alt="Bill breakdown" loading="lazy" />
-        </article>
-        <article class="dec" id="d11" data-shot="fallback" data-cap="Honest fallback">
-          <div class="num"><b>11</b><span class="tag">Fail gracefully</span></div>
-          <h3>When it can’t help, say what it can do.</h3>
-          <dl><dt>Decision</dt><dd>Out-of-scope requests get an honest “I’m still learning that”, followed by the five things it can do right now, as tappable follow-ups.</dd>
-          <dt>Why</dt><dd>A confident wrong answer is the fastest way to lose trust in an AI. <b>An honest boundary plus a next step</b> keeps people moving instead of calling care.</dd>
-          <dt>Trade-off</dt><dd>It admits limits openly. That’s the point: limits are fine, surprises are not.</dd></dl>
-          <img class="inline-shot" src="img/fallback.jpg" alt="Fallback" loading="lazy" />
-        </article>
-        <article class="dec" id="d12" data-shot="voice-speak" data-cap="The orb, speaking">
-          <div class="num"><b>12</b><span class="tag">Identity</span></div>
-          <h3>One object, many states: the orb.</h3>
-          <dl><dt>Decision</dt><dd>A single orb is the assistant’s body. It grows out of the pill, bounces into place, docks when you type, spins while thinking, and reacts to your voice.</dd>
-          <dt>Why</dt><dd>People read <b>one consistent character</b> faster than a set of loaders and icons. State changes on the same object feel like the assistant reacting, not the UI changing.</dd>
-          <dt>Trade-off</dt><dd>Motion has to be cheap. Every move is transform-only and spring-driven, so it holds 60 fps on mid-range Android.</dd></dl>
-          <img class="inline-shot" src="img/voice-speak.jpg" alt="Voice mode" loading="lazy" />
-        </article>
-      </div>
-      <aside class="sticky-phone" aria-hidden="true">
-        <div class="phone"><div class="screen"><img class="shot" id="decShot" src="img/home.jpg" alt="" /></div></div>
-        <p class="phone-caption" id="decCap">Home, with the Agentic pill in the header</p>
-      </aside>
-    </div>
-  </div>
-</section>
+    <article class="decision"><div>
+      <div class="n">02</div><h3>Agree on the rules before the first answer</h3>
+      <dl><dt>Decision</dt><dd>A one-screen first run: what it is good at, that it is still learning, and what never to share.</dd>
+      <dt>Why</dt><dd>Setting expectations early lowers the cost of a wrong answer later, and covers consent for account access.</dd>
+      <dt>Trade-off</dt><dd>One extra tap, shown only once.</dd></dl>
+    </div><img src="img/onboarding.jpg" alt="Onboarding" loading="lazy" /></article>
 
-<section id="system">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Conversation model</span>
-      <h2>One voice up front. Specialists behind it.</h2>
-      <p class="lede">An Experience Agent owns the conversation. Domain agents do the work through structured instructions and guardrails. Run a journey to watch a request travel, or tap any box to read its job.</p>
-    </div>
-    <div class="model reveal">
-      <div class="model-ctl">
-        <button class="btn btn-dark" data-run="buy">▶ Run a purchase</button>
-        <button class="btn btn-line" data-run="serve">▶ Run a service issue</button>
-        <button class="btn btn-line" data-run="esc">▶ Run an escalation</button>
-      </div>
-      <div class="flow" id="flow">
-        <div class="lane"><span class="lbl">In</span>
-          <button class="node" data-id="user">User<small>Types, taps or speaks</small></button>
-          <button class="node" data-id="guard">Guardrails<small>Input safety</small></button>
-        </div>
-        <div class="lane"><span class="lbl">Orchestrate</span>
-          <button class="node" data-id="exp">Experience Agent<small>Intent + UI</small></button>
-        </div>
-        <div class="lane"><span class="lbl">Buy</span>
-          <button class="node" data-id="buy">Buy Agent<small>Purchases</small></button>
-          <button class="node" data-id="cdata1">Customer data<small>Plan, usage</small></button>
-          <button class="node" data-id="feas">Feasibility<small>Can we sell this?</small></button>
-          <button class="node" data-id="lead">Lead agent<small>Offer + order</small></button>
-        </div>
-        <div class="lane"><span class="lbl">Serve</span>
-          <button class="node" data-id="serve">Serve Agent<small>Service issues</small></button>
-          <button class="node" data-id="cdata2">Customer data<small>Account, device</small></button>
-          <button class="node" data-id="diag">Diagnostics<small>Run checks, act</small></button>
-          <button class="node" data-id="check">Resolution check<small>Fixed?</small></button>
-          <button class="node" data-id="ticket">Escalation ticket<small>With context</small></button>
-        </div>
-        <div class="lane"><span class="lbl">Out</span>
-          <button class="node" data-id="struct">Structured output<small>Cards, actions</small></button>
-          <button class="node" data-id="guard2">Guardrails<small>Output safety</small></button>
-          <button class="node" data-id="user2">User<small>Sees the answer</small></button>
-        </div>
-      </div>
-      <div class="model-detail" id="modelDetail"><b>Tap a box, or run a journey.</b><p>Each step lights up as the request moves through the system.</p></div>
-    </div>
-  </div>
-</section>
+    <article class="decision"><div>
+      <div class="n">03</div><h3>Show the work while it thinks</h3>
+      <dl><dt>Decision</dt><dd>A small orb spins while the status line names real steps: “Checking current usage…”, “Reading today’s data meter…”.</dd>
+      <dt>Why</dt><dd>A spinner says “wait”. A named step says “I’m doing what you asked”, which makes the wait feel shorter.</dd>
+      <dt>Trade-off</dt><dd>Steps must match what the backend really does. Engineering agreed to send real stage events.</dd></dl>
+    </div><img src="img/thinking.jpg" alt="Thinking state" loading="lazy" /></article>
 
-<section id="framework" style="background:#fff">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Capabilities framework</span>
-      <h2>Every conversation has five beats.</h2>
-      <p class="lede">I mapped what the assistant must be able to do at each stage, so product and engineering could plan capability by capability instead of feature by feature.</p>
+    <article class="decision"><div>
+      <div class="n">04</div><h3>Answers are cards, not paragraphs</h3>
+      <dl><dt>Decision</dt><dd>Anything with numbers renders as a card from the app’s design system, with its action inside.</dd>
+      <dt>Why</dt><dd>A usage bar reads faster than a sentence, and a button inside the answer turns reading into doing.</dd>
+      <dt>Trade-off</dt><dd>Less freedom than free text. Every card keeps a short sentence above it so it reads well aloud.</dd></dl>
+    </div><img src="img/usage.jpg" alt="Usage card" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">05</div><h3>Recommend one, and say why</h3>
+      <dl><dt>Decision</dt><dd>One “Best match” pack with a reason, and two alternatives below it.</dd>
+      <dt>Why</dt><dd>A wall of packs is the old app again. One explained pick reads as advice, not a sales pitch.</dd>
+      <dt>Trade-off</dt><dd>The pick follows usage, not margin; the premium pack appears as an alternative.</dd></dl>
+    </div><img src="img/packs.jpg" alt="Data packs" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">06</div><h3>Money never moves without a confirm</h3>
+      <dl><dt>Decision</dt><dd>Every purchase opens a sheet with amount, item, number and payment method. Pay is a separate tap.</dd>
+      <dt>Why</dt><dd>An agent that can spend is only trusted if it always asks. The sheet keeps people in the chat.</dd>
+      <dt>Trade-off</dt><dd>One more tap than one-click buying.</dd></dl>
+    </div><img src="img/payment.jpg" alt="Payment sheet" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">07</div><h3>Diagnose first, escalate with context</h3>
+      <dl><dt>Decision</dt><dd>“My internet is slow” runs a visible check, explains the cause, lists fixes, then offers a complaint with the details attached.</dd>
+      <dt>Why</dt><dd>Many issues can be fixed by the person in a minute. When they can’t, the ticket arrives pre-filled.</dd>
+      <dt>Trade-off</dt><dd>The check takes about three seconds.</dd></dl>
+    </div><img src="img/network.jpg" alt="Network check" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">08</div><h3>Voice lives in the composer</h3>
+      <dl><dt>Decision</dt><dd>The mic turns the composer into a waveform with a live transcript, then “Transcribing…”, then it sends.</dd>
+      <dt>Why</dt><dd>A full-screen voice mode is a context switch. The live transcript lets people catch mis-hears. Hinglish works too.</dd>
+      <dt>Trade-off</dt><dd>Less room for visuals. A full voice mode is still one tap away.</dd></dl>
+    </div><img src="img/mic.jpg" alt="Inline voice" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">09</div><h3>Two tones: the AI is red-brown, actions are the app</h3>
+      <dl><dt>Decision</dt><dd>The accent marks the AI. Buttons and cards inside answers keep the app’s black CTAs and blue links.</dd>
+      <dt>Why</dt><dd>The AI should feel new, but paying a bill should feel exactly as safe as it always did.</dd>
+      <dt>Trade-off</dt><dd>Two palettes need rules. I documented where the accent is allowed.</dd></dl>
+    </div><img src="img/bill.jpg" alt="Bill breakdown" loading="lazy" /></article>
+
+    <article class="decision"><div>
+      <div class="n">10</div><h3>When it can’t help, say what it can do</h3>
+      <dl><dt>Decision</dt><dd>Out-of-scope requests get an honest “I’m still learning that” and a list of what it can do now.</dd>
+      <dt>Why</dt><dd>A confident wrong answer loses trust fastest. An honest limit plus a next step keeps people moving.</dd>
+      <dt>Trade-off</dt><dd>It admits limits openly, by design.</dd></dl>
+    </div><img src="img/fallback.jpg" alt="Fallback" loading="lazy" /></article>
+  </section>
+
+  <section id="system">
+    <h2>Conversation model</h2>
+    <p>One Experience Agent owns the conversation. Specialised agents do the work through structured instructions and guardrails.</p>
+    <div class="flow">
+      <div class="flow-row"><span class="lbl">In</span><span class="node">User</span><span class="arr">→</span><span class="node">Guardrails</span><span class="arr">→</span><span class="node">Experience Agent</span></div>
+      <div class="flow-row"><span class="lbl">Buy</span><span class="node">Buy Agent</span><span class="arr">→</span><span class="node">Customer data</span><span class="arr">→</span><span class="node">Feasibility</span><span class="arr">→</span><span class="node">Lead agent</span></div>
+      <div class="flow-row"><span class="lbl">Serve</span><span class="node">Serve Agent</span><span class="arr">→</span><span class="node">Customer data</span><span class="arr">→</span><span class="node">Diagnostics</span><span class="arr">→</span><span class="node">Resolved?</span><span class="arr">→</span><span class="node">Answer or ticket</span></div>
+      <div class="flow-row"><span class="lbl">Out</span><span class="node">Structured output</span><span class="arr">→</span><span class="node">Guardrails</span><span class="arr">→</span><span class="node">User</span></div>
     </div>
-    <div class="caps reveal">
+  </section>
+
+  <section>
+    <h2>Conversation capabilities</h2>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Stage</th><th>What the assistant can do</th></tr></thead>
+      <tbody>
+        <tr><td>Initiation</td><td>Conversation starters, contextual nudges, free-text input, prompts from account context</td></tr>
+        <tr><td>Trust</td><td>“Thinking…” state with real steps, visible reasoning, sources, progress</td></tr>
+        <tr><td>Continuation</td><td>Text and voice replies, interactive widgets, structured cards</td></tr>
+        <tr><td>Action</td><td>Pay bills, recharge, buy plans, raise requests, feedback, copy, read-aloud</td></tr>
+        <tr><td>Closure</td><td>Next-step suggestions, follow-ups, rating, escalation</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Screens</h2>
+    <div class="screens">
+      <figure><img src="img/onboarding.jpg" alt="" loading="lazy" /><figcaption>First run</figcaption></figure>
+      <figure><img src="img/typing.jpg" alt="" loading="lazy" /><figcaption>Orb docks on first keystroke</figcaption></figure>
+      <figure><img src="img/plans.jpg" alt="" loading="lazy" /><figcaption>Plans with one pick</figcaption></figure>
+      <figure><img src="img/paid.jpg" alt="" loading="lazy" /><figcaption>Payment success</figcaption></figure>
+      <figure><img src="img/ticket.jpg" alt="" loading="lazy" /><figcaption>Complaint with context</figcaption></figure>
+      <figure><img src="img/rating.jpg" alt="" loading="lazy" /><figcaption>Closing with a rating</figcaption></figure>
+      <figure><img src="img/transcribing.jpg" alt="" loading="lazy" /><figcaption>Transcribing</figcaption></figure>
+      <figure><img src="img/voice-speak.jpg" alt="" loading="lazy" /><figcaption>Full voice mode</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="try">
+    <div class="try">
       <div>
-        <div class="tabs" id="capTabs" role="tablist">
-          <button class="tab on" data-i="0" role="tab">1 · Initiation</button>
-          <button class="tab" data-i="1" role="tab">2 · Trust</button>
-          <button class="tab" data-i="2" role="tab">3 · Continuation</button>
-          <button class="tab" data-i="3" role="tab">4 · Action</button>
-          <button class="tab" data-i="4" role="tab">5 · Closure</button>
+        <h2>Try the prototype</h2>
+        <p>This is the working prototype. Pick a scenario, or tap the red pill and type your own question in English or Hinglish.</p>
+        <div class="scen" id="scen">
+          <button data-q="Kitna data bacha hai?">Running low on data<small>Usage card, best-match pack, pay</small></button>
+          <button data-q="Recharge my number">Pack expires today<small>Plans with one explained pick</small></button>
+          <button data-q="Why is my bill high?">Bill shock<small>Breakdown and a one-tap fix</small></button>
+          <button data-q="My internet is slow">Slow internet<small>Diagnosis, fixes, complaint</small></button>
+          <button data-start>Start from the home screen<small>The full flow, with onboarding</small></button>
         </div>
-        <div class="tab-panel" id="capPanel"></div>
       </div>
-      <div class="phone"><div class="screen"><img class="shot" id="capShot" src="img/home.jpg" alt="" /></div></div>
+      <div class="phone"><div class="screen"><iframe id="tryFrame" title="Agentic prototype" loading="lazy" src="../"></iframe></div></div>
     </div>
-    <div class="support reveal">
-      <div><b>Chat history</b><span>48-hour conversational context, 90-day memory, and session continuity across app restarts.</span></div>
-      <div><b>Nudges &amp; presets</b><span>Smart recommendations, personalised prompts and contextual shortcuts on the pill.</span></div>
-      <div><b>Multi-modality</b><span>Text and voice today. Images, attachments and video diagnostics on the roadmap.</span></div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section class="motion" id="craft">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Motion &amp; craft</span>
-      <h2>Physics, not keyframes.</h2>
-      <p class="lede">Early transitions felt boxy: speed jumped between steps. I rebuilt them on one damped spring per motion, transform and opacity only. Play with the same spring the prototype uses.</p>
-    </div>
-    <div class="lab reveal">
-      <div class="lab-card">
-        <h4>The orb’s landing spring</h4>
-        <p>After “I Agree”, the orb is driven by an under-damped spring, so it overshoots and settles. The dashed ring is a linear ease for comparison.</p>
-        <div class="track" id="track"><span class="lane-lbl">spring vs linear</span><span class="ghost" id="ghost"></span><span class="ball" id="ball"></span></div>
-        <div class="sliders">
-          <label>Stiffness <output id="kOut">110</output><input type="range" id="k" min="40" max="300" value="110" /></label>
-          <label>Damping <output id="cOut">11</output><input type="range" id="c" min="4" max="40" value="11" /></label>
-        </div>
-        <div class="lab-btns"><button class="btn btn-ember" id="runSpring">▶ Drop the orb</button></div>
-      </div>
-      <div class="lab-card">
-        <h4>The pill becomes the screen</h4>
-        <p>No new element appears. The pill itself grows as a soft rounded blob and hands over to the conversation. Tap to replay at the prototype’s timing.</p>
-        <div class="morph-stage" id="morphStage"><div class="morph" id="morph"></div><div class="morph-pill" id="morphPill">What do you need today? ✦</div></div>
-        <div class="lab-btns"><button class="btn btn-ember" id="runMorph">▶ Replay the burst</button><button class="btn btn-ghost-d" id="slowMorph">Slow motion</button></div>
-      </div>
-    </div>
-    <div class="craft reveal">
-      <div><b>60 fps</b><span>Measured frame by frame on open, agree, dock and close. No frame over 17 ms.</span></div>
-      <div><b>8 pt</b><span>Spacing grid across chat, sheets and voice. The home screen matches Figma exactly.</span></div>
-      <div><b>Inter</b><span>Embedded with the app, so type renders the same on every device.</span></div>
-      <div><b>A11y</b><span>Reduced-motion respected, read-aloud on every answer, and a live transcript for voice.</span></div>
-    </div>
-  </div>
-</section>
+  <section>
+    <h2>What I learned</h2>
+    <p>The most valuable outcome wasn’t only the assistant, it was the clarity we created along the way. In a space full of ambiguity, design set the vision, aligned stakeholders, and turned a broad AI ambition into something the team could build.</p>
+    <ul>
+      <li><b>Prototype the feeling early.</b> A working prototype settled debates about pace and trust that static frames couldn’t.</li>
+      <li><b>Design the system, not the screen.</b> Agreeing on the conversation model decided half the UI.</li>
+      <li><b>Trust is a budget.</b> Surprises spend it; confirms, honest limits and visible work refill it.</li>
+    </ul>
+    <h3 style="margin-top:32px">How we measure it</h3>
+    <ul><li>Task completion rate inside the chat</li><li>Digital-to-assisted hand-offs per 1,000 sessions</li><li>Fallback rate, and recovery after a fallback</li><li>Answer feedback and post-chat rating</li></ul>
+  </section>
+</main>
 
-<section id="screens">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Screens</span>
-      <h2>Every state, straight from the prototype.</h2>
-    </div>
-    <div class="filters" id="filters">
-      <button class="chip on" data-f="all">All</button>
-      <button class="chip" data-f="entry">Entry</button>
-      <button class="chip" data-f="chat">Chat</button>
-      <button class="chip" data-f="widgets">Widgets</button>
-      <button class="chip" data-f="pay">Payments</button>
-      <button class="chip" data-f="voice">Voice</button>
-    </div>
-    <div class="gallery" id="gallery"></div>
-  </div>
-</section>
-
-<section class="try" id="try">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Try it yourself</span>
-      <h2>Pick a scenario. Watch it work.</h2>
-      <p class="lede">Each scenario opens the live prototype mid-task. Type your own question too, in English or Hinglish.</p>
-    </div>
-    <div class="try-grid">
-      <div class="scen" id="scenL">
-        <button data-q="Kitna data bacha hai?"><b>Running low on data</b><span>Usage card → best-match pack → pay</span></button>
-        <button data-q="Recharge my number"><b>Pack expires today</b><span>Plans carousel with one explained pick</span></button>
-        <button data-q="Why is my bill high?"><b>Bill shock</b><span>Breakdown, cause, and a one-tap fix</span></button>
-      </div>
-      <div class="phone"><div class="screen"><iframe id="tryFrame" title="Agentic live prototype" loading="lazy" data-src="../?chat"></iframe></div></div>
-      <div class="scen" id="scenR">
-        <button data-q="My internet is slow"><b>Slow internet</b><span>Live diagnosis, fixes, complaint</span></button>
-        <button data-q="Going to Dubai next week"><b>Travelling abroad</b><span>Roaming packs that start on landing</span></button>
-        <button data-deep="mic"><b>Just talk</b><span>Inline voice with live transcript</span></button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="learnings">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">What I learned</span>
-      <h2>The most useful thing I designed was clarity.</h2>
-      <p class="lede">In a space full of ambiguity, design set the vision, aligned stakeholders, and turned a broad AI ambition into something the team could build.</p>
-    </div>
-    <div class="learn reveal">
-      <article><b>Prototype the feeling, early</b><p>Static frames couldn’t settle debates about pace and trust. A working prototype did, in one review.</p></article>
-      <article><b>Design the system, not the screen</b><p>Agreeing on the conversation model with engineering decided half the UI before I drew it.</p></article>
-      <article><b>Trust is a budget</b><p>Every surprise spends it. Confirms, honest limits and visible work refill it.</p></article>
-    </div>
-    <div class="next reveal">
-      <div><h4>How we measure it</h4><ul><li>Task completion rate inside the chat</li><li>Digital-to-assisted hand-offs per 1,000 sessions</li><li>Fallback rate and recovery after fallback</li><li>Answer feedback (thumbs) and post-chat rating</li></ul></div>
-      <div><h4>What’s next</h4><ul><li>Connect the live model behind the guardrails layer</li><li>Image input for bills and router photos</li><li>Proactive nudges before a pack runs out</li><li>Usability rounds in Hindi-first markets</li></ul></div>
-    </div>
-  </div>
-</section>
-
-<section class="outro">
-  <div class="wrap">
-    <span class="eyebrow" style="color:#F28A66">Thanks for reading</span>
-    <h2>Ask once. It’s done.</h2>
-    <p>The best way to judge this work is to use it. Open the prototype on your phone; it runs full screen, with real voice input.</p>
-    <div class="hero-ctas" style="justify-content:center">
-      <a class="btn btn-ember" href="../" target="_blank" rel="noopener">Open the prototype ↗</a>
-      <a class="btn btn-line" href="#top">Back to top</a>
-    </div>
-  </div>
-</section>
-<footer><div class="wrap"><span>Agentic · Case study by Yashish, Lead Product Designer</span><span>Prototype built with HTML, CSS and JS · Figma → code</span></div></footer>
-
-<div class="lightbox" id="lightbox" aria-hidden="true"><button class="lb-close" id="lbClose" aria-label="Close">✕</button><figure><img id="lbImg" alt="" /><figcaption id="lbCap"></figcaption></figure></div>
+<div class="outro">
+  <h2>Thanks for reading</h2>
+  <p>The best way to judge this work is to use it. The prototype runs full screen on a phone.</p>
+  <a class="btn" href="../" target="_blank" rel="noopener">Open the prototype</a>
+</div>
+<footer>Agentic · Case study by Yashish</footer>
 
 <script>
-(() => {
-  document.body.classList.remove('no-js');
-  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
-
-  // Nav state + section highlight
-  const nav = $('#nav');
-  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 8), { passive: true });
-  const links = $$('.nav-links a');
-  const secIO = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
-  ['problem', 'research', 'principles', 'decisions', 'system', 'craft'].forEach((id) => secIO.observe(document.getElementById(id)));
-
-  // Reveal on scroll
-  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
-  $$('.reveal').forEach((el) => io.observe(el));
-
-  // Live prototype deep links
-  const hero = $('#heroFrame');
-  $$('#moments .chip').forEach((b) => b.addEventListener('click', () => {
-    $$('#moments .chip').forEach((x) => x.classList.toggle('on', x === b && !b.hasAttribute('data-reset')));
-    hero.src = b.dataset.q ? '../?ask=' + encodeURIComponent(b.dataset.q) : b.dataset.deep ? '../?' + b.dataset.deep : '../';
-  }));
-  const tryF = $('#tryFrame');
-  const tryIO = new IntersectionObserver((es) => { if (es[0].isIntersecting) { tryF.src = tryF.dataset.src; tryIO.disconnect(); } }, { rootMargin: '300px' });
-  tryIO.observe(tryF);
-  $$('.scen button').forEach((b) => b.addEventListener('click', () => {
-    $$('.scen button').forEach((x) => x.classList.toggle('on', x === b));
-    tryF.src = b.dataset.q ? '../?ask=' + encodeURIComponent(b.dataset.q) : '../?' + b.dataset.deep;
-  }));
-
-  // Journey comparison
-  const playCompare = () => {
-    $$('#compare .path').forEach((path) => {
-      const items = $$('li', path), count = $('.count', path), to = +count.dataset.to;
-      items.forEach((li) => li.classList.remove('lit')); count.textContent = '0';
-      const gap = path.classList.contains('today') ? 420 : 980;
-      items.forEach((li, i) => setTimeout(() => { li.classList.add('lit'); count.textContent = Math.min(to, i + 1); }, 200 + i * gap));
-    });
-  };
-  $('#playCompare').addEventListener('click', playCompare);
-  const cmpIO = new IntersectionObserver((es) => { if (es[0].isIntersecting) { playCompare(); cmpIO.disconnect(); } }, { threshold: .4 });
-  cmpIO.observe($('#compare'));
-
-  // Pattern cards flip on tap (hover handles desktop)
-  $$('.pattern').forEach((p) => p.addEventListener('click', () => p.classList.toggle('flipped')));
-
-  // Decisions: sticky phone follows the active decision
-  const shot = $('#decShot'), cap = $('#decCap'), list = $('#decList');
-  let current = 'home';
-  const setShot = (img, el, name) => {
-    if (name === current && el === shot) return;
-    if (el === shot) current = name;
-    el.classList.add('out');
-    setTimeout(() => { el.src = 'img/' + name + '.jpg'; el.onload = () => el.classList.remove('out'); }, 180);
-  };
-  const decIO = new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting) return;
-    $$('.dec').forEach((d) => d.classList.toggle('active', d === e.target));
-    list.classList.add('focus-mode');
-    setShot(null, shot, e.target.dataset.shot); cap.textContent = e.target.dataset.cap;
-  }), { rootMargin: '-40% 0px -55% 0px' });
-  $$('.dec').forEach((d) => decIO.observe(d));
-  ['home', 'onboarding', 'landing', 'thinking', 'usage', 'packs', 'payment', 'network', 'mic', 'bill', 'fallback', 'voice-speak'].forEach((n) => { const i = new Image(); i.src = 'img/' + n + '.jpg'; });
-
-  // Conversation model
-  const INFO = {
-    user: ['User', 'Starts with plain language: typed, tapped from a follow-up, or spoken in English or Hinglish.'],
-    guard: ['Guardrails (in)', 'Blocks unsafe input and strips sensitive data before anything reaches a model.'],
-    exp: ['Experience Agent', 'Detects intent, keeps context, and decides which UI to render: text, card, sheet or follow-ups.'],
-    buy: ['Buy Agent', 'Owns purchases: data packs, plans, roaming, new connections.'],
-    cdata1: ['Customer data', 'Reads plan, usage and history so recommendations follow real behaviour.'],
-    feas: ['Feasibility', 'Checks eligibility, serviceability and stock before anything is offered.'],
-    lead: ['Lead agent', 'Builds the offer and the order. Payment still needs the user’s confirm.'],
-    serve: ['Serve Agent', 'Owns service issues: slow internet, bills, SIM, Wi-Fi.'],
-    cdata2: ['Customer data', 'Pulls account status, device and location for diagnosis.'],
-    diag: ['Diagnostics', 'Routes to the right sub-agent and runs checks or actions, like a router restart.'],
-    check: ['Resolution check', 'Asks: is it fixed? Yes goes back as an answer, no becomes a ticket.'],
-    ticket: ['Escalation ticket', 'Created with the diagnosis attached, so the human agent starts where the bot stopped.'],
-    struct: ['Structured output', 'Cards, actions and follow-ups in a fixed schema, so the UI never renders guesswork.'],
-    guard2: ['Guardrails (out)', 'Checks the answer: no hallucinated prices, correct steps, safe language.'],
-    user2: ['User', 'Sees one clear answer with the next step ready.'],
-  };
-  const ROUTES = {
-    buy: ['user', 'guard', 'exp', 'buy', 'cdata1', 'feas', 'lead', 'struct', 'guard2', 'user2'],
-    serve: ['user', 'guard', 'exp', 'serve', 'cdata2', 'diag', 'check', 'struct', 'guard2', 'user2'],
-    esc: ['user', 'guard', 'exp', 'serve', 'cdata2', 'diag', 'check', 'ticket', 'guard2', 'user2'],
-  };
-  const nodes = $$('.node'), detail = $('#modelDetail');
-  const show = (id) => { const [t, d] = INFO[id]; detail.innerHTML = `<b>${t}</b><p>${d}</p>`; };
-  nodes.forEach((n) => n.addEventListener('click', () => { nodes.forEach((x) => x.classList.toggle('sel', x === n)); show(n.dataset.id); }));
-  let runT = [];
-  $$('[data-run]').forEach((b) => b.addEventListener('click', () => {
-    runT.forEach(clearTimeout); runT = [];
-    nodes.forEach((n) => n.classList.remove('hot', 'done', 'sel'));
-    ROUTES[b.dataset.run].forEach((id, i) => runT.push(setTimeout(() => {
-      nodes.forEach((n) => { if (n.classList.contains('hot')) { n.classList.remove('hot'); n.classList.add('done'); } });
-      const n = nodes.find((x) => x.dataset.id === id); n.classList.add('hot'); show(id);
-    }, i * 650)));
-  }));
-
-  // Capabilities tabs
-  const CAPS = [
-    { items: ['Conversation starters', 'Contextual nudges on the pill', 'Free-text query input', 'Smart prompts from account context'], why: 'The rotating pill does the job of starter chips before the chat even opens.', shot: 'home' },
-    { items: ['“Thinking…” state with real steps', 'Reasoning you can see', 'Source attribution', 'Progress indicators'], why: 'Narrated steps make the wait feel shorter and the answer feel earned.', shot: 'thinking' },
-    { items: ['Text and voice responses', 'Interactive widgets', 'Images and video (roadmap)', 'Structured cards and tables'], why: 'Numbers render as system cards, so reading becomes doing.', shot: 'usage' },
-    { items: ['Pay bill or recharge', 'Buy a plan or pack', 'Raise a service request', 'Feedback, copy, read-aloud'], why: 'Every action that moves money asks for a confirm, inside the chat.', shot: 'payment' },
-    { items: ['Next action suggestions', 'Follow-up tasks', 'Post-resolution feedback', 'Escalation options'], why: 'Closing well is a feature: a rating, a reminder, or a human, never a dead end.', shot: 'rating' },
-  ];
-  const capShot = $('#capShot'), capPanel = $('#capPanel');
-  const renderCap = (i) => {
-    const c = CAPS[i];
-    capPanel.innerHTML = `<ul>${c.items.map((x) => `<li>${x}</li>`).join('')}</ul><p class="why">${c.why}</p>`;
-    capPanel.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'cubic-bezier(.22,1,.36,1)' });
-    setShot(null, capShot, c.shot);
-  };
-  $$('#capTabs .tab').forEach((t) => t.addEventListener('click', () => { $$('#capTabs .tab').forEach((x) => x.classList.toggle('on', x === t)); renderCap(+t.dataset.i); }));
-  renderCap(0);
-
-  // Spring lab (same spring as the prototype)
-  function spring(t, k, c) {
-    const w0 = Math.sqrt(k), z = c / (2 * Math.sqrt(k));
-    if (z >= 1) return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
-    const wd = w0 * Math.sqrt(1 - z * z);
-    return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + (z * w0 / wd) * Math.sin(wd * t));
-  }
-  const k = $('#k'), c = $('#c'), ball = $('#ball'), ghost = $('#ghost'), track = $('#track');
-  const syncOut = () => { $('#kOut').textContent = k.value; $('#cOut').textContent = c.value; };
-  k.addEventListener('input', () => { syncOut(); runSpring(); }); c.addEventListener('input', () => { syncOut(); runSpring(); });
-  function runSpring() {
-    const dist = track.clientWidth - 92, N = 90, T = 1.6, frames = [], gf = [];
-    for (let i = 0; i <= N; i++) { const p = spring((i / N) * T, +k.value, +c.value); frames.push({ transform: `translateX(${(p * dist).toFixed(1)}px)` }); gf.push({ transform: `translateX(${((i / N) * dist).toFixed(1)}px)` }); }
-    ball.animate(frames, { duration: 1600, easing: 'linear', fill: 'forwards' });
-    ghost.animate(gf, { duration: 1600, easing: 'linear', fill: 'forwards' });
-  }
-  $('#runSpring').addEventListener('click', runSpring);
-
-  // Pill-to-screen burst replay
-  const morph = $('#morph'), stage = $('#morphStage'), mp = $('#morphPill');
-  function rr(x, y, w, h, r) { r = Math.max(0, Math.min(r, w / 2, h / 2)); const f = (n) => n.toFixed(1); return `path('M${f(x + r)},${f(y)} H${f(x + w - r)} A${f(r)},${f(r)} 0 0 1 ${f(x + w)},${f(y + r)} V${f(y + h - r)} A${f(r)},${f(r)} 0 0 1 ${f(x + w - r)},${f(y + h)} H${f(x + r)} A${f(r)},${f(r)} 0 0 1 ${f(x)},${f(y + h - r)} V${f(y + r)} A${f(r)},${f(r)} 0 0 1 ${f(x + r)},${f(y)} Z')`; }
-  function runMorph(slow) {
-    const W = stage.clientWidth, H = stage.clientHeight, pw = 180, ph = 34, px = (W - pw) / 2, py = 40, m = 80;
-    const frames = [];
-    for (let i = 0; i <= 60; i++) { const p = Math.max(0, spring((i / 60) * 1.25, 42, 11.5)); frames.push({ clipPath: rr(px + (-m - px) * p, py + (-m - py) * p, pw + (W + 2 * m - pw) * p, ph + (H + 2 * m - ph) * p, 17 + 160 * Math.min(1, p * 1.6)) }); }
-    const d = slow ? 3400 : 1150;
-    mp.animate([{ opacity: 1 }, { opacity: 0 }], { duration: d * .15, fill: 'forwards' });
-    morph.animate(frames, { duration: d, easing: 'linear', fill: 'forwards' }).finished.then(() => setTimeout(() => {
-      morph.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' }).finished.then(() => { morph.getAnimations().forEach((a) => a.cancel()); morph.style.clipPath = rr(px, py, pw, ph, 17); mp.getAnimations().forEach((a) => a.cancel()); });
-    }, 500));
-  }
-  morph.style.clipPath = 'inset(100%)';
-  requestAnimationFrame(() => { const W = stage.clientWidth; morph.style.clipPath = rr((W - 180) / 2, 40, 180, 34, 17); });
-  $('#runMorph').addEventListener('click', () => runMorph(false));
-  $('#slowMorph').addEventListener('click', () => runMorph(true));
-  const labIO = new IntersectionObserver((es) => { if (es[0].isIntersecting) { runSpring(); setTimeout(() => runMorph(false), 600); labIO.disconnect(); } }, { threshold: .5 });
-  labIO.observe($('#track'));
-
-  // Gallery
-  const SHOTS = [
-    ['home', 'entry', 'Home: the pill teaches what it can do'], ['onboarding', 'entry', 'First run: expectations and consent'], ['landing', 'entry', 'Greeting, centred'],
-    ['typing', 'chat', 'First keystroke docks the orb'], ['thinking', 'chat', 'Narrated thinking'], ['usage', 'widgets', 'Usage card with actions'],
-    ['packs', 'widgets', 'One best match, explained'], ['plans', 'widgets', 'Plans carousel with a pick'], ['bill', 'widgets', 'Bill breakdown and cause'],
-    ['network', 'widgets', 'Live network diagnosis'], ['ticket', 'chat', 'Escalation with context'], ['payment', 'pay', 'Confirm before paying'],
-    ['paid', 'pay', 'Payment success'], ['confirmed', 'pay', 'Confirmation in the chat'], ['rating', 'chat', 'Closing with a rating'],
-    ['fallback', 'chat', 'Honest fallback'], ['mic', 'voice', 'Inline voice with transcript'], ['transcribing', 'voice', 'Transcribing'],
-    ['voice-listen', 'voice', 'Full voice mode, listening'], ['voice-speak', 'voice', 'Full voice mode, speaking'],
-  ];
-  const gal = $('#gallery');
-  gal.innerHTML = SHOTS.map(([n, f, t]) => `<button class="gal" data-f="${f}" data-n="${n}" data-t="${t}"><img src="img/${n}.jpg" alt="${t}" loading="lazy" /><span>${t}</span></button>`).join('');
-  $$('#filters .chip').forEach((b) => b.addEventListener('click', () => {
-    $$('#filters .chip').forEach((x) => x.classList.toggle('on', x === b));
-    $$('.gal').forEach((g) => g.classList.toggle('hide', b.dataset.f !== 'all' && g.dataset.f !== b.dataset.f));
-  }));
-  const lb = $('#lightbox');
-  gal.addEventListener('click', (e) => { const g = e.target.closest('.gal'); if (!g) return; $('#lbImg').src = 'img/' + g.dataset.n + '.jpg'; $('#lbCap').textContent = g.dataset.t; lb.classList.add('open'); lb.setAttribute('aria-hidden', 'false'); });
-  const closeLb = () => { lb.classList.remove('open'); lb.setAttribute('aria-hidden', 'true'); };
-  lb.addEventListener('click', (e) => { if (e.target === lb || e.target.id === 'lbClose') closeLb(); });
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLb(); });
-})();
+document.querySelectorAll('#scen button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('#scen button').forEach((x) => x.classList.toggle('on', x === b));
+  document.getElementById('tryFrame').src = b.dataset.q ? '../?ask=' + encodeURIComponent(b.dataset.q) : '../';
+}));
 </script>
 </body>
 </html>
