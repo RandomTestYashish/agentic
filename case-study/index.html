@@ -39,23 +39,11 @@ ul, ol { margin: 0 0 18px; padding-left: 22px; color: var(--ink-2); }
 li { margin-bottom: 6px; }
 b, strong { color: var(--ink); font-weight: 600; }
 
-.nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-.nav-in { max-width: 1300px; margin: 0 auto; height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 0 max(24px, env(safe-area-inset-left)); }
-.brand { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 500; text-decoration: none; }
-.brand i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-.nav-links { display: flex; gap: 28px; font-size: 15px; }
-.nav-links a { text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; min-height: 44px; transition: color .2s ease; }
-.nav-links a:hover { color: var(--muted); }
-@media (max-width: 720px) { .nav-links a:not(:last-child) { display: none; } }
 
-.frame { max-width: 1300px; margin: 0 auto; padding: 0 max(24px, env(safe-area-inset-left)); }
-.hero-panel { background: var(--panel); display: flex; justify-content: center; align-items: center; gap: clamp(16px, 5vw, 72px); padding: clamp(40px, 6vw, 72px) 24px; overflow: hidden; }
-.hero-panel img { aspect-ratio: 375 / 812; object-fit: cover; object-position: top; width: clamp(160px, 21vw, 290px); border-radius: clamp(22px, 2.6vw, 36px); border: 6px solid #111; box-shadow: 0 30px 60px -30px rgba(80, 30, 20, .35); }
-.hero-panel img:nth-child(2) { margin-top: clamp(30px, 4vw, 60px); }
-@media (max-width: 640px) { .hero-panel { gap: 16px; } .hero-panel img { width: 40vw; } .hero-panel img:nth-child(3) { display: none; } }
 
 .col { max-width: 880px; margin: 0 auto; padding: 0 24px; }
-.intro { padding: 72px 0 24px; }
+.intro { padding: 96px 0 24px; }
+.intro-title { font-size: clamp(30px, 3.8vw, 44px); line-height: 1.15; margin-bottom: 28px; }
 .intro h1 { margin-bottom: 28px; }
 .facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding: 32px 0; margin: 40px 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .facts dt { font-size: 14px; color: var(--muted); margin-bottom: 6px; }
@@ -123,27 +111,109 @@ section { padding: 64px 0; }
 footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; color: var(--muted); text-align: center; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 .btn:hover { opacity: .85; }
+
+/* ===== Landing (inspired by the reference video): fan of phones → pinned phone with side panels ===== */
+.pillnav { position: fixed; z-index: 40; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 5px 5px 5px 16px; border-radius: 12px; background: rgba(160, 160, 166, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: #fff; font-size: 14px; }
+.pillnav a { text-decoration: none; color: #fff; }
+.pn-brand { font-weight: 600; margin-right: 18px; }
+.pn-brand sup { font-size: 9px; }
+.pn-link { padding: 0 10px; min-height: 32px; display: inline-flex; align-items: center; border-radius: 8px; transition: background-color .2s; }
+.pn-link:hover { background: rgba(255,255,255,.18); }
+.pn-cta { min-height: 32px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 8px; background: rgba(255,255,255,.22); }
+@media (max-width: 520px) { .pn-link { display: none; } }
+
+.show { position: relative; height: 480vh; }
+.show-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.show-hero { position: absolute; left: 0; right: 0; top: 11vh; text-align: center; padding: 0 24px; will-change: transform, opacity; }
+.show-hero h1 { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.04; letter-spacing: -.035em; max-width: 16ch; margin: 0 auto 18px; }
+.show-hero p { max-width: 40ch; margin: 0 auto; font-size: 16px; line-height: 1.55; color: var(--muted); }
+.fan { position: absolute; left: 50%; top: 0; width: 0; height: 100%; }
+.ph { position: absolute; left: 0; top: 0; width: var(--w); aspect-ratio: 375 / 812; border-radius: calc(var(--w) * .14); border: calc(var(--w) * .028) solid #111; background: #fff; box-shadow: 0 30px 60px -30px rgba(0,0,0,.35); overflow: hidden; will-change: transform, opacity; transform-origin: 50% 0; }
+.ph-c { --w: min(300px, 25vw); z-index: 3; }
+.ph-l1, .ph-r1 { --w: min(220px, 18vw); z-index: 2; }
+.ph-l2, .ph-r2 { --w: min(180px, 15vw); z-index: 1; }
+img.ph { object-fit: cover; object-position: top; max-width: none; height: auto; }
+.ph-c { max-width: none; }
+.ph-c .scr { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; will-change: transform; }
+.panel { position: absolute; top: 9vh; bottom: 9vh; width: var(--pw); background: #F2F2F4; border-radius: 28px; opacity: 0; will-change: transform, opacity; }
+.panel-l { right: calc(50% + min(150px, 12.5vw) + 24px); }
+.panel-r { left: calc(50% + min(150px, 12.5vw) + 24px); }
+.show { --pw: min(420px, calc((100vw - min(300px, 25vw) - 96px) / 2)); }
+.chap { position: absolute; inset: 0; padding: 0 clamp(24px, 3vw, 40px); display: flex; flex-direction: column; justify-content: center; opacity: 0; transition: opacity .45s ease, transform .45s ease; transform: translateY(12px); pointer-events: none; }
+.chap.on { opacity: 1; transform: none; pointer-events: auto; }
+.panel-l .chap { justify-content: flex-end; padding-bottom: clamp(32px, 6vh, 64px); }
+.panel-l h2 { font-size: clamp(26px, 2.6vw, 36px); line-height: 1.08; letter-spacing: -.03em; margin-bottom: 14px; max-width: 12ch; }
+.panel-l p, .panel-r p { font-size: 15px; line-height: 1.6; color: var(--muted); margin-bottom: 0; }
+.panel-r h3 { font-size: 17px; margin: 22px 0 6px; }
+.panel-r h3:first-child { margin-top: 0; }
+
+/* Phones and small screens: no pinning, a simple stack */
+@media (max-width: 899px), (prefers-reduced-motion: reduce) {
+  .show { height: auto; }
+  .show-stage { position: static; height: auto; overflow: visible; padding: 96px 0 24px; display: flex; flex-direction: column; }
+  .show-hero { order: 1; } .fan { order: 2; } .panel-l { order: 3; } .panel-r { order: 4; }
+  .show-hero { position: static; margin-bottom: 36px; }
+  .fan { position: static; width: auto; height: auto; display: flex; justify-content: center; }
+  .ph { position: static; }
+  .ph-l1, .ph-l2, .ph-r1, .ph-r2 { display: none; }
+  .ph-c { --w: min(280px, 72vw); }
+  .ph-c .scr + .scr { display: none; }
+  .panel { position: static; width: auto; opacity: 1; margin: 24px; background: #F2F2F4; padding: 28px 0; }
+  .chap { position: static; opacity: 1; transform: none; display: none; }
+  .chap[data-i="0"] { display: flex; }
+  .panel-l .chap { padding-bottom: 0; }
+}
 </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<nav class="nav"><div class="nav-in">
-  <a class="brand" href="#top"><i></i>Yashish</a>
-  <div class="nav-links"><a href="#problem">Problem</a><a href="#decisions">Decisions</a><a href="#system">System</a><a href="#try">Try it</a></div>
-</div></nav>
 
-<div class="frame" id="top">
-  <div class="hero-panel">
-    <img width="750" height="1624" src="img/home.jpg" alt="Airtel home with the Agentic pill" />
-    <img width="750" height="1624" src="img/landing.jpg" alt="Agentic greeting screen" />
-    <img width="750" height="1624" src="img/usage.jpg" alt="Agentic answer with a usage card" />
+
+<nav class="pillnav" aria-label="Case study">
+  <a class="pn-brand" href="#top">Agentic<sup>®</sup></a>
+  <a class="pn-link" href="#problem">Problem</a>
+  <a class="pn-link" href="#decisions">Decisions</a>
+  <a class="pn-cta" href="#try" aria-label="Try the prototype">Try it</a>
+</nav>
+
+<!-- Landing: hero fan of phones that resolves into a pinned phone with side panels (scroll-driven) -->
+<section class="show" id="top" aria-label="Agentic overview">
+  <div class="show-stage" id="stage">
+    <header class="show-hero" id="showHero">
+      <h1>One calm assistant for every Airtel task</h1>
+      <p>Agentic checks your data, recharges your number, explains your bill and fixes your network, inside one conversation.</p>
+    </header>
+
+    <div class="panel panel-l" id="panelL" aria-live="polite">
+      <div class="chap" data-i="0"><h2>Say it the way you’d say it.</h2><p>“Kitna data bacha hai?” is enough. People type or speak in English or Hinglish, and the assistant works out the task.</p></div>
+      <div class="chap" data-i="1"><h2>Answers you can act on.</h2><p>Numbers come back as cards from the app’s own design system, with the next action inside the answer.</p></div>
+      <div class="chap" data-i="2"><h2>Nothing moves without you.</h2><p>Every payment opens a confirm sheet in the chat. The agent suggests; the person decides.</p></div>
+    </div>
+
+    <div class="fan" aria-hidden="true">
+      <img class="ph ph-l2" src="img/onboarding.jpg" alt="" width="750" height="1624" />
+      <img class="ph ph-l1" src="img/home.jpg" alt="" width="750" height="1624" />
+      <div class="ph ph-c" id="phC">
+        <img class="scr" src="img/landing.jpg" alt="Agentic greeting screen" width="750" height="1624" />
+        <img class="scr" src="img/usage.jpg" alt="Agentic usage card with actions" width="750" height="1624" />
+        <img class="scr" src="img/payment.jpg" alt="Payment confirmation sheet" width="750" height="1624" />
+      </div>
+      <img class="ph ph-r1" src="img/packs.jpg" alt="" width="750" height="1624" />
+      <img class="ph ph-r2" src="img/network.jpg" alt="" width="750" height="1624" />
+    </div>
+
+    <div class="panel panel-r" id="panelR">
+      <div class="chap" data-i="0"><h3>Starts from the home screen</h3><p>A pill in the header cycles real asks, so people learn what it can do before they tap.</p><h3>One-time ground rules</h3><p>A short first run sets expectations and covers consent.</p><h3>Hinglish and voice</h3><p>Type or talk; a live transcript catches mis-hears.</p></div>
+      <div class="chap" data-i="1"><h3>Usage, packs, plans, bills</h3><p>Each answer renders as a card with its button inside.</p><h3>One pick, explained</h3><p>A best-match pack with the reason, alternatives below.</p><h3>Shows its work</h3><p>The thinking state names real steps while it fetches.</p></div>
+      <div class="chap" data-i="2"><h3>Confirm in the chat</h3><p>Amount, item, number and method, then a separate Pay tap.</p><h3>App-grade actions</h3><p>Black CTAs and familiar cards make paying feel as safe as before.</p><h3>Escalates with context</h3><p>When it can’t fix something, the ticket arrives pre-filled.</p></div>
+    </div>
   </div>
-</div>
+</section>
 
 <main class="col" id="main">
   <div class="intro">
-    <h1>Designing an AI layer that finishes tasks for 300 Mn Airtel users.</h1>
+    <h2 class="intro-title">Designing an AI layer that finishes tasks for 300 Mn Airtel users.</h2>
     <p>People open the Airtel app to do one thing: check data, recharge, pay a bill, fix the internet. The app made them search menus to do it, and many gave up and called customer care.</p>
     <p>Instead of improving the menus, I proposed <b>Agentic</b>: a conversation that understands what people want and does it, inside the chat.</p>
     <dl class="facts">
@@ -358,6 +428,51 @@ document.querySelectorAll('#scen button').forEach((b) => b.addEventListener('cli
   document.querySelectorAll('#scen button').forEach((x) => x.classList.toggle('on', x === b));
   document.getElementById('tryFrame').src = b.dataset.q ? '../?ask=' + encodeURIComponent(b.dataset.q) : '../';
 }));
+</script>
+
+<script>
+(() => {
+  const big = matchMedia('(min-width: 900px)'), calm = matchMedia('(prefers-reduced-motion: reduce)');
+  const show = document.querySelector('.show'), hero = document.getElementById('showHero');
+  const pL = document.getElementById('panelL'), pR = document.getElementById('panelR');
+  const phones = { l2: document.querySelector('.ph-l2'), l1: document.querySelector('.ph-l1'), c: document.getElementById('phC'), r1: document.querySelector('.ph-r1'), r2: document.querySelector('.ph-r2') };
+  const scr = [...document.querySelectorAll('#phC .scr')];
+  const chapsL = [...pL.querySelectorAll('.chap')], chapsR = [...pR.querySelectorAll('.chap')];
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  let chap = -1, ticking = false;
+  function frame() {
+    ticking = false;
+    if (!big.matches || calm.matches) { [hero, pL, pR, ...Object.values(phones), ...scr].forEach((e) => { e.style.transform = ''; e.style.opacity = ''; }); return; }
+    const vh = innerHeight, rect = show.getBoundingClientRect();
+    const p = clamp(-rect.top / (show.offsetHeight - vh));            // 0..1 through the section
+    const intro = ease(clamp(p / .2));                                 // fan → pinned
+    const wC = phones.c.offsetWidth, hC = wC * 812 / 375, w1 = phones.l1.offsetWidth, w2 = phones.l2.offsetWidth;
+    const fanTop = hero.offsetTop + hero.offsetHeight + 48, pinTop = (vh - hC) / 2, gap = 24;
+    const y = lerp(fanTop, pinTop, intro);
+    phones.c.style.transform = `translate(${-wC / 2}px, ${y}px)`;
+    const side = (el, w, dir, slot) => {
+      const x0 = dir * (wC / 2 + gap + (slot === 1 ? 0 : w1 + gap)) - (dir < 0 ? w : 0);
+      const x = x0 + dir * intro * vh * .9, top = fanTop + (hC - w * 812 / 375) * .35;
+      el.style.transform = `translate(${x}px, ${top + intro * 40}px)`; el.style.opacity = 1 - intro;
+    };
+    side(phones.l1, w1, -1, 1); side(phones.r1, w1, 1, 1); side(phones.l2, w2, -1, 2); side(phones.r2, w2, 1, 2);
+    hero.style.transform = `translateY(${-intro * vh * .25}px)`; hero.style.opacity = 1 - clamp(intro * 1.6);
+    const pin = ease(clamp((p - .12) / .12));
+    pL.style.opacity = pR.style.opacity = pin;
+    pL.style.transform = `translateX(${(1 - pin) * -40}px)`; pR.style.transform = `translateX(${(1 - pin) * 40}px)`;
+    // chapters: screens slide up inside the phone, panel copy swaps
+    const c = clamp((p - .24) / .76) * 3;                              // 0..3
+    scr.forEach((el, i) => { const t = ease(clamp(c - i - .55, 0, 1)); el.style.transform = i === 0 ? '' : `translateY(${(1 - ease(clamp(c - i + .45, 0, 1))) * 100}%)`; el.style.zIndex = i; });
+    const k = Math.min(2, Math.floor(c + .5 > 3 ? 2 : Math.max(0, c - .05)));
+    if (k !== chap) { chap = k; chapsL.forEach((e, i) => e.classList.toggle('on', i === k)); chapsR.forEach((e, i) => e.classList.toggle('on', i === k)); }
+  }
+  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+  addEventListener('scroll', req, { passive: true }); addEventListener('resize', req);
+  big.addEventListener('change', req); calm.addEventListener('change', req);
+  frame();
+})();
 </script>
 </body>
 </html>
