@@ -51,7 +51,7 @@
     <div class="of o-f4"><img src="assets/orb-f4.svg" alt=""></div>
     <div class="of o-v2"><img src="assets/orb-v2.svg" alt=""></div>
     <div class="of o-v3"><img src="assets/orb-v3.svg" alt=""></div>
-  </div></div><div class="orb-star"><img src="assets/orb-star.svg" alt=""></div></div>`;
+  </div></div><div class="orb-star"><img class="sym sym-star" src="assets/orb-star.svg" alt=""><img class="sym sym-airtel" src="assets/home/airtel-white.svg" alt=""></div></div>`;
   $$('[data-orb]').forEach((el) => {
     el.innerHTML = ORB;
     const n = +el.dataset.orb;
@@ -151,6 +151,8 @@
   function handoff(anim, targetOrb) {
     const src = $$('.of, .orb-star', flyEl), dst = $$('.of, .orb-star', targetOrb);
     src.forEach((el, i) => { const a = el.getAnimations()[0], b = dst[i] && dst[i].getAnimations()[0]; if (a && b) b.currentTime = a.currentTime; });
+    // start the star↔Airtel loop from the star, so the landing shows the same symbol that flew in
+    $$('.sym', targetOrb).forEach((el) => el.getAnimations().forEach((x) => (x.currentTime = 0)));
     targetOrb.classList.add('snap');
     void targetOrb.offsetWidth;
     requestAnimationFrame(() => requestAnimationFrame(() => {
