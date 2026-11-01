@@ -661,5 +661,12 @@ textarea { font: inherit; }
 /* Pack Status tag stays still */
 .pack-tag-body { animation: none !important; }
 
-/* Phones wider than 375: the Figma home scales to the full width (no left/right gap) */
-.fh, .home-header, .bottom-nav { zoom: var(--home-zoom, 1); }
+/* Phones wider than 375: the Figma home scales to the full width (no left/right gap).
+   transform is used instead of zoom because zoom is unreliable in iOS WebKit. */
+@media (max-width: 500px) {
+  .fh { margin-left: 0; transform: scale(var(--home-zoom, 1)); transform-origin: 0 0; }
+  .home-header { height: calc(72px * var(--home-zoom, 1)); }
+  .home-header > div { transform: scale(var(--home-zoom, 1)); transform-origin: 50% 0; }
+  .home-header::before { height: var(--sb); }
+  .bottom-nav { transform: scale(var(--home-zoom, 1)); transform-origin: 50% 100%; }
+}

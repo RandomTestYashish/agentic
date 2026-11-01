@@ -160,7 +160,7 @@
   }
   function pillToFull() {
     const c = pillClip();
-    const z = homeZoom(), h = pRect(header);   // the header is zoomed, so convert phone px into its units
+    const z = homeZoom(), h = pRect(header.firstElementChild);   // the header content is scaled, so convert phone px into its units
     Object.assign(pill.style, { position: 'absolute', left: `${-h.x / z}px`, top: `${-h.y / z}px`, width: phone.offsetWidth / z + 'px', height: phone.offsetHeight / z + 'px', borderRadius: '0', clipPath: c.closed, zIndex: 1 });
     header.style.zIndex = 90;
     pill.classList.add('expanding');
