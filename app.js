@@ -51,7 +51,7 @@
     <div class="of o-f4"><img src="assets/orb-f4.svg" alt=""></div>
     <div class="of o-v2"><img src="assets/orb-v2.svg" alt=""></div>
     <div class="of o-v3"><img src="assets/orb-v3.svg" alt=""></div>
-  </div></div><div class="orb-star"><img class="sym sym-star" src="assets/orb-star.svg" alt=""><img class="sym sym-airtel" src="assets/home/airtel-white.svg" alt=""></div></div>`;
+  </div><div class="ember"><i class="e-body"></i><i class="e-core"></i><i class="e-sun-soft"></i><i class="e-sun"></i><i class="e-rim"></i><i class="e-spec"></i></div></div><div class="orb-star"><img class="sym sym-star" src="assets/orb-star.svg" alt=""><img class="sym sym-airtel" src="assets/home/airtel-white.svg" alt=""></div></div>`;
   $$('[data-orb]').forEach((el) => {
     el.innerHTML = ORB;
     const n = +el.dataset.orb;
@@ -404,7 +404,7 @@
     const steps = instant ? (resp.steps || ['Thinking…']) : ['🤔 Thinking about it...', ...(resp.steps || [])];
     const split = (s) => { const m = s.match(/^(\S+)\s(.*)$/); return m ? [m[1], m[2]] : ['', s]; };
     const [e0, t0] = split(steps[0]);
-    w.innerHTML = `<div class="thinking"><span class="t-orb" aria-hidden="true">${ORB.replace('class="orb"', 'class="orb fast"')}</span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
+    w.innerHTML = `<div class="thinking"><span class="t-orb t-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
     if (opts.before) msgs.insertBefore(w, opts.before); else msgs.appendChild(w);
     toBottom();
     const th = $('.thinking', w);
@@ -805,7 +805,7 @@
     btn.innerHTML = '<span class="spinner"></span>Processing payment…';
     await sleep(1600);
     const txn = 'AT' + Math.random().toString(36).slice(2, 10).toUpperCase();
-    sheetBody.innerHTML = `<div class="pay-done"><div class="confetti">${Array.from({ length: 24 }, (_, i) => `<i style="left:50%;background:${['#D42D1F', '#EE6A43', '#F6C3B5', '#8A2A19', '#FFB547'][i % 5]};--x:${rand(-170, 170)}px;--y:${rand(-120, 200)}px;--r:${rand(-400, 400)}deg;animation-delay:${rand(0, 0.15)}s"></i>`).join('')}</div>
+    sheetBody.innerHTML = `<div class="pay-done"><div class="confetti">${Array.from({ length: 24 }, (_, i) => `<i style="left:50%;background:${['#B84B43', '#E0614B', '#EBC4C0', '#5A2328', '#FFB547'][i % 5]};--x:${rand(-170, 170)}px;--y:${rand(-120, 200)}px;--r:${rand(-400, 400)}deg;animation-delay:${rand(0, 0.15)}s"></i>`).join('')}</div>
       <svg class="check-anim" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38" fill="none" stroke="#1F8A4C" stroke-width="5"/><path d="M26 43l11 11 21-23" fill="none" stroke="#1F8A4C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h3>Payment successful</h3><p>₹${payItem.price} paid · Txn ${txn}</p></div>`;
     await sleep(1700);
@@ -1032,7 +1032,7 @@
     const W = wave.width, H = wave.height, n = 46, gap = W / n, bw = gap * 0.42;
     wctx.clearRect(0, 0, W, H);
     const g = wctx.createLinearGradient(0, 0, W, 0);
-    g.addColorStop(0, '#F59A6E'); g.addColorStop(0.45, '#D42D1F'); g.addColorStop(1, '#8A2A19');
+    g.addColorStop(0, '#F0A47A'); g.addColorStop(0.45, '#B84B43'); g.addColorStop(1, '#5A2328');
     wctx.fillStyle = g;
     for (let i = 0; i < n; i++) {
       const v = recHist[recHist.length - n + i] ?? 0.04;
@@ -1109,7 +1109,26 @@
   $('#recStop').addEventListener('click', () => {
     if (recRec) { try { recRec.stop(); } catch {} setTimeout(finishRec, 250); } else finishRec();
   });
-  $('#agentOrb').addEventListener('click', openVoice);
+  // In the chat the header orb is still; tapping it opens your profile and previous chats. On the landing it starts voice
+  $('#agentOrb').addEventListener('click', () => (agent.classList.contains('docked') ? openHistory() : openVoice()));
+  const HISTORY = [
+    ['Kitna data bacha hai?', 'Usage card · 1.1 GB left today', 'Today, 9:12 AM'],
+    ['Recharge my number', '₹449 plan · paid with UPI', 'Yesterday'],
+    ['Why is my bill high?', 'Roaming and Hellotunes explained', '28 Oct'],
+    ['My internet is slow', 'Weak indoor signal · complaint raised', '24 Oct'],
+  ];
+  function openHistory() {
+    openSheet(`<div class="hist"><div class="hist-me"><span class="hist-av">${esc(NAME[0])}</span><span class="hist-id"><b>${esc(NAME)}</b><small>98765 43210 · Prepaid</small></span></div>
+      <div class="hist-h">Previous chats</div>
+      ${HISTORY.map(([q, sub, d]) => `<button class="hist-row" data-hq="${esc(q)}"><span class="hist-q">${esc(q)}<small>${esc(sub)}</small></span><span class="hist-d">${esc(d)}</span></button>`).join('')}</div>`);
+  }
+  sheetBody.addEventListener('click', (e) => {
+    const r = e.target.closest('.hist-row');
+    if (!r) return;
+    closeSheet();
+    $('#newChat').click();
+    setTimeout(() => send(r.dataset.hq), 650);
+  });
   $('#voiceClose').addEventListener('click', () => closeVoice());
   $('#voiceEnd').addEventListener('click', () => closeVoice());
   $('#voiceType').addEventListener('click', () => { closeVoice(); setTimeout(() => input.focus(), 50); });
@@ -1202,4 +1221,202 @@
     }, 350);
   }
 
+})();
+
+/* ===================== Exploration 2: micro-interactions ===================== */
+(() => {
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = document.querySelector('.phone') || document.body;
+
+  // Coral ripple from the exact tap point
+  const RIP = '.btn, .chip, .icon-btn, .close-btn, .newchat-btn, .ma, .btn-secondary, .btn-primary, #agreeBtn, .rate, .vc-side';
+  phone.addEventListener('pointerdown', (e) => {
+    if (calm.matches) return;
+    const el = e.target.closest(RIP);
+    if (!el || el.disabled) return;
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    el.classList.add('rip-host');
+    const s = document.createElement('span');
+    const dark = /rgb\((\d+), (\d+), (\d+)\)/.exec(cs.backgroundColor);
+    const isDark = (dark && (+dark[1] + +dark[2] + +dark[3]) < 160) || /gradient\(.*rgb\((?:[0-4]\d|\d), /.test(cs.backgroundImage);
+    s.className = 'rip' + (isDark ? ' on-dark' : '');
+    const z = r.width / el.offsetWidth || 1; // the home is scaled with transforms on phones
+    s.style.left = (e.clientX - r.left) / z + 'px';
+    s.style.top = (e.clientY - r.top) / z + 'px';
+    s.style.setProperty('--rs', (Math.hypot(el.offsetWidth, el.offsetHeight) / 3.2).toFixed(1));
+    el.appendChild(s);
+    s.addEventListener('animationend', () => s.remove());
+  }, { passive: true });
+
+  // Message actions: spring pop plus a small coral burst
+  phone.addEventListener('click', (e) => {
+    const ma = e.target.closest('.ma');
+    if (!ma || calm.matches) return;
+    ma.classList.remove('pop'); void ma.offsetWidth; ma.classList.add('pop');
+    for (let i = 0; i < 6; i++) {
+      const b = document.createElement('i');
+      b.className = 'burst';
+      const a = (i / 6) * Math.PI * 2 + Math.random() * .4, d = 16 + Math.random() * 6;
+      b.style.setProperty('--bx', (Math.cos(a) * d).toFixed(1) + 'px');
+      b.style.setProperty('--by', (Math.sin(a) * d).toFixed(1) + 'px');
+      ma.appendChild(b);
+      b.addEventListener('animationend', () => b.remove());
+    }
+  });
+
+  // Agent landing: a coral wireframe icosahedron turning slowly (from the reference), drawn as SVG lines
+  const svg = document.getElementById('poly'), agent = document.getElementById('agent');
+  if (!svg || !agent) return;
+  const t = (1 + Math.sqrt(5)) / 2;
+  const V = [[-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0], [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t], [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]];
+  const E = [];
+  for (let i = 0; i < V.length; i++) for (let j = i + 1; j < V.length; j++) {
+    const d = Math.hypot(V[i][0] - V[j][0], V[i][1] - V[j][1], V[i][2] - V[j][2]);
+    if (Math.abs(d - 2) < .01) E.push([i, j]);
+  }
+  const NS = 'http://www.w3.org/2000/svg';
+  const lines = E.map(() => svg.appendChild(document.createElementNS(NS, 'line')));
+  const R = 36;
+  function draw(time) {
+    const a = time * .00018, b = time * .00011 + .6;
+    const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
+    const P = V.map(([x, y, z]) => {
+      const x1 = x * ca + z * sa, z1 = -x * sa + z * ca;      // turn around Y
+      const y2 = y * cb - z1 * sb, z2 = y * sb + z1 * cb;     // tilt around X
+      const k = 4.2 / (4.2 - z2 * .55);                       // gentle perspective
+      return [x1 * R * k, y2 * R * k, z2];
+    });
+    E.forEach(([i, j], n) => {
+      const l = lines[n], p = P[i], q = P[j];
+      l.setAttribute('x1', p[0].toFixed(2)); l.setAttribute('y1', p[1].toFixed(2));
+      l.setAttribute('x2', q[0].toFixed(2)); l.setAttribute('y2', q[1].toFixed(2));
+      l.style.opacity = (.32 + ((p[2] + q[2]) / 2 + t) / (2 * t) * .58).toFixed(2); // nearer edges read stronger
+    });
+  }
+  let raf = 0;
+  const loop = (time) => { draw(time); raf = requestAnimationFrame(loop); };
+  const sync = () => {
+    const on = agent.classList.contains('active') && agent.classList.contains('landing') && !agent.classList.contains('docked') && !calm.matches && !document.hidden;
+    if (on && !raf) raf = requestAnimationFrame(loop);
+    if (!on && raf) { cancelAnimationFrame(raf); raf = 0; }
+  };
+  draw(2400);
+  new MutationObserver(sync).observe(agent, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('visibilitychange', sync);
+  calm.addEventListener('change', sync);
+  sync();
+})();
+
+/* ===================== Exploration 2: dot logo — filled halftone marks: the Airtel logo is written in dots, then swirls into the AI star ===================== */
+(() => {
+  const CYCLE = 6000, GRID = .05;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)');
+  const agentEl = document.getElementById('agent');
+  const AIRTEL = { box: 13.3333, d: 'M5.61131 12.3915C6.37953 12.1203 7.06913 11.6945 7.75939 11.2692C8.41998 10.8581 9.04646 10.3967 9.63299 9.88925C11.3857 8.3891 13.2686 5.77795 12.4831 3.30745C11.9302 1.56324 10.2115 0.666667 8.46868 0.666667C6.19908 0.666667 3.91353 1.88095 2.21218 3.34291C1.35392 4.15507 -0.151076 6.18717 1.21941 7.2139C2.31286 8.02288 3.86396 7.28428 4.86897 6.67955C6.01019 5.9002 7.19199 5.09143 8.5065 4.64535C9.13028 4.41762 10.0065 4.40329 10.3415 5.09665C10.5986 5.60908 10.5375 6.41885 10.1873 7.15957C9.70946 8.16874 8.88891 9.16327 7.74956 10.1163C6.9831 10.7763 6.09674 11.3694 5.13172 11.6927C4.01763 11.9848 4.69546 11.0246 4.69546 11.0246C5.0841 10.5863 5.5372 10.2112 5.95424 9.80124C6.14816 9.61094 6.41485 9.35024 6.39881 8.97526C6.37601 8.46677 5.8322 8.15616 5.34236 8.15616C4.51367 8.15616 3.7734 8.88142 3.3485 9.53166C3.05224 9.99199 2.42834 11.165 3.03591 12.103C3.44812 12.7409 4.3475 12.8378 5.61131 12.3915Z', scale: 1.04 };
+  const STAR = { box: 49.5238, d: 'M24.7619 0C26.381 18.3048 31.219 23.1429 49.5238 24.7619C31.219 26.381 26.381 31.219 24.7619 49.5238C23.1429 31.219 18.3048 26.381 0 24.7619C18.3048 23.1429 23.1429 18.3048 24.7619 0Z', scale: 1.0 };
+  // fill a mark with dots on a square grid (a halftone of the real logo)
+  function fill(mark) {
+    const R = 400, c = document.createElement('canvas'); c.width = c.height = R;
+    const g = c.getContext('2d');
+    g.translate(R / 2, R / 2); g.scale(R * mark.scale / mark.box, R * mark.scale / mark.box); g.translate(-mark.box / 2, -mark.box / 2);
+    g.fill(new Path2D(mark.d));
+    const px = g.getImageData(0, 0, R, R).data, out = [];
+    const n = Math.floor(.5 / GRID);
+    for (let gy = -n; gy <= n; gy++) for (let gx = -n; gx <= n; gx++) {
+      const x = gx * GRID, y = gy * GRID, X = Math.floor((x + .5) * R), Y = Math.floor((y + .5) * R);
+      if (X >= 0 && Y >= 0 && X < R && Y < R && px[(Y * R + X) * 4 + 3] > 110) out.push([x, y]);
+    }
+    return out;
+  }
+  let A = fill(AIRTEL), S = fill(STAR);
+  // the star is four-way symmetric: mirror its dots so every side is complete
+  { const key = (p) => p.map((v) => Math.round(v / GRID)).join(','), seen = new Map();
+    S.forEach(([x, y]) => [[x, y], [-x, y], [x, -y], [-x, -y], [y, x], [-y, x], [y, -x], [-y, -x]].forEach((q) => seen.set(key(q), q)));
+    S = [...seen.values()]; }
+  // equal counts: the smaller mark doubles up a few dots (they sit on top of each other)
+  const N = Math.max(A.length, S.length);
+  const pad = (arr) => { const o = arr.slice(); for (let i = 0; o.length < N; i++) o.push(arr[(i * 7) % arr.length]); return o; };
+  A = pad(A); S = pad(S);
+  // pair dots by angle around the centre, so the swirl stays orderly
+  const byAngle = (arr) => arr.slice().sort((p, q) => Math.atan2(p[1], p[0]) - Math.atan2(q[1], q[0]) || Math.hypot(...p) - Math.hypot(...q));
+  A = byAngle(A); S = byAngle(S);
+  // writing order: how far along the curl each Airtel dot sits (from the tail at the left end to the inner hook)
+  const TRACE = [[1.7, 6.5], [3.6, 4.3], [6.0, 2.6], [8.6, 2.0], [11.0, 2.7], [11.9, 5.0], [10.9, 7.7], [8.9, 9.9], [6.6, 11.5], [4.3, 12.1], [3.4, 10.4], [5.2, 8.6]]
+    .map(([x, y]) => [(x / 13.333 - .5) * 1.04, (y / 13.333 - .5) * 1.04]);
+  const dense = [];
+  for (let i = 0; i < TRACE.length - 1; i++) for (let k = 0; k < 30; k++) { const t = k / 30; dense.push([TRACE[i][0] + (TRACE[i + 1][0] - TRACE[i][0]) * t, TRACE[i][1] + (TRACE[i + 1][1] - TRACE[i][1]) * t]); }
+  const along = A.map(([x, y]) => { let bi = 0, bd = 1e9; dense.forEach(([dx, dy], i) => { const d = (dx - x) ** 2 + (dy - y) ** 2; if (d < bd) { bd = d; bi = i; } }); return bi / dense.length; });
+  const sRad = S.map((p) => Math.hypot(...p)), sMax = Math.max(...sRad);
+
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  const back = (t) => { const c1 = 1.7, c3 = c1 + 1; return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2; };
+  const rot = ([x, y], a) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+  const T0 = performance.now(), listeners = [];
+  let lastPhase = -1;
+
+  const trace = (u) => A.map((p, i) => { const q = clamp((u - along[i] * .72) / .28); return [p[0], p[1], q ? back(q) : 0]; });
+  function pose(now) {
+    const t = now - T0;
+    if (calm.matches) return S.map((p) => [p[0], p[1], 1]);
+    if (t < 1300) return trace(t / 1300);
+    const c = (t - 1300) % CYCLE, phase = c < CYCLE / 2 ? 0 : 1, local = c % (CYCLE / 2);
+    if (phase !== lastPhase) { lastPhase = phase; listeners.forEach((f) => f(phase)); }
+    if (phase === 0) {
+      // the Airtel logo folds into the centre, then the star blooms outward from it (centre first, tips last); a glint follows
+      if (local < 420) {
+        const q = ease(local / 420);
+        return A.map((p) => { const [x, y] = rot(p, -q * Math.PI / 2); return [x * (1 - q), y * (1 - q), 1 - q * .6]; });
+      }
+      const u = clamp((local - 420) / 900);
+      const settle = (1 - ease(u)) * -.35;
+      return S.map((p, i) => {
+        const q = clamp((u - (sRad[i] / sMax) * .62) / .38), sc = q ? back(q) : 0;
+        const [x, y] = rot([p[0] * (.55 + .45 * (q ? back(q) : 0)), p[1] * (.55 + .45 * (q ? back(q) : 0))], settle);
+        const glint = u >= 1 ? 1 + .45 * Math.max(0, Math.sin(((local - 1320) / 1700) * Math.PI * 2 - sRad[i] * 9)) ** 6 : 1;
+        return [x, y, sc * glint];
+      });
+    }
+    // the star folds into the centre with a quarter turn, then the Airtel logo is written again
+    if (local < 420) {
+      const q = ease(local / 420);
+      return S.map((p) => { const [x, y] = rot(p, q * Math.PI / 2); return [x * (1 - q), y * (1 - q), 1 - q * .6]; });
+    }
+    return trace(clamp((local - 420) / 1100));
+  }
+
+  const logos = [];
+  function mount(host, opts) {
+    const cv = document.createElement('canvas');
+    cv.className = 'dotlogo';
+    host.appendChild(cv);
+    logos.push({ cv, g: cv.getContext('2d'), ...opts });
+  }
+  document.querySelectorAll('.orb-star').forEach((h) => mount(h, { r: .0145, k: .8, glow: 1, res: 4, still: h.closest('#agentOrb') }));
+  const pillStar = document.getElementById('amaStar');
+  if (pillStar) mount(pillStar, { r: .018, k: 1, glow: .3, res: 6 });
+  const STILL = S.map((p) => [p[0], p[1], 1]);
+
+  function frame(now) {
+    const P = pose(now);
+    for (const o of logos) {
+      if (!o.cv.getClientRects().length) continue;
+      const w = o.cv.clientWidth; if (!w) continue;
+      const D = Math.round(w * o.res);
+      if (o.cv.width !== D) o.cv.width = o.cv.height = D;
+      const pts = o.still && agentEl.classList.contains('docked') ? STILL : P;   // the chat header orb stays still
+      const g = o.g; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, D, D);
+      g.setTransform(D, 0, 0, D, D / 2, D / 2);
+      g.fillStyle = '#fff'; g.shadowColor = 'rgba(255,226,190,.75)'; g.shadowBlur = D * .025 * o.glow;
+      g.beginPath();
+      for (const [x, y, sc] of pts) { if (sc <= .01) continue; const r = o.r * sc; g.moveTo(x * o.k + r, y * o.k); g.arc(x * o.k, y * o.k, r, 0, Math.PI * 2); }
+      g.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  const pulse = document.querySelector('.ambient .dots-pulse');
+  if (pulse) listeners.push(() => { pulse.classList.remove('go'); void pulse.offsetWidth; pulse.classList.add('go'); });
 })();
