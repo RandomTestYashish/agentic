@@ -770,3 +770,5 @@ textarea { font: inherit; }
 .orb-glow { animation: haloWarp 7.5s ease-in-out infinite; }
 @keyframes haloWarp { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.06); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .orb-clip, .orb-clip::after, .orb-glow { animation: none; } }
+/* keep the colour and lighting, but the orb stays a perfect circle (no edge warp) */
+.orb-clip { animation: none !important; border-radius: 50% !important; }
