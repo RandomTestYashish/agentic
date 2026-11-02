@@ -805,7 +805,7 @@
     btn.innerHTML = '<span class="spinner"></span>Processing payment…';
     await sleep(1600);
     const txn = 'AT' + Math.random().toString(36).slice(2, 10).toUpperCase();
-    sheetBody.innerHTML = `<div class="pay-done"><div class="confetti">${Array.from({ length: 24 }, (_, i) => `<i style="left:50%;background:${['#D42D1F', '#EE6A43', '#F6C3B5', '#8A2A19', '#FFB547'][i % 5]};--x:${rand(-170, 170)}px;--y:${rand(-120, 200)}px;--r:${rand(-400, 400)}deg;animation-delay:${rand(0, 0.15)}s"></i>`).join('')}</div>
+    sheetBody.innerHTML = `<div class="pay-done"><div class="confetti">${Array.from({ length: 24 }, (_, i) => `<i style="left:50%;background:${['#E80000', '#FF5A1F', '#FFC2B0', '#7A0000', '#FFB547'][i % 5]};--x:${rand(-170, 170)}px;--y:${rand(-120, 200)}px;--r:${rand(-400, 400)}deg;animation-delay:${rand(0, 0.15)}s"></i>`).join('')}</div>
       <svg class="check-anim" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38" fill="none" stroke="#1F8A4C" stroke-width="5"/><path d="M26 43l11 11 21-23" fill="none" stroke="#1F8A4C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <h3>Payment successful</h3><p>₹${payItem.price} paid · Txn ${txn}</p></div>`;
     await sleep(1700);
@@ -1032,7 +1032,7 @@
     const W = wave.width, H = wave.height, n = 46, gap = W / n, bw = gap * 0.42;
     wctx.clearRect(0, 0, W, H);
     const g = wctx.createLinearGradient(0, 0, W, 0);
-    g.addColorStop(0, '#F59A6E'); g.addColorStop(0.45, '#D42D1F'); g.addColorStop(1, '#8A2A19');
+    g.addColorStop(0, '#FF7A45'); g.addColorStop(0.45, '#E80000'); g.addColorStop(1, '#7A0000');
     wctx.fillStyle = g;
     for (let i = 0; i < n; i++) {
       const v = recHist[recHist.length - n + i] ?? 0.04;
