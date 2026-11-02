@@ -744,3 +744,29 @@ textarea { font: inherit; }
 /* #E80000 highlighted: a vivid red bloom around the orb */
 .orb-glow { filter: saturate(1.2); }
 .agent-orb .orb-glow, .voice-orb .orb-glow { opacity: 1; }
+
+/* ===== Red branch: liquid orb — the edge warps, the lighting follows the shape and travels around it ===== */
+.orb-clip { inset: 6.667px; border-radius: 50%; background: #E80000; clip-path: none !important; -webkit-clip-path: none !important;
+  animation: orbWarp 7.5s ease-in-out infinite; will-change: border-radius; }
+.orb-frame { left: -57.137px; top: -53.337px; -webkit-mask: none !important; mask: none !important; }
+@keyframes orbWarp {
+  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+  18% { border-radius: 53% 47% 51% 49% / 47% 54% 46% 53%; }
+  36% { border-radius: 47% 53% 46% 54% / 54% 47% 53% 46%; }
+  54% { border-radius: 54% 46% 50% 50% / 50% 55% 45% 50%; }
+  72% { border-radius: 46% 54% 54% 46% / 52% 46% 54% 48%; }
+  88% { border-radius: 51% 49% 47% 53% / 46% 52% 48% 54%; } }
+/* lighting: a crisp highlight, a hot core, and a rim light that traces the warping edge and circles slowly */
+.orb-clip::after { inset: 0 !important; border-radius: inherit !important; z-index: 1;
+  background: radial-gradient(24% 17% at 31% 21%, rgba(255,255,255,.62), rgba(255,255,255,0) 72%),
+              radial-gradient(55% 50% at 60% 66%, rgba(255,70,50,.30), rgba(255,70,50,0) 72%) !important;
+  animation: rimLight 10s linear infinite; }
+@keyframes rimLight {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset 4px 5px 4px -2px rgba(255,236,236,.55), inset -5px -7px 12px rgba(110,0,0,.30); }
+  25% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset -4px 5px 4px -2px rgba(255,236,236,.55), inset 5px -7px 12px rgba(110,0,0,.30); }
+  50% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset -4px -5px 4px -2px rgba(255,236,236,.45), inset 5px 7px 12px rgba(110,0,0,.30); }
+  75% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset 4px -5px 4px -2px rgba(255,236,236,.50), inset -5px 7px 12px rgba(110,0,0,.30); } }
+/* the halo breathes with the warp */
+.orb-glow { animation: haloWarp 7.5s ease-in-out infinite; }
+@keyframes haloWarp { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.06); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .orb-clip, .orb-clip::after, .orb-glow { animation: none; } }
