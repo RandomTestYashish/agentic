@@ -729,7 +729,7 @@ textarea { font: inherit; }
 .ama-pill.expanding::before, .ama-pill.launch::before, .ama-pill.expanding .ama-star::before, .ama-pill.launch .ama-star::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .ama-pill::before, .ama-star::before { animation: none; display: none; } }
 
-/* ===== Red branch: premium pill and orb ===== */
+/* ===== Red branch: premium pill and orb (orb is a red and orange mix) ===== */
 .ama-art > span > span { background: linear-gradient(90deg, #FF7A45 0%, #FF4100 22%, #E80000 52%, #B00000 77%, #520000 100%); }
 /* glassy gloss on the pill: a bright top edge fading into the colour, a faint darker base */
 .ama-gloss { position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none;
@@ -739,5 +739,5 @@ textarea { font: inherit; }
 .ama-pill.expanding .ama-gloss { opacity: 0; transition: opacity .2s; }
 /* orb: a crisp specular and a warm rim glow for depth */
 .orb-clip::after { content: ""; position: absolute; inset: 6.667px; border-radius: 50%; pointer-events: none; z-index: 1;
-  background: radial-gradient(26% 18% at 32% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 72%), radial-gradient(70% 70% at 70% 82%, rgba(255,65,0,.28), rgba(255,65,0,0) 70%);
+  background: radial-gradient(26% 18% at 32% 22%, rgba(255,255,255,.42), rgba(255,255,255,0) 72%), radial-gradient(70% 70% at 70% 82%, rgba(255,128,0,.38), rgba(255,128,0,0) 70%), radial-gradient(60% 60% at 24% 70%, rgba(255,90,0,.18), rgba(255,90,0,0) 70%);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), inset 0 -6px 14px rgba(90,0,0,.35); }
