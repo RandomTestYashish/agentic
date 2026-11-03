@@ -1093,3 +1093,6 @@ textarea { font: inherit; }
 .obc-next:hover { border-color: rgba(224,97,75,.5); }
 .obc-next:active { transform: scale(.92); }
 @media (prefers-reduced-motion: reduce) { .obc-slide, .obc-dot { transition: none; } .obc-slide.on .obc-ring, .obc-slide.on .obc-lens img { animation: none; } }
+
+/* card rows: snap cards to the 16px content edge, not the phone edge */
+.hscroll { scroll-padding-inline: 16px; }
