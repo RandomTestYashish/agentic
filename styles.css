@@ -798,3 +798,15 @@ textarea { font: inherit; }
 .rc-more { width: calc(100% + 32px); margin: 0 -16px; padding: 14px 0; border-top: 1px solid #E6E9EF; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 14px; color: #075EE8; }
 .rc-more svg { transition: transform .3s var(--ease); }
 .rc.open .rc-more svg { transform: rotate(180deg); }
+
+/* ===== Thinking loader: a mini circle with three dots that bounce in a wave, and a soft ring pulsing around it ===== */
+.t-orb.t-bub { position: relative; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; gap: 2.5px;
+  background: var(--brand-tint); box-shadow: inset 0 0 0 1px var(--brand-300); }
+.t-orb.t-bub::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--brand-300); opacity: 0; animation: tBubRing 1.8s ease-out infinite; pointer-events: none; }
+.t-bub i { width: 3px; height: 3px; border-radius: 50%; background: var(--brand); opacity: .35; animation: tBub 1s ease-in-out infinite; }
+.t-bub i:nth-child(2) { animation-delay: .14s; } .t-bub i:nth-child(3) { animation-delay: .28s; }
+@keyframes tBub { 0%, 60%, 100% { transform: translateY(0); opacity: .35; } 30% { transform: translateY(-2.5px); opacity: 1; } }
+@keyframes tBubRing { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.45); opacity: 0; } }
+.thinking.done .t-bub i, .thinking.done .t-bub::after { animation: none; }
+.thinking.done .t-bub i { opacity: .5; }
+@media (prefers-reduced-motion: reduce) { .t-bub i, .t-orb.t-bub::after { animation: none; } .t-bub i { opacity: .7; } }
