@@ -919,3 +919,10 @@ textarea { font: inherit; }
               linear-gradient(142deg, #FFB547 0%, #FF9F1C 45%, #F07A00 80%, #D45F00 100%); }
 .ama-art::after { mix-blend-mode: normal; background: linear-gradient(90deg, #FFC15A 0%, #FFA41F 24%, #FF8E0A 52%, #D96800 77%, #8A3F00 100%); }
 @keyframes toAmber { 0%, 30% { opacity: 0; } 55%, 68% { opacity: .9; } 95%, 100% { opacity: 0; } }
+/* v3: amber was too yellow — use a deeper red-amber, keep red showing through, and give red most of the loop */
+.orb-clip::after {
+  background: radial-gradient(55% 50% at 32% 24%, #FFB27A 0%, rgba(255,178,122,0) 70%),
+              linear-gradient(142deg, #FF8A3A 0%, #FF6A1A 42%, #F2480E 76%, #D8300A 100%); }
+.ama-art::after { background: linear-gradient(90deg, #FF9A55 0%, #FF7A28 24%, #FF5E14 52%, #D8380A 77%, #8A1E04 100%); }
+@keyframes toAmber { 0%, 40% { opacity: 0; } 60%, 66% { opacity: .7; } 92%, 100% { opacity: 0; } }
+@keyframes glowAmber { 0%, 40% { filter: hue-rotate(0deg) saturate(1); } 60%, 66% { filter: hue-rotate(14deg) saturate(1.08); } 92%, 100% { filter: hue-rotate(0deg) saturate(1); } }
