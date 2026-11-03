@@ -926,3 +926,13 @@ textarea { font: inherit; }
 .ama-art::after { background: linear-gradient(90deg, #FF9A55 0%, #FF7A28 24%, #FF5E14 52%, #D8380A 77%, #8A1E04 100%); }
 @keyframes toAmber { 0%, 40% { opacity: 0; } 60%, 66% { opacity: .7; } 92%, 100% { opacity: 0; } }
 @keyframes glowAmber { 0%, 40% { filter: hue-rotate(0deg) saturate(1); } 60%, 66% { filter: hue-rotate(14deg) saturate(1.08); } 92%, 100% { filter: hue-rotate(0deg) saturate(1); } }
+
+/* v4 balance: a clear brand red, then a clear amber (orange-amber, never yellow), equal weight, then back to red */
+:root { --brand: #E80000; }
+.ama-art > span > span { background: linear-gradient(90deg, #FF4100 0%, #F01800 22%, #E80000 52%, #B80000 76%, #6A0000 100%); }
+.orb-clip::after {
+  background: radial-gradient(55% 50% at 32% 24%, #FFB066 0%, rgba(255,176,102,0) 70%),
+              linear-gradient(142deg, #FF9A2E 0%, #FF8A1A 40%, #FF7A00 72%, #E05A00 100%); }
+.ama-art::after { background: linear-gradient(90deg, #FFA850 0%, #FF9020 24%, #FF7A00 52%, #D45A00 77%, #7A2E00 100%); }
+@keyframes toAmber { 0%, 28% { opacity: 0; } 46%, 62% { opacity: .88; } 82%, 100% { opacity: 0; } }
+@keyframes glowAmber { 0%, 28% { filter: hue-rotate(0deg) saturate(1); } 46%, 62% { filter: hue-rotate(26deg) saturate(1.1); } 82%, 100% { filter: hue-rotate(0deg) saturate(1); } }
