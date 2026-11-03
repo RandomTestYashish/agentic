@@ -8,7 +8,8 @@
   const plain = (s) => String(s).replace(/\*\*/g, '');
   const rand = (a, b) => a + Math.random() * (b - a);
 
-  const NAME = 'Yashish';
+  let NAME = 'Yashish';
+  let MODE = 'manage';                     // 'manage' (home) or 'finance', chosen from the dropdown or the bottom nav
   const KEY = 'agentic_onboarded_v1';
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -84,7 +85,7 @@
   }
 
   /* ---------------- Home ---------------- */
-  const PHRASES = ['What do you need today?', 'Check my data balance', 'Recharge my ₹399 pack', 'Why is my bill high?', 'Fix my slow internet'];
+  let PHRASES = ['What do you need today?', 'Check my data balance', 'Recharge my ₹399 pack', 'Why is my bill high?', 'Fix my slow internet'];
   let pi = 0;
   setInterval(() => {
     if (!home.classList.contains('active') || document.hidden) return;
@@ -508,6 +509,7 @@
   function route(q, v = 0) {
     const t = q.toLowerCase();
     const hi = has(t, /\b(kitna|bacha|hai|karo|kya|mera|meri|nahi|chal|kyun|zyada|batao)\b/);
+    if (MODE === 'finance') { const f = routeFin(t); if (f) return f; }
     if (has(t, /^(hi|hii|hello|hey|namaste|yo)\b/) && t.length < 24) return R.greet();
     if (has(t, /(thank|thanks|thx|shukriya|dhanyavad|that'?s all|no,? thank)/)) return R.thanks();
     if (has(t, /not now|later|no thanks|skip/)) return R.notNow();
@@ -530,6 +532,130 @@
     if (has(t, /wi-?fi|broadband|fiber|fibre|router|xstream/)) return R.wifi();
     if (has(t, /e-?sim|sim|port/)) return R.sim();
     return R.fallback(q);
+  }
+
+
+  /* ---------------- Finance (Airtel Finance · credit score) mock conversations ---------------- */
+  const FIN = { score: 684, limit: 150000, used: 102000 };
+  const scoreCard = () => `<div class="card fin-score"><div class="card-over">CIBIL SCORE · UPDATED 2 NOV</div>
+    <div class="fs-top"><span class="fs-num" data-to="${FIN.score}">300</span><span class="fs-of">/ 900</span><span class="fs-band">Fair</span></div>
+    <div class="gauge"><i></i></div><div class="fs-scale"><span>300</span><span>550</span><span>650</span><span>750</span><span>900</span></div>
+    <div class="rows"><div class="r"><span>Credit card usage<span class="flag">High impact</span></span><b>68%</b></div>
+    <div class="r"><span>Late payment · Aug 2026<span class="flag">Medium</span></span><b>1</b></div></div></div>`;
+  const growScore = (el) => {
+    const n = $('.fs-num', el), mark = $('.gauge i', el); if (!n) return;
+    requestAnimationFrame(() => { mark.style.left = `calc(${((FIN.score - 300) / 600) * 100}% - 2px)`; });
+    const t0 = performance.now(), to = +n.dataset.to;
+    const tick = (now) => { const k = Math.min(1, (now - t0) / 1100), e = 1 - (1 - k) ** 3; n.textContent = Math.round(300 + (to - 300) * e); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  };
+  const F = {
+    greet: () => ({
+      steps: ['👋 Saying hello…'],
+      blocks: [{ p: `Hey ${NAME}! I can explain your **CIBIL score**, show what’s affecting it, build a plan to improve it and check which loans you can get.` }],
+      say: `Hey ${NAME}! I can explain your credit score, what's affecting it, and which loans you can get.`,
+      follow: ['Why is my score low?', 'How can I reach 720+', 'Can I get a loan?'],
+    }),
+    low: () => ({
+      steps: ['📊 Reading your CIBIL report…', '🔎 Checking what moved your score…'],
+      blocks: [
+        { p: `Your CIBIL score is **${FIN.score}**, in the **Fair** range. Two things are holding it back:` },
+        { html: scoreCard(), after: growScore },
+        { ul: ['**High card usage**: you’re using **68%** of your ₹1,50,000 card limit. Lenders like to see it under 30%.', '**One late payment** on your HDFC card in **Aug 2026**. It still counts for a few more months.'] },
+        { p: 'The good news: both are fixable, and card usage can move your score within a month.' },
+      ],
+      say: `Your CIBIL score is ${FIN.score}, in the fair range. High card usage and one late payment in August are holding it back.`,
+      follow: ['How do I improve it?', 'How can I reach 720+', 'What’s hurting my score?'],
+    }),
+    hurting: () => ({
+      steps: ['🧾 Going through each factor in your report…'],
+      blocks: [
+        { p: 'Here’s everything that affects your score, from biggest impact to smallest:' },
+        { html: `<div class="card"><div class="card-over">WHAT’S AFFECTING YOUR SCORE</div><div class="rows">
+          <div class="r"><span>Card usage · 68% of limit<span class="flag">High</span></span><b class="fin-neg">Hurting</b></div>
+          <div class="r"><span>Late payment · Aug 2026<span class="flag">Medium</span></span><b class="fin-neg">Hurting</b></div>
+          <div class="r"><span>Loan enquiries · 3 in 6 months</span><b class="fin-mid">Slightly</b></div>
+          <div class="r"><span>Credit age · 3 yrs 2 mo</span><b class="fin-mid">Okay</b></div>
+          <div class="r"><span>On-time payments · 34 of 35</span><b class="fin-pos">Helping</b></div>
+          <div class="r"><span>Credit mix · card + 1 loan</span><b class="fin-pos">Helping</b></div></div></div>` },
+        { p: '**Card usage is the quickest win.** Paying it down is the one change that shows up in your next report.' },
+      ],
+      say: 'Card usage at 68 percent and one late payment are hurting your score. Your on-time payments and credit mix are helping.',
+      follow: ['How do I improve it?', 'How can I reach 720+', 'Can I get a loan?'],
+    }),
+    improve: () => ({
+      steps: ['🧭 Building a plan for your score…', '📈 Ranking steps by impact…'],
+      blocks: [
+        { p: 'Here’s what will move your score the most, in order:' },
+        { html: `<div class="card"><div class="card-over">YOUR SCORE PLAN</div><div class="rows">
+          <div class="r"><span>1 · Pay your card down to ₹45,000 (30%)</span><b class="fin-pos">+20 to +30</b></div>
+          <div class="r"><span>2 · Turn on auto-pay for card dues</span><b class="fin-pos">No late marks</b></div>
+          <div class="r"><span>3 · No new loan or card applications for 6 months</span><b class="fin-pos">+5 to +10</b></div>
+          <div class="r"><span>4 · Keep your oldest card open</span><b class="fin-pos">Protects age</b></div></div>
+          <div class="card-actions"><button class="btn btn-secondary" data-act="toast" data-msg="I’ll remind you on the 1st of every month">Remind me</button><button class="btn btn-primary" data-ask="Set up auto-pay for my card">Set up auto-pay</button></div></div>` },
+        { p: 'Steps 1 and 2 alone should take you past **700** in about two months.' },
+      ],
+      say: 'Pay your card down to 30 percent of the limit and turn on auto-pay. Those two steps alone should take you past 700 in about two months.',
+      follow: ['How can I reach 720+', 'Can I get a loan?'],
+    }),
+    reach: () => ({
+      steps: ['📈 Projecting your score month by month…'],
+      blocks: [
+        { p: 'You can realistically reach **720+ in about 4 to 6 months**. Here’s the path:' },
+        { html: `<div class="card"><div class="card-over">PATH TO 720+</div><div class="fin-path">
+          ${[['Today', 684, 'Where you are'], ['Month 1', 705, 'Card paid down to 30%'], ['Month 3', 714, 'Auto-pay on, no late marks'], ['Month 6', 724, 'No new applications']].map(([m, v, why], i) => `<div class="fp-row${i === 3 ? ' goal' : ''}"><span class="fp-m">${m}</span><span class="fp-bar"><i class="fp-fill" data-w="${((v - 600) / 150) * 100}"></i></span><b>${v}</b><small>${why}</small></div>`).join('')}
+          </div></div>`, after: (el) => requestAnimationFrame(() => $$('.fp-fill', el).forEach((i, k) => setTimeout(() => (i.style.width = i.dataset.w + '%'), k * 140))) },
+        { p: 'At **720+**, a ₹2,40,000 loan drops from about 14.5% to **12.5% a year**. That saves you roughly **₹11,000** in interest.' },
+      ],
+      say: 'You can reach 720 plus in about 4 to 6 months. At 720, a 2.4 lakh loan gets about 2 percent cheaper, saving roughly 11 thousand rupees.',
+      follow: ['How do I improve it?', 'Can I get a loan?'],
+    }),
+    loan: () => ({
+      steps: ['🏦 Checking offers for your profile…', '📐 Estimating eligibility at score 684…'],
+      blocks: [
+        { p: `Yes. With a score of **${FIN.score}** you have a pre-approved personal loan, though rates get better above 720.` },
+        { html: `<div class="card"><div class="card-over">PRE-APPROVED · AIRTEL FINANCE</div>
+          <div class="fl-amt"><small>Up to</small>₹2,40,000</div><div class="rows">
+          <div class="r"><span>Interest</span><b>14.5% a year</b></div>
+          <div class="r"><span>Tenure</span><b>12 to 48 months</b></div>
+          <div class="r"><span>EMI for 48 months</span><b>₹6,618 / month</b></div>
+          <div class="r"><span>Processing fee</span><b>2%</b></div></div>
+          <div class="card-actions"><button class="btn btn-secondary" data-ask="How can I reach 720+">Rate at 720+</button><button class="btn btn-primary" data-ask="Check my exact loan eligibility">Check eligibility</button></div></div>` },
+        { p: 'Checking eligibility is a **soft check**, so it won’t affect your score.' },
+      ],
+      say: 'Yes. You have a pre-approved personal loan of up to 2.4 lakh at 14.5 percent. Checking eligibility will not affect your score.',
+      follow: ['How can I reach 720+', 'Why is my score low?'],
+    }),
+    eligible: () => ({
+      steps: ['🔐 Running a soft check…', '🏦 Confirming your offer…'],
+      blocks: [{ html: successCard('Eligible for ₹2,40,000', 'Soft check · no impact on your score') }, { p: 'You’re eligible for the full **₹2,40,000**. The money can reach your bank account in **about 30 minutes** once you accept the offer.' }],
+      say: 'You are eligible for the full 2.4 lakh. Money can reach your account in about 30 minutes after you accept.',
+      follow: ['How can I reach 720+', 'Thanks!'],
+    }),
+    autopay: () => ({
+      steps: ['⚙️ Setting up card auto-pay…'],
+      blocks: [{ html: successCard('Card auto-pay is on', 'HDFC card · full due paid on the 5th') }, { p: 'Done. Your **full card due** will be paid automatically on the **5th of every month**, so you won’t get another late mark.' }],
+      say: 'Done. Your full card due will be paid automatically on the fifth of every month.',
+      follow: ['How can I reach 720+', 'Can I get a loan?'],
+    }),
+    fallback: () => ({
+      steps: ['🤔 Thinking…'],
+      blocks: [{ p: 'In Finance I can help with your **CIBIL score**: why it’s where it is, what’s hurting it, how to improve it, and which **loans** you can get.' }],
+      say: 'In Finance I can help with your credit score and which loans you can get.',
+      follow: ['Why is my score low?', 'What’s hurting my score?', 'Can I get a loan?'],
+    }),
+  };
+  function routeFin(t) {
+    if (/(thank|thanks|thx|shukriya|not now|later|no thanks|skip)/.test(t)) return null;   // shared replies
+    if (/^(hi|hii|hello|hey|namaste)\b/.test(t) && t.length < 24) return F.greet();
+    if (/auto.?pay/.test(t)) return F.autopay();
+    if (/exact|check.*eligib|eligib/.test(t)) return F.eligible();
+    if (/hurt|affect|factor|reason|kharab/.test(t)) return F.hurting();
+    if (/720|reach|target|cheaper/.test(t)) return F.reach();
+    if (/improve|better|increase|boost|badh/.test(t)) return F.improve();
+    if (/loan|borrow|emi|lend/.test(t)) return F.loan();
+    if (/score|cibil|credit|low|kam/.test(t)) return F.low();
+    return F.fallback();
   }
 
   const R = {
@@ -1201,5 +1327,41 @@
       if (deep.has('voice')) setTimeout(openVoice, 400);
     }, 350);
   }
+
+
+  /* ---------------- Manage / Finance switch (dropdown beside the phone + bottom nav) ---------------- */
+  const MODES = {
+    manage: { name: 'Yashish', phrases: ['What do you need today?', 'Check my data balance', 'Recharge my ₹399 pack', 'Why is my bill high?', 'Fix my slow internet'],
+      disclaimer: 'AI-generated responses are intended to assist you. Always verify important information before taking action', chips: [] },
+    finance: { name: 'Palak', phrases: ['What do you need today?', 'Check my credit score', 'Why is my score low?', 'Can I get a loan?', 'How can I reach 720+'],
+      disclaimer: 'Based on your CIBIL report. Not financial advice', chips: [['Why is my score low?', 'How do I improve it?'], ['What’s hurting my score?', 'Can I get a loan?'], ['How can I reach 720+']] },
+  };
+  const modeSel = $('#modeSel'), finChips = $('#finChips'), disclaimerEl = $('#disclaimer');
+  function applyMode(m) {
+    MODE = m;
+    const cfg = MODES[m];
+    NAME = cfg.name; $$('.uname').forEach((e) => (e.textContent = NAME));
+    PHRASES = cfg.phrases; pi = 0;
+    const box = $('#amaText'); box.innerHTML = `<span>${esc(PHRASES[0])}</span>`;
+    phone.classList.toggle('fin', m === 'finance');
+    $$('.bn').forEach((b) => b.classList.toggle('active', +b.dataset.i === (m === 'finance' ? 1 : 0)));
+    if (disclaimerEl) disclaimerEl.textContent = cfg.disclaimer;
+    if (finChips) finChips.innerHTML = cfg.chips.map((row) => `<div class="fc-row">${row.map((q) => `<button class="chip fc" data-ask="${esc(q)}">${esc(q)}</button>`).join('')}</div>`).join('');
+    if (modeSel && modeSel.value !== m) modeSel.value = m;
+    try { const u = new URL(location.href); if (m === 'finance') u.searchParams.set('mode', 'finance'); else u.searchParams.delete('mode'); history.replaceState(null, '', u); } catch {}
+  }
+  async function setMode(m) {
+    if (m === MODE || !MODES[m]) return;
+    const open = [agent, onboard].find((sc) => sc.classList.contains('active'));
+    if (open) { await closeOverlay(open); await sleep(80); }
+    if (hasMsgs()) { msgs.innerHTML = ''; agent.classList.remove('has-msgs', 'scrolled', 'docked'); chat.scrollTop = 0; }
+    applyMode(m);
+  }
+  if (modeSel) modeSel.addEventListener('change', () => setMode(modeSel.value));
+  $$('.bn').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; if (i === 0) setMode('manage'); if (i === 1) setMode('finance'); }));
+  // hide the floating picker on phones while Agentic is open
+  const syncPick = () => document.body.classList.toggle('agent-open', agent.classList.contains('active') || onboard.classList.contains('active'));
+  [agent, onboard].forEach((sc) => new MutationObserver(syncPick).observe(sc, { attributes: true, attributeFilter: ['class'] }));
+  applyMode(new URLSearchParams(location.search).get('mode') === 'finance' ? 'finance' : 'manage');
 
 })();
