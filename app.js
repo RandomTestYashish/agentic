@@ -405,7 +405,7 @@
     const steps = instant ? (resp.steps || ['Thinking…']) : ['🤔 Thinking about it...', ...(resp.steps || [])];
     const split = (s) => { const m = s.match(/^(\S+)\s(.*)$/); return m ? [m[1], m[2]] : ['', s]; };
     const [e0, t0] = split(steps[0]);
-    w.innerHTML = `<div class="thinking"><span class="t-orb t-min" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
+    w.innerHTML = `<div class="thinking"><span class="t-orb t-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
     if (opts.before) msgs.insertBefore(w, opts.before); else msgs.appendChild(w);
     toBottom();
     const th = $('.thinking', w);
@@ -487,11 +487,11 @@
 
   const packCard = (id, best) => {
     const it = ITEMS[id];
-    return `<div class="pack${best ? ' best' : ''}">
-      ${best ? '<span class="pack-badge">BEST MATCH</span>' : ''}
-      <div class="pack-row"><div class="pack-price">₹${it.price}</div><div class="pk">${it.gb} GB<small>Data</small></div><div class="pk">${it.validity}<small>Validity</small></div></div>
+    const card = `<div class="pack${best ? ' best' : ''}">
+      <div class="pack-row"><div class="pack-price">₹${it.price}</div><div class="pk">${it.gb} GB<small>Data</small></div><div class="pk">${it.validity}<small>Validity</small></div><img class="pack-chev" src="assets/chevron.svg" width="20" height="20" alt=""></div>
       <div class="pack-foot"><button class="tlink" data-act="details" data-id="${id}">View Details <img src="assets/chevron.svg" width="16" height="16" alt=""></button><button class="btn btn-secondary" data-act="buy" data-id="${id}">Buy</button></div>
     </div>`;
+    return best ? `<div class="pack-wrap"><div class="pack-h">Best Match</div>${card}</div>` : card;
   };
   const planCard = (id, best) => {
     const it = ITEMS[id];
@@ -502,6 +502,11 @@
       <button class="btn ${best ? 'btn-primary' : 'btn-secondary'}" data-act="buy" data-id="${id}">Recharge</button>
     </div>`;
   };
+  const receiptCard = (title, order, it, what) => `<div class="rc"><span class="rc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    <b class="rc-t">${title}</b><div class="rc-id">Order ID: <span>${order}</span></div><p class="rc-p">Thank you! Your payment has been received.</p>
+    <div class="rc-details"><div class="rows"><div class="r"><span>Amount</span><b>₹${it.price}.00</b></div><div class="r"><span>Item</span><b>${what}</b></div><div class="r"><span>Paid with</span><b>APB A/C **7936</b></div><div class="r"><span>Number</span><b>98765 43210</b></div></div></div>
+    <button class="rc-more" data-rc>View details <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5l3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-rc]'); if (!b) return; const c = b.closest('.rc'); c.classList.toggle('open'); b.firstChild.textContent = c.classList.contains('open') ? 'Hide details ' : 'View details '; });
   const successCard = (title, sub) => `<div class="success-card"><span class="sc-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><div><b>${title}</b><span>${sub}</span></div></div>`;
 
   /* ---------------- Response engine ---------------- */
@@ -899,44 +904,56 @@
     }),
 
     paid: (it) => {
-      const blocks = [];
-      if (it.kind === 'data') { S.extraGB += it.gb; blocks.push({ html: successCard(`${it.gb} GB added`, `₹${it.price} · valid ${it.validity}`) }, { p: `Done! **${it.gb} GB** has been added to your number. It activates in **about 2 minutes** and is valid for ${it.validity}.` }); }
-      if (it.kind === 'plan') { S.recharged = true; blocks.push({ html: successCard(`${it.name} activated`, `${it.data} · ${it.validity}`) }, { p: `You’re all set! Your **${it.name}** plan is active for **${it.validity}**. Enjoy ${it.data} and unlimited 5G.` }); }
-      if (it.kind === 'roam') blocks.push({ html: successCard('Roaming pack booked', `${it.gb} GB · ${it.mins} min · ${it.validity}`) }, { p: 'Booked! The pack **starts automatically when you land** in the UAE. Have a safe trip ✈️' });
-      if (it.kind === 'bill') { S.billPaid = true; blocks.push({ html: successCard('Bill paid', '₹749 · October') }, { p: 'Your October bill of **₹749** is paid. The receipt is in your email.' }); }
-      return { steps: ['⚡ Confirming with the network…'], blocks, say: plain(blocks[1].p), choices: ['How much data do I have left?', 'No, thank you'] };
+      const order = String(Math.floor(1e9 + Math.random() * 9e9));
+      const what = { data: `${it.gb} GB data pack`, plan: it.name, roam: it.name, bill: 'October postpaid bill' }[it.kind];
+      if (it.kind === 'data') S.extraGB += it.gb;
+      if (it.kind === 'plan') S.recharged = true;
+      if (it.kind === 'bill') S.billPaid = true;
+      const lead = it.kind === 'bill' ? 'Your bill payment was successful.' : 'Your recharge was successful.';
+      const after = { data: `**${it.gb} GB** is added to your number and activates in **about 2 minutes**.`, plan: `Your **${it.name}** plan is active for **${it.validity}**.`, roam: 'The pack **starts automatically when you land** in the UAE.', bill: 'Your October bill of **₹749** is paid. The receipt is in your email.' }[it.kind];
+      return {
+        steps: ['⚡ Confirming with the network…'],
+        blocks: [
+          { p: lead },
+          { html: receiptCard(it.kind === 'bill' ? 'Your bill has been paid' : 'Your recharge was successful', order, it, what) },
+          { p: after },
+          { p: '**Is there anything else I can help you with today?**' },
+        ],
+        say: `${lead} ${plain(after)} Is there anything else I can help you with today?`,
+        choices: ['How much data do I have left?', 'No, thank you'],
+      };
     },
   };
 
   /* ---------------- Sheets ---------------- */
   const sheet = $('#sheet'), sheetBody = $('#sheetBody'), backdrop = $('#sheetBackdrop');
-  function openSheet(html) { sheetBody.innerHTML = html; sheet.classList.add('show'); backdrop.classList.add('show'); }
+  function openSheet(html, cls = '') { sheet.classList.remove('qp'); if (cls) sheet.classList.add(cls); sheetBody.innerHTML = html; sheet.classList.add('show'); backdrop.classList.add('show'); }
   function closeSheet() { sheet.classList.remove('show'); backdrop.classList.remove('show'); }
   backdrop.addEventListener('click', closeSheet);
 
   let payItem = null;
   function openPay(id) {
     const it = ITEMS[id]; payItem = it;
-    const label = { data: 'Confirm data pack', plan: 'Confirm recharge', roam: 'Confirm roaming pack', bill: 'Pay bill' }[it.kind];
-    const meta = it.kind === 'plan' ? `${it.data} · ${it.validity}` : it.kind === 'bill' ? it.validity : `${it.gb} GB · ${it.validity}`;
-    openSheet(`<h3>${label}</h3><p class="sub">${it.name} · ${meta} · 98765 43210</p>
-      <div class="pay-sum"><span>Amount to pay</span><b>₹${it.price}</b></div>
-      <button class="pay-m sel" data-act="pm"><span class="pm-ic" style="color:#292C31">UPI</span><span class="pm-t">Airtel Payments Bank<small>yashish@airtel</small></span><span class="radio"></span></button>
-      <button class="pay-m" data-act="pm"><span class="pm-ic">💳</span><span class="pm-t">HDFC Credit Card<small>•••• 4242</small></span><span class="radio"></span></button>
-      <button class="pay-m" data-act="pm"><span class="pm-ic">👛</span><span class="pm-t">Airtel Wallet<small>Balance ₹1,240</small></span><span class="radio"></span></button>
-      <button class="btn btn-primary btn-lg" data-act="pay">Pay ₹${it.price}</button>`);
+    const acct = it.kind === 'bill' ? 'Postpaid' : 'Prepaid';
+    const meta = it.kind === 'plan' ? `${it.data} • ${it.validity} validity` : it.kind === 'bill' ? `October bill • ${it.validity}` : it.kind === 'roam' ? `${it.gb} GB • ${it.mins} min • ${it.validity}` : `${it.gb} GB data • ${it.validity} validity`;
+    openSheet(`<div class="qp-head"><h3>Quick Pay</h3><button class="qp-x" data-act="closesheet" aria-label="Close"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7m0-7l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></div>
+      <div class="qp-box">
+        <div class="qp-row"><b>${acct} • 98765 43210</b><b>₹${it.price}.00</b></div>
+        <div class="qp-row qp-sub"><span>${meta}</span><button class="qp-link" data-act="toast" data-msg="Pack details would open here">VIEW DETAILS</button></div>
+        <div class="qp-sep"></div>
+        <div class="qp-upi"><span class="qp-airtel">airtel</span><span class="qp-div"></span><span class="qp-upilogo">UPI</span><span class="qp-linked">LINKED BANK…</span></div>
+        <div class="qp-acc"><span class="qp-acc-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8m4-8v8m6-8v8m4-8v8M3 21h18M12 3l9 5H3z"/></svg></span>
+          <span class="qp-acc-t"><b>APB A/C No. **7936</b><button class="qp-link2" data-act="toast" data-msg="Bank and card options would open here">Change Bank/Card</button></span></div>
+      </div>
+      <button class="btn btn-primary btn-lg qp-pay" data-act="pay">PAY ₹${it.price} BY AIRTEL UPI</button>
+      <button class="qp-all" data-act="toast" data-msg="All payment options would open here">VIEW ALL PAYMENT OPTIONS</button>`, 'qp');
   }
   async function doPay(btn) {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Processing payment…';
-    await sleep(1600);
-    const txn = 'AT' + Math.random().toString(36).slice(2, 10).toUpperCase();
-    sheetBody.innerHTML = `<div class="pay-done"><div class="confetti">${Array.from({ length: 24 }, (_, i) => `<i style="left:50%;background:${['#D42D1F', '#EE6A43', '#F6C3B5', '#8A2A19', '#FFB547'][i % 5]};--x:${rand(-170, 170)}px;--y:${rand(-120, 200)}px;--r:${rand(-400, 400)}deg;animation-delay:${rand(0, 0.15)}s"></i>`).join('')}</div>
-      <svg class="check-anim" viewBox="0 0 84 84"><circle cx="42" cy="42" r="38" fill="none" stroke="#1F8A4C" stroke-width="5"/><path d="M26 43l11 11 21-23" fill="none" stroke="#1F8A4C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <h3>Payment successful</h3><p>₹${payItem.price} paid · Txn ${txn}</p></div>`;
-    await sleep(1700);
+    await sleep(1500);
     closeSheet();
-    await sleep(300);
+    await sleep(320);
     await runBot(R.paid(payItem));
   }
   function openUsage() {
