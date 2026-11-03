@@ -1420,3 +1420,36 @@
   const pulse = document.querySelector('.ambient .dots-pulse');
   if (pulse) listeners.push(() => { pulse.classList.remove('go'); void pulse.offsetWidth; pulse.classList.add('go'); });
 })();
+
+/* ===================== Exploration 2: onboarding carousel ===================== */
+(() => {
+  const track = document.getElementById('obcTrack'), nav = document.getElementById('obcNav'), onb = document.getElementById('onboard');
+  if (!track || !nav || !onb) return;
+  const wrap = track.closest('.ob-carousel'), slides = [...track.children], dots = [...nav.querySelectorAll('.obc-dot')], next = document.getElementById('obcNext');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)'), MS = 4000;
+  let cur = -1, timer = 0, auto = true;
+  const step = () => slides[1].offsetLeft - slides[0].offsetLeft;
+  function set(i) {
+    if (i === cur) return;
+    cur = i;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === i); s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
+    dots.forEach((d, k) => { d.classList.toggle('on', k === i); d.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
+    if (wrap.classList.contains('playing')) { const d = dots[i].querySelector('i'); d.style.animation = 'none'; void d.offsetWidth; d.style.animation = ''; }
+    next.setAttribute('aria-label', i === slides.length - 1 ? 'Back to first slide' : 'Next slide');
+  }
+  const go = (i) => track.scrollTo({ left: ((i + slides.length) % slides.length) * step(), behavior: calm.matches ? 'auto' : 'smooth' });
+  track.addEventListener('scroll', () => set(Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / step())))), { passive: true });
+  function stopAuto() { auto = false; clearTimeout(timer); wrap.classList.remove('playing'); }
+  function tick() { clearTimeout(timer); if (!auto || calm.matches || !onb.classList.contains('active')) return; timer = setTimeout(() => { go(cur + 1); tick(); }, MS); }
+  function start() { if (calm.matches) return; auto = true; wrap.style.setProperty('--obc-ms', MS + 'ms'); wrap.classList.add('playing'); const c = cur; cur = -1; set(c < 0 ? 0 : c); tick(); }
+  dots.forEach((d, k) => d.addEventListener('click', () => { stopAuto(); go(k); }));
+  next.addEventListener('click', () => { stopAuto(); go(cur + 1); });
+  ['pointerdown', 'wheel', 'touchstart'].forEach((ev) => track.addEventListener(ev, stopAuto, { passive: true }));
+  track.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { stopAuto(); go(cur + 1); } if (e.key === 'ArrowLeft') { stopAuto(); go(cur - 1); } });
+  set(0);
+  // start playing each time onboarding opens; rewind to the first card
+  new MutationObserver(() => {
+    if (onb.classList.contains('active') && !onb.classList.contains('leaving')) { if (!timer) { track.scrollLeft = 0; cur = -1; set(0); setTimeout(start, 900); } }
+    else { clearTimeout(timer); timer = 0; }
+  }).observe(onb, { attributes: true, attributeFilter: ['class'] });
+})();
