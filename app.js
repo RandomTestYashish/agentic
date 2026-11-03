@@ -1175,7 +1175,7 @@
     const W = wave.width, H = wave.height, n = 46, gap = W / n, bw = gap * 0.42;
     wctx.clearRect(0, 0, W, H);
     const g = wctx.createLinearGradient(0, 0, W, 0);
-    g.addColorStop(0, '#F59A6E'); g.addColorStop(0.45, '#D42D1F'); g.addColorStop(1, '#8A2A19');
+    g.addColorStop(0, '#FF8530'); g.addColorStop(0.45, '#F0300F'); g.addColorStop(1, '#8A1A04');
     wctx.fillStyle = g;
     for (let i = 0; i < n; i++) {
       const v = recHist[recHist.length - n + i] ?? 0.04;
