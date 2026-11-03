@@ -1,12 +1,12 @@
 /* ===== Tokens: new ember (reddish-brown) branding from the Figma "New Branding" artboard ===== */
 :root {
-  --brand: #F0300F;          /* orb base */
+  --brand: #EE1C0E;          /* orb base */
   --brand-700: #B81A05;
   --brand-900: #6B1203;      /* brown */
   --brand-300: #FF9A5C;
   --brand-50: #FFF2EF;
   --brand-tint: #FDEDEA;
-  --brand-grad: linear-gradient(135deg, #FF4A12 0%, #F0300F 48%, #8A1A04 100%);
+  --brand-grad: linear-gradient(135deg, #FF4A12 0%, #EE1C0E 48%, #8A1A04 100%);
   --ink: #292C31;
   --ink-2: #3E4146;
   --muted: #696B6F;
@@ -116,7 +116,7 @@ textarea { font: inherit; }
 .ama-pill:active { transform: scale(.97); }
 .ama-art { animation: amaDrift 9s ease-in-out infinite alternate; }
 .ama-art img { display: none; }
-.ama-art > span > span { background: linear-gradient(90deg, #FF8530 0%, #FF4A12 22%, #F0300F 52%, #B81A05 76%, #6B1203 100%); }
+.ama-art > span > span { background: linear-gradient(90deg, #FF8530 0%, #FF4A12 22%, #EE1C0E 52%, #B81A05 76%, #6B1203 100%); }
 .ama-pill { box-shadow: 0 6px 18px -8px rgba(200, 40, 5, .55); }
 @keyframes amaDrift { from { rotate: -3deg; scale: 1.18; } to { rotate: 4deg; scale: 1.28; } }
 .ama-text { color: #fff; font-size: 14px; font-weight: 500; line-height: 17px; text-align: left; }
@@ -895,3 +895,27 @@ textarea { font: inherit; }
 
 /* card rows: snap cards to the 16px content edge, not the phone edge */
 .hscroll { scroll-padding-inline: 16px; }
+
+/* ===================== New colour: the AI colour breathes from brand red to amber and back =====================
+   One 8s loop shared by the orb, its glow, the home pill and the thinking loader:
+   red holds (0–30%), mellows into amber (30–55%), amber holds (55–68%), returns to red (68–95%).
+   A colour layer (mix-blend-mode: color) recolours the orb and pill while keeping all their light and shade. */
+:root { --amber: #FF9F1C; }
+.orb-clip::after, .ama-art::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: var(--amber);
+  mix-blend-mode: color; opacity: 0; animation: toAmber 8s ease-in-out infinite; }
+.orb-clip::after { z-index: 5; border-radius: 50%; }
+.ama-art { isolation: isolate; }
+.ama-art::after { z-index: 2; }
+@keyframes toAmber { 0%, 30% { opacity: 0; } 55%, 68% { opacity: .82; } 95%, 100% { opacity: 0; } }
+/* the soft glow and the loader dots warm up on the same beat */
+.orb-glow, .t-tri { animation: glowAmber 8s ease-in-out infinite; }
+@keyframes glowAmber { 0%, 30% { filter: hue-rotate(0deg) saturate(1); } 55%, 68% { filter: hue-rotate(28deg) saturate(1.15); } 95%, 100% { filter: hue-rotate(0deg) saturate(1); } }
+.ama-pill.expanding .ama-art::after { opacity: 0; animation: none; }
+@media (prefers-reduced-motion: reduce) { .orb-clip::after, .ama-art::after, .orb-glow, .t-tri { animation: none; } }
+/* amber phase as a bright amber gradient fading over the red (not a blend), sized exactly to the visible orb */
+.orb-clip::after { inset: 6.667px; mix-blend-mode: normal;
+  background: radial-gradient(60% 55% at 32% 26%, #FFD88A 0%, rgba(255,216,138,0) 70%),
+              radial-gradient(80% 80% at 64% 72%, #FF8A00 0%, rgba(255,138,0,0) 70%),
+              linear-gradient(142deg, #FFB547 0%, #FF9F1C 45%, #F07A00 80%, #D45F00 100%); }
+.ama-art::after { mix-blend-mode: normal; background: linear-gradient(90deg, #FFC15A 0%, #FFA41F 24%, #FF8E0A 52%, #D96800 77%, #8A3F00 100%); }
+@keyframes toAmber { 0%, 30% { opacity: 0; } 55%, 68% { opacity: .9; } 95%, 100% { opacity: 0; } }
