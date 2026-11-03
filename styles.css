@@ -936,3 +936,21 @@ textarea { font: inherit; }
 .ama-art::after { background: linear-gradient(90deg, #FFA850 0%, #FF9020 24%, #FF7A00 52%, #D45A00 77%, #7A2E00 100%); }
 @keyframes toAmber { 0%, 28% { opacity: 0; } 46%, 62% { opacity: .88; } 82%, 100% { opacity: 0; } }
 @keyframes glowAmber { 0%, 28% { filter: hue-rotate(0deg) saturate(1); } 46%, 62% { filter: hue-rotate(26deg) saturate(1.1); } 82%, 100% { filter: hue-rotate(0deg) saturate(1); } }
+
+/* v5: no whole-orb colour fade. The orb stays brand red; amber flows INSIDE it as a moving ember, the inner light is red */
+.orb-clip::after, .ama-art::after { animation: none !important; opacity: 0 !important; }
+.orb-glow, .t-tri { animation: none !important; filter: none !important; }
+/* the amber blob drifts a little slower and wider so the colour visibly moves through the red */
+.o-f1 { animation-duration: 6s !important; }
+/* pill: red, with an amber current drifting slowly left and right inside it */
+.ama-art { isolation: isolate; }
+.ama-flow { position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; overflow: hidden; }
+.ama-flow::before { content: ""; position: absolute; top: -40%; bottom: -40%; left: -60%; width: 120%;
+  background: radial-gradient(40% 60% at 50% 50%, rgba(255,122,0,.85) 0%, rgba(255,122,0,.35) 45%, rgba(255,122,0,0) 72%);
+  animation: amaFlow 7s ease-in-out infinite alternate; }
+@keyframes amaFlow { from { transform: translateX(-10%); } to { transform: translateX(95%); } }
+.ama-pill.expanding .ama-flow { opacity: 0; transition: opacity .2s; }
+/* loader: one amber dot among the reds */
+.tri i:nth-child(1) { background: #E80000; } .tri i:nth-child(2) { background: #A80000; } .tri i:nth-child(3) { background: #FF7A00; }
+@media (prefers-reduced-motion: reduce) { .ama-flow::before { animation: none; } }
+.ama-text, .ama-star { z-index: 2; }
