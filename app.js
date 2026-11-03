@@ -405,7 +405,7 @@
     const steps = instant ? (resp.steps || ['Thinking…']) : ['🤔 Thinking about it...', ...(resp.steps || [])];
     const split = (s) => { const m = s.match(/^(\S+)\s(.*)$/); return m ? [m[1], m[2]] : ['', s]; };
     const [e0, t0] = split(steps[0]);
-    w.innerHTML = `<div class="thinking"><span class="t-orb t-bub" aria-hidden="true"><i></i><i></i><i></i></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
+    w.innerHTML = `<div class="thinking"><span class="t-orb t-tri" aria-hidden="true"><span class="tri"><i></i><i></i><i></i></span></span><span class="t-txt shimmer-text">${esc(t0)}</span></div>${instant ? '' : '<div class="skeleton"><i></i><i></i><i></i></div>'}`;
     if (opts.before) msgs.insertBefore(w, opts.before); else msgs.appendChild(w);
     toBottom();
     const th = $('.thinking', w);
