@@ -728,3 +728,12 @@ textarea { font: inherit; }
 @keyframes starFlare { 0%, 15% { transform: scale(0) rotate(0deg); opacity: 0; } 22% { transform: scale(1) rotate(45deg); opacity: 1; } 34%, 100% { transform: scale(.5) rotate(90deg); opacity: 0; } }
 .ama-pill.expanding::before, .ama-pill.launch::before, .ama-pill.expanding .ama-star::before, .ama-pill.launch .ama-star::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .ama-pill::before, .ama-star::before { animation: none; display: none; } }
+
+/* Thinking loader: minimal and different from the header orb — three small dots that light up in turn */
+.t-orb.t-min { display: inline-flex; align-items: center; justify-content: center; gap: 3px; width: 20px; height: 20px; }
+.t-orb.t-min::after { display: none; }
+.t-min i { width: 4px; height: 4px; border-radius: 50%; background: var(--brand); opacity: .25; animation: tMin 1.1s ease-in-out infinite; }
+.t-min i:nth-child(2) { animation-delay: .15s; } .t-min i:nth-child(3) { animation-delay: .3s; }
+@keyframes tMin { 0%, 70%, 100% { opacity: .25; transform: translateY(0) scale(.8); } 35% { opacity: 1; transform: translateY(-2px) scale(1); } }
+.thinking.done .t-min i { animation: none; opacity: .35; transform: none; }
+@media (prefers-reduced-motion: reduce) { .t-min i { animation: none; opacity: .6; } }
