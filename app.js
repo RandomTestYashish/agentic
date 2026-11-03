@@ -1345,7 +1345,6 @@
     PHRASES = cfg.phrases; pi = 0;
     const box = $('#amaText'); box.innerHTML = `<span>${esc(PHRASES[0])}</span>`;
     phone.classList.toggle('fin', m === 'finance');
-    $$('.bn').forEach((b) => b.classList.toggle('active', +b.dataset.i === (m === 'finance' ? 1 : 0)));
     if (disclaimerEl) disclaimerEl.textContent = cfg.disclaimer;
     if (finChips) finChips.innerHTML = cfg.chips.map((row) => `<div class="fc-row">${row.map((q) => `<button class="chip fc" data-ask="${esc(q)}">${esc(q)}</button>`).join('')}</div>`).join('');
     if (modeSel && modeSel.value !== m) modeSel.value = m;
@@ -1367,7 +1366,6 @@
     setTimeout(() => agent.classList.remove('intro'), 1600);
   }
   if (modeSel) modeSel.addEventListener('change', () => setMode(modeSel.value));
-  $$('.bn').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; if (i === 0) setMode('manage'); if (i === 1) setMode('finance'); }));
   // hide the floating picker on phones while Agentic is open
   const syncPick = () => document.body.classList.toggle('agent-open', agent.classList.contains('active') || onboard.classList.contains('active'));
   [agent, onboard].forEach((sc) => new MutationObserver(syncPick).observe(sc, { attributes: true, attributeFilter: ['class'] }));

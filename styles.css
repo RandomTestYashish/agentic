@@ -748,10 +748,7 @@ textarea { font: inherit; }
   body.agent-open .mode-pick { display: none; }
 }
 
-/* bottom nav: the highlight slides to the active tab */
-#bnPill { transition: transform .45s var(--ease); }
-.phone.fin #bnPill { transform: translateX(78px); }
-.bn { cursor: pointer; }
+/* bottom nav stays on Manage (as in Figma) in both modes; the dropdown picks the screen */
 
 /* Finance landing (Figma "FC agentic"): orb higher, greeting, five starter chips, CIBIL disclaimer */
 .fin-chips { display: none; }
