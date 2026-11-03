@@ -52,7 +52,7 @@
     <div class="of o-f4"><img src="assets/orb-f4.svg" alt=""></div>
     <div class="of o-v2"><img src="assets/orb-v2.svg" alt=""></div>
     <div class="of o-v3"><img src="assets/orb-v3.svg" alt=""></div>
-  </div></div><div class="orb-star"><img class="sym sym-star" src="assets/orb-star.svg" alt=""><img class="sym sym-airtel" src="assets/home/airtel-white.svg" alt=""></div></div>`;
+  </div><div class="tide" aria-hidden="true"><i class="t-back"></i><i class="t-front"></i></div></div><div class="orb-star"><img class="sym sym-star" src="assets/orb-star.svg" alt=""><img class="sym sym-airtel" src="assets/home/airtel-white.svg" alt=""></div></div>`;
   $$('[data-orb]').forEach((el) => {
     el.innerHTML = ORB;
     const n = +el.dataset.orb;

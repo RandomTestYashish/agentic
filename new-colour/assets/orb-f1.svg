@@ -4,8 +4,8 @@
 </g>
 <defs>
 <radialGradient id="paint0_radial_0_283" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(76.1905 76.1905) scale(76.1905)">
-<stop stop-color="#FF7A00"/>
-<stop offset="1" stop-color="#FF7A00" stop-opacity="0"/>
+<stop stop-color="#FF1010"/>
+<stop offset="1" stop-color="#FF1010" stop-opacity="0"/>
 </radialGradient>
 </defs>
 </svg>

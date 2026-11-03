@@ -954,3 +954,24 @@ textarea { font: inherit; }
 .tri i:nth-child(1) { background: #E80000; } .tri i:nth-child(2) { background: #A80000; } .tri i:nth-child(3) { background: #FF7A00; }
 @media (prefers-reduced-motion: reduce) { .ama-flow::before { animation: none; } }
 .ama-text, .ama-star { z-index: 2; }
+
+/* v6: amber tide inside the red orb — the top stays brand red, amber rises from the bottom with a moving wave and settles back */
+.tide { position: absolute; inset: 6.667px; z-index: 1; border-radius: 50%; overflow: hidden; pointer-events: none; }
+.tide i { position: absolute; left: 0; width: 200%; height: 140%; top: 62%; will-change: transform; }
+.tide .t-back { opacity: .55;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8 Q 25 0 50 8 T 100 8 V 16 H 0 Z' fill='%23FF5A00'/%3E%3C/svg%3E") 0 0 / 50% 14px repeat-x, linear-gradient(#FF5A00, #E03A00) 0 13px / 100% calc(100% - 13px) no-repeat;
+  animation: tideWave 4.2s linear infinite reverse, tideRise 7s ease-in-out infinite alternate; animation-delay: 0s, -1.2s; }
+.tide .t-front {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 16' preserveAspectRatio='none'%3E%3Cpath d='M0 8 Q 25 0 50 8 T 100 8 V 16 H 0 Z' fill='%23FF8A1A'/%3E%3C/svg%3E") 0 0 / 50% 12px repeat-x, linear-gradient(#FF8A1A 0%, #FF7A00 35%, #FF5200 100%) 0 11px / 100% calc(100% - 11px) no-repeat;
+  animation: tideWave 3s linear infinite, tideRise 7s ease-in-out infinite alternate; }
+@keyframes tideWave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes tideRise { 0% { top: 78%; } 50% { top: 52%; } 100% { top: 44%; } }
+.orb.fast .tide i { animation-duration: 1.4s, 3s; }
+@media (prefers-reduced-motion: reduce) { .tide i { animation: none; top: 60%; } }
+/* tide polish: lower range, see-through amber, sphere shading and gloss over both colours */
+@keyframes tideRise { 0% { top: 82%; } 50% { top: 66%; } 100% { top: 58%; } }
+.tide .t-front { opacity: .88; }
+.tide .t-back { opacity: .45; }
+.tide::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(28% 20% at 32% 22%, rgba(255,255,255,.38), rgba(255,255,255,0) 72%),
+              radial-gradient(120% 120% at 50% 38%, rgba(120,0,0,0) 52%, rgba(110,0,0,.38) 100%); }
