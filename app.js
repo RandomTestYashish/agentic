@@ -1329,6 +1329,7 @@
   }
 
 
+  const deepAsk = () => { const q = new URLSearchParams(location.search); return q.has('ask') || q.has('chat') || q.has('mic') || q.has('voice'); };
   /* ---------------- Manage / Finance switch (dropdown beside the phone + bottom nav) ---------------- */
   const MODES = {
     manage: { name: 'Yashish', phrases: ['What do you need today?', 'Check my data balance', 'Recharge my ₹399 pack', 'Why is my bill high?', 'Fix my slow internet'],
@@ -1356,6 +1357,14 @@
     if (open) { await closeOverlay(open); await sleep(80); }
     if (hasMsgs()) { msgs.innerHTML = ''; agent.classList.remove('has-msgs', 'scrolled', 'docked'); chat.scrollTop = 0; }
     applyMode(m);
+    if (m === 'finance') openFinanceLanding();
+  }
+  // Finance starts straight on the Agentic landing (no home, no onboarding); the orb and greeting play their intro
+  function openFinanceLanding() {
+    store.set(KEY, '1');
+    if (agent.classList.contains('active')) return;
+    agent.classList.add('active', 'intro');
+    setTimeout(() => agent.classList.remove('intro'), 1600);
   }
   if (modeSel) modeSel.addEventListener('change', () => setMode(modeSel.value));
   $$('.bn').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; if (i === 0) setMode('manage'); if (i === 1) setMode('finance'); }));
@@ -1363,5 +1372,6 @@
   const syncPick = () => document.body.classList.toggle('agent-open', agent.classList.contains('active') || onboard.classList.contains('active'));
   [agent, onboard].forEach((sc) => new MutationObserver(syncPick).observe(sc, { attributes: true, attributeFilter: ['class'] }));
   applyMode(new URLSearchParams(location.search).get('mode') === 'finance' ? 'finance' : 'manage');
+  if (MODE === 'finance' && !deepAsk()) openFinanceLanding();
 
 })();
