@@ -886,3 +886,9 @@ textarea { font: inherit; }
 .tri i:nth-child(2) { left: 32%; top: 63%; }
 .tri i:nth-child(3) { left: 68%; top: 63%; }
 @keyframes triDot { 0%, 100% { scale: 1; } 15% { scale: 1.28; } 35% { scale: 1; } }
+/* three-dot logo without the black square: dots in the brand colours */
+.t-orb.t-tri { background: none; box-shadow: none; border-radius: 0; }
+.tri i { background: var(--brand); width: 4.6px; height: 4.6px; margin: -2.3px; }
+.tri i:nth-child(2) { background: var(--brand-700); }
+.tri i:nth-child(3) { background: var(--brand-300); }
+.tri i:nth-child(1) { top: 27%; } .tri i:nth-child(2) { left: 29%; top: 65%; } .tri i:nth-child(3) { left: 71%; top: 65%; }
