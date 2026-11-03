@@ -841,3 +841,6 @@ textarea { font: inherit; }
 .tri i:nth-child(1) { background: #E80000; }
 .tri i:nth-child(2) { background: #A80000; }
 .tri i:nth-child(3) { background: #FF2A2A; }
+
+/* card rows: snap cards to the 16px content edge, not the phone edge */
+.hscroll { scroll-padding-inline: 16px; }
