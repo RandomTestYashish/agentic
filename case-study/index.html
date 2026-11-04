@@ -220,6 +220,47 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
   .mch .ph { --s: min(220px, 58vw); position: relative; margin: 28px auto 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .fan .ph, .show-hero > * { animation: none; } .js .rv { opacity: 1; transform: none; } }
+
+/* ===== Feedback round: role, failure states, process, evidence, impact, reflection ===== */
+.fill { background: repeating-linear-gradient(135deg, #FFF4D6 0 8px, #FFEDC2 8px 16px); color: #6B4A00; border: 1px dashed #E2B54A; border-radius: 6px; padding: 0 6px; font-weight: 500; }
+.note { font-size: 14px; color: var(--muted); background: #F7F7F9; border-radius: 12px; padding: 12px 16px; margin: 0 0 24px; }
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+.role-grid > div { border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+.role-grid h3 { margin-bottom: 10px; }
+.role-grid ul { margin: 0; font-size: 16px; }
+@media (max-width: 640px) { .role-grid { grid-template-columns: 1fr; } }
+.fail { display: grid; gap: 0; margin-top: 8px; }
+.fail-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 28px; padding: 24px 0; border-top: 1px solid var(--line); align-items: start; }
+.fail-row:first-child { border-top: 0; padding-top: 4px; }
+.fail-row h3 { font-size: 18px; }
+.fail-row dl { margin: 8px 0 0; display: grid; grid-template-columns: 92px 1fr; gap: 6px 12px; font-size: 16px; }
+.fail-row dt { color: var(--muted); font-size: 14px; padding-top: 2px; }
+.fail-row dd { margin: 0; color: var(--ink-2); line-height: 1.6; }
+.fail-row img { width: 100%; aspect-ratio: 375 / 812; object-fit: cover; object-position: top; border-radius: 20px; border: 5px solid #111; }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .02em; padding: 2px 8px; border-radius: 6px; margin-left: 8px; vertical-align: middle; }
+.tag.built { background: #E7F6EC; color: #1F7A45; } .tag.designed { background: #EEF0F6; color: #4A5470; }
+@media (max-width: 640px) { .fail-row { grid-template-columns: 1fr; } .fail-row img { width: 150px; } }
+.proc { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 12px; }
+.proc figure { margin: 0; }
+.proc img { width: 100%; aspect-ratio: 420 / 860; object-fit: cover; border-radius: 16px; border: 1px solid var(--line); }
+.proc .n { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.proc figcaption { font-size: 14px; line-height: 1.5; color: var(--ink-2); margin-top: 4px; }
+.proc figcaption b { display: block; color: var(--ink); }
+.proc-logos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.proc-logos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; }
+.proc-logos span { display: block; font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+.crossed { text-decoration: line-through; text-decoration-color: rgba(196,50,31,.6); color: var(--muted); }
+@media (max-width: 720px) { .proc, .proc-logos { grid-template-columns: 1fr 1fr; } }
+.calc { border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-top: 12px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+.calc label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+.calc input { display: block; width: 100%; margin-top: 6px; font: 500 17px/1 var(--font); color: var(--ink); padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.calc input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.calc-out { background: #FBF4F1; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.calc-out small { display: block; font-size: 13px; color: var(--muted); }
+.calc-out b { font-size: 30px; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.calc-out .big b { font-size: 40px; color: var(--accent); }
+.calc-out p { font-size: 13px; color: var(--muted); margin: 0; }
+@media (max-width: 720px) { .calc { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -231,6 +272,7 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
   <a class="pn-brand" href="#top">Agentic<sup>®</sup></a>
   <a class="pn-link" href="#problem">Problem</a>
   <a class="pn-link" href="#decisions">Decisions</a>
+  <a class="pn-link" href="#impact">Impact</a>
   <a class="pn-cta" href="#try">Try it</a>
 </nav>
 
@@ -295,6 +337,25 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
       <div><dt>Goal</dt><dd>Fewer digital-to-assisted hand-offs</dd></div>
     </dl>
   </div>
+
+  <section id="role">
+    <h2>My role and the calls I made</h2>
+    <p>I was the <mark class="fill">[Add: your title, e.g. Lead Product Designer]</mark> on a team of <mark class="fill">[Add: who — e.g. 1 PM, 4 engineers, 1 data scientist]</mark>, over <mark class="fill">[Add: duration]</mark>. Here is what was mine and what was shared.</p>
+    <div class="role-grid">
+      <div><h3>I owned</h3><ul>
+        <li>The concept: an agent that completes tasks, not a better menu</li>
+        <li>The conversation model and the ten decisions below</li>
+        <li>The working prototype, built in code to test pace and trust</li>
+        <li>The visual system for the AI: orb, accent, motion, loader</li>
+        <li>Failure states and the money-safety rules</li></ul></div>
+      <div><h3>With the team</h3><ul>
+        <li>Which tasks ship first (data, recharge, bill, network), with Product</li>
+        <li>Real “thinking” steps from backend events, with Engineering</li>
+        <li>Success metrics and the baseline, with Data</li>
+        <li><mark class="fill">[Add: anything else that was shared or led by others]</mark></li></ul></div>
+    </div>
+    <p class="small">Calls I made against pushback: <mark class="fill">[Add 1–2 real moments, e.g. ‘kept the confirm sheet even though it adds a tap’]</mark></p>
+  </section>
 
   <section id="problem">
     <h2>The current navigation falls short</h2>
@@ -419,6 +480,34 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
     </div><img width="750" height="1624" src="img/fallback.jpg" alt="Fallback" loading="lazy" /></article>
   </section>
 
+
+  <section id="failures">
+    <h2>When things go wrong</h2>
+    <p>An agent that can spend money is only trusted if its failures are calm and honest. I designed these before the happy paths were final.</p>
+    <div class="fail">
+      <div class="fail-row"><div><h3>It doesn’t understand<span class="tag built">In prototype</span></h3><dl>
+        <dt>What happens</dt><dd>An out-of-scope or unclear request.</dd>
+        <dt>Agentic</dt><dd>Says “I’m still learning that”, lists what it can do now, and offers the closest task. It never guesses.</dd></dl></div>
+        <img src="img/fallback.jpg" alt="Fallback reply" loading="lazy" width="750" height="1624" /></div>
+      <div class="fail-row"><div><h3>It can’t fix the problem<span class="tag built">In prototype</span></h3><dl>
+        <dt>What happens</dt><dd>The network check finds weak signal it can’t solve.</dd>
+        <dt>Agentic</dt><dd>Shows the check, names the cause, lists fixes in order, then raises a complaint with the details already filled in.</dd></dl></div>
+        <img src="img/ticket.jpg" alt="Complaint raised with context" loading="lazy" width="750" height="1624" /></div>
+      <div class="fail-row"><div><h3>Voice mis-hears<span class="tag built">In prototype</span></h3><dl>
+        <dt>What happens</dt><dd>Noise, accent or Hinglish confuses speech-to-text.</dd>
+        <dt>Agentic</dt><dd>A live transcript sits in the composer, so people see the mistake before it’s sent. If the mic is blocked, it falls back to typing.</dd></dl></div>
+        <img src="img/transcribing.jpg" alt="Live transcript and transcribing state" loading="lazy" width="750" height="1624" /></div>
+      <div class="fail-row"><div><h3>A payment doesn’t go through<span class="tag designed">Designed</span></h3><dl>
+        <dt>What happens</dt><dd>UPI times out or the bank declines.</dd>
+        <dt>Agentic</dt><dd>The Quick Pay sheet stays open with the reason in plain words, offers retry or another method, and confirms nothing was charged twice.</dd></dl></div>
+        <img src="img/payment.jpg" alt="Payment confirmation sheet" loading="lazy" width="750" height="1624" /></div>
+      <div class="fail-row"><div><h3>The answer is wrong<span class="tag built">In prototype</span></h3><dl>
+        <dt>What happens</dt><dd>The reply is unhelpful or incorrect.</dd>
+        <dt>Agentic</dt><dd>Thumbs down and Regenerate sit under every answer; feedback goes to the team. Anything that costs money always asks first, so a wrong answer can’t spend.</dd></dl></div>
+        <img src="img/usage.jpg" alt="Answer with feedback controls" loading="lazy" width="750" height="1624" /></div>
+    </div>
+  </section>
+
   <section id="system">
     <h2>Conversation model</h2>
     <p>One Experience Agent owns the conversation. Specialised agents do the work through structured instructions and guardrails.</p>
@@ -458,6 +547,28 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
     </div>
   </section>
 
+
+  <section id="process">
+    <h2>The messy middle</h2>
+    <p>The final screens came after a lot of wrong turns. These are real rounds from building the prototype, with what each one taught me.</p>
+    <h3 style="margin-top:8px">Finding the AI’s colour</h3>
+    <div class="proc">
+      <figure><img src="img/process/step1.jpg" alt="Coral accent on white with floating shapes" loading="lazy" /><div class="n">Round 1</div><figcaption><b class="crossed">Coral on white</b>Taken from a moodboard. It looked like a different brand.</figcaption></figure>
+      <figure><img src="img/process/step2.jpg" alt="Amber accent on white" loading="lazy" /><div class="n">Round 2</div><figcaption><b class="crossed">Amber</b>Sampled from the same image. Too orange to say “Airtel”.</figcaption></figure>
+      <figure><img src="img/process/step3.jpg" alt="Black agent with an ember orb and floating shapes" loading="lazy" /><div class="n">Round 3</div><figcaption><b class="crossed">Black, plus floating shapes</b>The dark agent worked; the wireframe and ring were decoration.</figcaption></figure>
+      <figure><img src="img/process/step4.jpg" alt="One dotted texture behind the orb" loading="lazy" /><div class="n">Round 4</div><figcaption><b>One texture, tied to the orb</b>The dots light up where the orb’s light falls. Kept.</figcaption></figure>
+    </div>
+    <h3 style="margin-top:36px">Drawing the logo in dots</h3>
+    <div class="proc-logos">
+      <div><img src="img/process/logo-e_2c.jpg" alt="Twelve dots, star clustered" loading="lazy" /><span><s>12 dots</s>: the star collapsed into clusters</span></div>
+      <div><img src="img/process/logo-f_3c.jpg" alt="Twelve dots tracing the Airtel curl" loading="lazy" /><span><s>12 dots, traced</s>: the curl read, the star didn’t</span></div>
+      <div><img src="img/process/logo-h_vortexc.jpg" alt="Twenty-eight dot star outline" loading="lazy" /><span><s>28 dots, outline</s>: clearer, but felt like a stroke icon</span></div>
+      <div><img src="img/process/logo-filled.jpg" alt="Filled halftone Airtel logo" loading="lazy" /><span><b>Filled halftone</b>: both marks read at every size</span></div>
+    </div>
+    <h3 style="margin-top:36px">Six loaders to find one</h3>
+    <p>A mini orb (looked like the header orb, so people read it as a second assistant) → three dots → an eight-dot chase ring → a circle with dots → a three-dot mark on black → the same mark in brand reds, with no box. The rule I ended with: <b>the loader must never look like the assistant itself.</b></p>
+  </section>
+
   <section id="try">
     <div class="try">
       <div>
@@ -475,16 +586,74 @@ footer { border-top: 1px solid var(--line); padding: 24px; font-size: 14px; colo
     </div>
   </section>
 
+
+  <section id="evidence">
+    <h2>Testing and evidence</h2>
+    <p class="note">Numbers marked like <mark class="fill">this</mark> are placeholders for your real results. Replace them before sharing.</p>
+    <p>I tested the working prototype with <mark class="fill">[Add: number]</mark> Airtel <mark class="fill">[prepaid / postpaid]</mark> users in <mark class="fill">[Add: city / remote]</mark>, using <mark class="fill">[Add: method — moderated usability sessions, unmoderated tasks, internal pilot]</mark>. Each person did four tasks: check data, recharge, explain a bill, fix slow internet.</p>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Measure</th><th>Current app</th><th>With Agentic</th></tr></thead>
+      <tbody>
+        <tr><td>Task success</td><td><mark class="fill">[Add] %</mark></td><td><mark class="fill">[Add] %</mark></td></tr>
+        <tr><td>Time to add a data top-up</td><td><mark class="fill">[Add] s</mark></td><td><mark class="fill">[Add] s</mark></td></tr>
+        <tr><td>Steps to add a data top-up</td><td>7</td><td>3</td></tr>
+        <tr><td>Would call customer care instead</td><td><mark class="fill">[Add] of [n]</mark></td><td><mark class="fill">[Add] of [n]</mark></td></tr>
+        <tr><td>Trust before paying (1–5)</td><td><mark class="fill">[Add]</mark></td><td><mark class="fill">[Add]</mark></td></tr>
+      </tbody>
+    </table></div>
+    <h3 style="margin-top:28px">What testing changed</h3>
+    <ul>
+      <li><mark class="fill">[Add a real finding, e.g. ‘People wanted to see the amount before Pay, so the amount moved to the top of the sheet.’]</mark></li>
+      <li><mark class="fill">[Add a second finding]</mark></li>
+    </ul>
+    <p class="small">Steps to add a top-up (7 vs 3) were counted by walking both flows; that row is measured, not a placeholder.</p>
+  </section>
+
+  <section id="impact">
+    <h2>Business impact, in rupees</h2>
+    <p>Every task that ends in a call or store visit costs Airtel money. If Agentic finishes some of those tasks in the chat, the saving is simple to estimate. Change the numbers below to Airtel’s real ones.</p>
+    <div class="calc" id="calc">
+      <div>
+        <label for="cContacts">Assisted contacts a month for these tasks<input id="cContacts" type="number" min="0" step="10000" value="1000000"></label>
+        <label for="cCost">Cost of one assisted contact (₹)<input id="cCost" type="number" min="0" step="5" value="60"></label>
+        <label for="cShare">Share Agentic handles end to end (%)<input id="cShare" type="number" min="0" max="100" step="1" value="20"></label>
+        <label for="cAi">Cost of one Agentic conversation (₹)<input id="cAi" type="number" min="0" step="0.5" value="3"></label>
+      </div>
+      <div class="calc-out" aria-live="polite">
+        <div><small>Contacts moved to the chat each month</small><b id="oMoved">2,00,000</b></div>
+        <div><small>Saving each month</small><b id="oMonth">₹1.14 Cr</b></div>
+        <div class="big"><small>Saving each year</small><b id="oYear">₹13.7 Cr</b></div>
+        <p>Example values only, not Airtel data. Saving = contacts × share × (cost of a contact − cost of a conversation).</p>
+      </div>
+    </div>
+    <p class="small">Real inputs to collect: <mark class="fill">[Add: monthly calls + store visits for data, recharge, bill and network issues]</mark>, <mark class="fill">[Add: cost per call]</mark>, and the hand-off rate from the pilot.</p>
+  </section>
+
   <section>
-    <h2>What I learned</h2>
+    <h2>What I learned, and what I’d do differently</h2>
     <p>The most valuable outcome wasn’t only the assistant, it was the clarity we created along the way. In a space full of ambiguity, design set the vision, aligned stakeholders, and turned a broad AI ambition into something the team could build.</p>
     <ul>
       <li><b>Prototype the feeling early.</b> A working prototype settled debates about pace and trust that static frames couldn’t.</li>
       <li><b>Design the system, not the screen.</b> Agreeing on the conversation model decided half the UI.</li>
       <li><b>Trust is a budget.</b> Surprises spend it; confirms, honest limits and visible work refill it.</li>
     </ul>
+
     <h3 style="margin-top:32px">How we measure it</h3>
-    <ul><li>Task completion rate inside the chat</li><li>Digital-to-assisted hand-offs per 1,000 sessions</li><li>Fallback rate, and recovery after a fallback</li><li>Answer feedback and post-chat rating</li></ul>
+    <ul><li>Task completion rate inside the chat</li><li>Digital-to-assisted hand-offs per 1,000 sessions (the number behind the rupee saving)</li><li>Fallback rate, and recovery after a fallback</li><li>Answer feedback and post-chat rating</li></ul>
+    <h3 style="margin-top:32px">Next steps</h3>
+    <ol>
+      <li>Pilot with <mark class="fill">[Add] %</mark> of prepaid users and measure hand-offs against the current app.</li>
+      <li>Connect real services: usage, recharge, bills, network diagnostics, then Finance (credit score, loans).</li>
+      <li>Evaluate Hindi and Hinglish understanding on real queries, not scripted ones.</li>
+      <li>Accessibility pass: screen readers, larger text, and voice-only use.</li>
+    </ol>
+    <h3 style="margin-top:32px">What I’d do differently</h3>
+    <ul>
+      <li><b>Agree the baseline first.</b> I designed before we had the current hand-off rate, which made impact harder to prove later.</li>
+      <li><b>Test colour and motion with people, not only by eye.</b> The AI colour took many rounds of taste-based iteration that a quick preference test would have shortened.</li>
+      <li><b>Write failure states before happy paths.</b> Several failures were designed late; they shaped the happy path more than I expected.</li>
+      <li><b>Lock the visual system once.</b> Orb, logo and loader changed independently; one shared system would have saved rework.</li>
+    </ul>
   </section>
 </main>
 
@@ -612,6 +781,23 @@ document.querySelectorAll('#scen button').forEach((b) => b.addEventListener('cli
     document.getElementById('tryFrame').src = a.dataset.q ? '../?ask=' + encodeURIComponent(a.dataset.q) : '../';
     document.querySelectorAll('#scen button').forEach((x) => x.classList.toggle('on', a.dataset.q ? x.dataset.q === a.dataset.q : x.hasAttribute('data-start')));
   });
+})();
+</script>
+
+<script>
+// Rupee impact calculator (Indian number format, lakh / crore)
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const inr = (n) => Math.round(n).toLocaleString('en-IN');
+  const trim = (t) => (t.includes('.') ? t.replace(/0+$/, '').replace(/\.$/, '') : t);
+  const cr = (n) => (n >= 1e9 ? '₹' + Math.round(n / 1e7).toLocaleString('en-IN') + ' Cr' : n >= 1e7 ? '₹' + trim((n / 1e7).toFixed(2)) + ' Cr' : '₹' + trim((n / 1e5).toFixed(1)) + ' L');
+  function calc() {
+    const contacts = +$('cContacts').value || 0, cost = +$('cCost').value || 0, share = Math.min(100, +$('cShare').value || 0) / 100, ai = +$('cAi').value || 0;
+    const moved = contacts * share, month = moved * Math.max(0, cost - ai);
+    $('oMoved').textContent = inr(moved); $('oMonth').textContent = cr(month); $('oYear').textContent = cr(month * 12);
+  }
+  ['cContacts', 'cCost', 'cShare', 'cAi'].forEach((id) => $(id).addEventListener('input', calc));
+  calc();
 })();
 </script>
 </body>
