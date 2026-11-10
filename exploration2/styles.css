@@ -1096,3 +1096,23 @@ textarea { font: inherit; }
 
 /* card rows: snap cards to the 16px content edge, not the phone edge */
 .hscroll { scroll-padding-inline: 16px; }
+
+/* ===== Onboarding carousel, lighter: no cards, no ring, small icon, full-width slides ===== */
+.ob-carousel { margin: 0 -16px; }
+.obc-track { gap: 0; padding: 0; scroll-padding: 0; }
+.obc-slide { flex: 0 0 100%; padding: 8px 16px 4px; border: 0; border-radius: 0; background: none; transform: none; opacity: .0; gap: 6px;
+  transition: opacity .45s var(--ease); }
+.obc-slide.on { opacity: 1; border: 0; }
+.obc-slide::before { display: none; }
+.obc-art { height: auto; margin: 0 0 14px; display: block; }
+.obc-dots, .obc-ring { display: none; }
+.obc-lens { width: 52px; height: 52px; border-radius: 16px; background: rgba(255,255,255,.05);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 10px 28px -12px rgba(224,97,75,.5); }
+.obc-lens img { width: 30px; height: 30px; filter: none; }
+.obc-slide.on .obc-lens img { animation: none; }
+.obc-k { font-size: 11px; letter-spacing: .1em; color: var(--night-muted); }
+.obc-slide b { font-size: 17px; line-height: 24px; font-weight: 600; }
+.obc-slide p { font-size: 14px; line-height: 21px; color: var(--night-muted); max-width: 300px; }
+.obc-nav { padding: 18px 16px 0; }
+.obc-next { width: 32px; height: 32px; background: transparent; }
+.obc-art { display: flex; justify-content: flex-start; }
